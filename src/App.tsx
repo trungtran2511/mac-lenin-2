@@ -454,12 +454,12 @@ export default function App() {
             </button>
 
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-10">
               {navLinks.map((link) => (
                 <button
                   key={link.label}
                   onClick={() => scrollToSection(link.target)}
-                  className={`text-sm font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
+                  className={`text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
                     ? "text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -473,7 +473,8 @@ export default function App() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => scrollToSection("surplus-value")}
-                className="liquid-glass rounded-full px-6 py-2.5 text-sm text-foreground font-medium transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg cursor-pointer bg-transparent border-none outline-none"
+                className="liquid-glass rounded-full px-7 py-3 text-base text-foreground font-medium transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg cursor-pointer bg-transparent border-none outline-none"
+                style={{ marginRight: "-50px" }}
               >
                 Khám Phá Ngay
               </button>
