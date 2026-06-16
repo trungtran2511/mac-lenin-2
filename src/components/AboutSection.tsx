@@ -29,9 +29,9 @@ export default function AboutSection() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight font-serif italic text-white/60"
         >
-          Lao động kiến tạo nên mọi giá trị,
+          Kẻ kiến tạo thế giới,
           <br className="hidden md:block" />
-          nhưng ai mới thực sự sở hữu?
+          hay quân cờ trong guồng quay của giá trị?
         </motion.h2>
       </div>
     </section>
