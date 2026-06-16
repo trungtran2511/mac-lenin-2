@@ -447,8 +447,8 @@ export default function App() {
             {/* Logo */}
             <button
               onClick={() => scrollToSection("theory")}
-              className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer -ml-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
+              className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
+              style={{ fontFamily: "'Instrument Serif', serif", marginLeft: "-20px" }}
             >
               Group 2 with love
             </button>
