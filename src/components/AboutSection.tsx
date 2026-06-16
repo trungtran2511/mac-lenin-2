@@ -27,7 +27,8 @@ export default function AboutSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight font-serif italic text-white/60"
+          className="text-4xl md:text-6xl lg:text-7xl leading-[1.15] tracking-tight font-serif italic text-white/60"
+          style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Kẻ kiến tạo thế giới,
           <br className="hidden md:block" />
