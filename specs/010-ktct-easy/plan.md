@@ -4,7 +4,7 @@
 
 ## Tóm tắt kế hoạch
 Xây dựng một ứng dụng Single Page Application (SPA) trên nền React có tên "Kinh Tế Chính Trị Easy" (KTCT-Easy) nhằm giảng dạy Kinh tế chính trị Mác - Lênin bằng ngôn ngữ bình dân cho người học tại Việt Nam. Ứng dụng bao gồm:
-- Sidebar điều hướng cố định bên trái được quản lý bằng React State (`currentPage`).
+- Thanh điều hướng dạng Top Navigation Pill lơ lửng được quản lý bằng React State để cuộn mượt mà giữa các phân đoạn học tập.
 - 5 tính năng chính: Phân tích lương & Máy tính đổi đồ, Trợ lý AI Các Mác, Biểu đồ biến động thị trường, Thử thách làm sếp, và Bản đồ kinh tế vĩ mô Việt Nam.
 - Trực quan hóa dữ liệu bằng Recharts (biểu đồ đường, biểu đồ tròn) và bộ icon Lucide.
 - Tích hợp gọi trực tiếp API Gemini từ frontend.

@@ -92,7 +92,7 @@ Là một học sinh ôn thi môn Kinh tế chính trị, tôi muốn xem biểu
 
 ### Các yêu cầu chi tiết
 - **FR-001**: Hệ thống PHẢI tải và đọc dữ liệu tĩnh từ `economy_data.json` khi khởi chạy.
-- **FR-002**: Hệ thống PHẢI chạy hoàn toàn ở Client-side dưới dạng Single Page Application (SPA) với Sidebar cố định bên trái điều hướng bằng React State.
+- **FR-002**: Hệ thống PHẢI chạy hoàn toàn ở Client-side dưới dạng Single Page Application (SPA) với thanh điều hướng dạng Top Navigation Pill lơ lửng được quản lý bằng React State để cuộn mượt mà giữa các phân đoạn học tập.
 - **FR-003**: Hệ thống PHẢI cung cấp công cụ so sánh thời gian lao động tất yếu và thặng dư dựa trên dữ liệu công việc được chọn.
 - **FR-004**: Hệ thống PHẢI hỗ trợ quy đổi tích lũy thặng dư theo số tháng ra trà sữa, vé xem phim, tai nghe kèm chú thích hài hước.
 - **FR-005**: Hệ thống PHẢI gọi trực tiếp API Gemini bằng API Key lấy từ môi trường để phân tích nỗi đau đi làm dưới góc nhìn Marxist.
