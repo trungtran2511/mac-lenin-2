@@ -448,7 +448,7 @@ export default function App() {
             <button
               onClick={() => scrollToSection("theory")}
               className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
-              style={{ fontFamily: "'Instrument Serif', serif", marginLeft: "-20px" }}
+              style={{ fontFamily: "'Instrument Serif', serif", marginLeft: "-100px" }}
             >
               Group 2 with love
             </button>
