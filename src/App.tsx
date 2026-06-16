@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Compass,
   ArrowRight,
+  ArrowLeft,
   BookOpen,
   ShieldAlert,
   Award,
@@ -259,6 +260,7 @@ export default function App() {
   const [economyData, setEconomyData] = useState<EconomyData>(FALLBACK_DATA);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [activeView, setActiveView] = useState<'home' | 'calculator' | 'ai-consultant' | 'market-dynamics' | 'ethical-challenge' | 'gdp-sectors'>('home');
 
   // Job offer page states
   const [selectedJobId, setSelectedJobId] = useState("it-fresher");
@@ -384,9 +386,35 @@ export default function App() {
   };
 
   const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (id === "theory") {
+      setActiveView("home");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "about-section") {
+      setActiveView("home");
+      setTimeout(() => {
+        const el = document.getElementById("about-section");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    } else if (id === "surplus-value") {
+      setActiveView("calculator");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "marxist-ai") {
+      setActiveView("ai-consultant");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "market-dynamics") {
+      setActiveView("market-dynamics");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "ethical-challenge") {
+      setActiveView("ethical-challenge");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "gdp-sectors") {
+      setActiveView("gdp-sectors");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
@@ -409,11 +437,11 @@ export default function App() {
   };
 
   const navLinks = [
-    { label: "Trang Chủ", target: "theory", active: true },
-    { label: "Tính Lương", target: "surplus-value" },
-    { label: "Lý Luận", target: "about-section" },
-    { label: "Mác AI", target: "marxist-ai" },
-    { label: "Cơ Cấu GDP", target: "gdp-sectors" },
+    { label: "Trang Chủ", target: "theory", active: activeView === "home" },
+    { label: "Tính Lương", target: "surplus-value", active: activeView === "calculator" },
+    { label: "Lý Luận", target: "about-section", active: false },
+    { label: "Mác AI", target: "marxist-ai", active: activeView === "ai-consultant" },
+    { label: "Cơ Cấu GDP", target: "gdp-sectors", active: activeView === "gdp-sectors" },
   ];
 
   const PIE_COLORS = ["#ffffff", "#a3a3a3", "#404040"];
@@ -422,28 +450,146 @@ export default function App() {
     <div className="relative min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background antialiased font-sans">
 
       {/* 1. HERO SECTION & HEADER */}
-      <header id="theory" className="relative min-h-screen flex flex-col justify-between overflow-hidden">
+      {activeView === "home" ? (
+        <header id="theory" className="relative min-h-screen flex flex-col justify-between overflow-hidden">
+          {/* Fullscreen Video Background */}
+          <video
+            muted
+            autoPlay
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+            style={{ objectPosition: "center 80%" }}
+          >
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
+          </video>
 
-        {/* Fullscreen Video Background */}
-        <video
-          muted
-          autoPlay
-          loop
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-          style={{ objectPosition: "center 80%" }}
-        >
-          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
-        </video>
+          {/* Smooth Bottom Gradient Fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent z-[1] pointer-events-none" />
 
-        {/* Smooth Bottom Gradient Fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent z-[1] pointer-events-none" />
+          {/* Navigation Bar */}
+          <div className="relative z-10 w-full">
+            <nav className="flex flex-row justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full">
+              {/* Logo */}
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
+                style={{ fontFamily: "'Instrument Serif', serif", marginLeft: "-100px" }}
+              >
+                Group 2 with love
+              </button>
 
-        {/* Navigation Bar */}
-        <div className="relative z-10 w-full">
-          <nav className="flex flex-row justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full">
+              {/* Desktop Nav Links */}
+              <div className="hidden md:flex items-center gap-10">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.label}
+                    onClick={() => scrollToSection(link.target)}
+                    className={`text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
+                      ? "text-foreground font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
 
+              {/* CTA Button & Mobile Menu Toggle */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => scrollToSection("surplus-value")}
+                  className="liquid-glass rounded-full px-7 py-3 text-base text-foreground font-medium transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg cursor-pointer bg-transparent border-none outline-none"
+                  style={{ marginRight: "-50px" }}
+                >
+                  Khám Phá Ngay
+                </button>
+
+                {/* Hamburger Button */}
+                <button
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none"
+                  aria-label="Toggle menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              </div>
+            </nav>
+          </div>
+
+          {/* Mobile Menu Overlay */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl p-8 flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); scrollToSection("theory"); }}
+                    className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
+                  >
+                    Group 2
+                  </button>
+                  <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-8 text-3xl font-medium tracking-tight py-12">
+                  {navLinks.map(link => (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        scrollToSection(link.target);
+                      }}
+                      className="text-left text-muted-foreground hover:text-foreground transition-all bg-transparent border-none outline-none cursor-pointer"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pb-8">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); scrollToSection("surplus-value"); }}
+                    className="w-full liquid-glass rounded-full py-4 text-center text-foreground font-medium text-lg border border-white/10 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 cursor-pointer bg-transparent"
+                  >
+                    Khám Phá Ngay
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Hero Section */}
+          <main className="relative z-10 flex-1 flex flex-col justify-start items-center text-center px-6 pt-8 md:pt-12 pb-20">
+            <h1
+              className="text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-7xl font-normal text-foreground select-text animate-fade-rise"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              Nơi{" "}
+              <em className="not-italic text-muted-foreground">giá trị thặng dư</em> được{" "}
+              <em className="not-italic text-muted-foreground">thấu suốt qua lao động.</em>
+            </h1>
+
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mt-5 leading-relaxed select-text animate-fade-rise-delay">
+              Chúng tôi thiết kế công cụ trực quan hóa học thuyết kinh tế chính trị Mác - Lênin.
+              Giữa guồng quay biến động của thị trường, bạn sẽ tìm thấy câu trả lời về bản chất thực sự của tiền lương và thặng dư.
+            </p>
+          </main>
+
+          <div className="relative z-10 w-full py-4" />
+        </header>
+      ) : (
+        /* Sticky Compact Navigation Bar for Subpages */
+        <div className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-white/5">
+          <nav className="flex flex-row justify-between items-center px-8 py-4 max-w-7xl mx-auto w-full">
             {/* Logo */}
             <button
               onClick={() => scrollToSection("theory")}
@@ -488,106 +634,219 @@ export default function App() {
                 <Menu className="w-6 h-6" />
               </button>
             </div>
-
           </nav>
-        </div>
 
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl p-8 flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => { setMobileMenuOpen(false); scrollToSection("theory"); }}
-                  className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
-                  style={{ fontFamily: "'Instrument Serif', serif" }}
-                >
-                  Group 2
-                </button>
-                <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-8 text-3xl font-medium tracking-tight py-12">
-                {navLinks.map(link => (
+          {/* Mobile Menu Overlay for Subpages */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl p-8 flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between">
                   <button
-                    key={link.label}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      scrollToSection(link.target);
-                    }}
-                    className="text-left text-muted-foreground hover:text-foreground transition-all bg-transparent border-none outline-none cursor-pointer"
+                    onClick={() => { setMobileMenuOpen(false); scrollToSection("theory"); }}
+                    className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
-                    {link.label}
+                    Group 2
                   </button>
-                ))}
+                  <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-8 text-3xl font-medium tracking-tight py-12">
+                  {navLinks.map(link => (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        scrollToSection(link.target);
+                      }}
+                      className="text-left text-muted-foreground hover:text-foreground transition-all bg-transparent border-none outline-none cursor-pointer"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="pb-8">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); scrollToSection("surplus-value"); }}
+                    className="w-full liquid-glass rounded-full py-4 text-center text-foreground font-medium text-lg border border-white/10 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 cursor-pointer bg-transparent"
+                  >
+                    Khám Phá Ngay
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {activeView === "home" && (
+        <>
+          {/* 2. ABOUT SECTION */}
+          <div id="about-section">
+            <AboutSection />
+          </div>
+
+          {/* 3. FEATURED VIDEO SECTION */}
+          <FeaturedVideoSection />
+
+          {/* 4. PHILOSOPHY SECTION */}
+          <PhilosophySection />
+
+          {/* 5. SERVICES SECTION */}
+          <ServicesSection />
+
+          {/* INTERACTIVE DASHBOARD GRID */}
+          <section className="relative bg-background px-6 md:px-28 py-24 border-t border-white/10 flex flex-col items-center animate-fade-rise">
+            <div className="max-w-6xl w-full space-y-12">
+              <div className="text-center space-y-3">
+                <span className="text-white/40 text-xs tracking-widest uppercase block font-mono">Trải nghiệm thực nghiệm</span>
+                <h2 className="text-4xl md:text-6xl text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  Công Cụ Tương Tác
+                </h2>
+                <p className="text-white/50 text-xs md:text-sm max-w-xl mx-auto">
+                  Chọn một công cụ trực quan hóa học thuyết kinh tế chính trị bên dưới để bắt đầu khám phá thực tiễn.
+                </p>
               </div>
 
-              <div className="pb-8">
-                <button
-                  onClick={() => { setMobileMenuOpen(false); scrollToSection("surplus-value"); }}
-                  className="w-full liquid-glass rounded-full py-4 text-center text-foreground font-medium text-lg border border-white/10 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 cursor-pointer bg-transparent"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                
+                {/* Card 1: Surplus Calculator */}
+                <motion.div 
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255, 255, 255, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => scrollToSection("surplus-value")}
+                  className="liquid-glass rounded-3xl p-8 border border-white/10 cursor-pointer flex flex-col justify-between space-y-6 hover:shadow-2xl hover:shadow-white/5 transition-all duration-300"
                 >
-                  Khám Phá Ngay
-                </button>
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <Briefcase className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white text-xl font-bold tracking-tight">Tính Lương & Thặng Dư</h3>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      Bóc tách ngày làm việc 8 tiếng thành giờ lao động tất yếu và thặng dư. Đo lường tỷ suất bóc lột thực tế trên đồng lương của bạn.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    Bắt đầu khám phá <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.div>
+
+                {/* Card 2: AI Consultant */}
+                <motion.div 
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255, 255, 255, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => scrollToSection("marxist-ai")}
+                  className="liquid-glass rounded-3xl p-8 border border-white/10 cursor-pointer flex flex-col justify-between space-y-6 hover:shadow-2xl hover:shadow-white/5 transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <Bot className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white text-xl font-bold tracking-tight">Trợ Lý AI Thầy Nam</h3>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      Tâm sự nỗi đau đi làm, bị ép KPI hay OT không lương để nhận phân tích học thuật dí dỏm, thực tế bằng tiếng lóng Gen Z.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    Chat với Thầy Nam <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.div>
+
+                {/* Card 3: Market Dynamics */}
+                <motion.div 
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255, 255, 255, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => scrollToSection("market-dynamics")}
+                  className="liquid-glass rounded-3xl p-8 border border-white/10 cursor-pointer flex flex-col justify-between space-y-6 hover:shadow-2xl hover:shadow-white/5 transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white text-xl font-bold tracking-tight">Biến Động Thị Trường</h3>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      Giải mã mối tương quan biện chứng giữa Giá cả thị trường và Giá trị thực tế dưới tác động của quy luật Cung - Cầu.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    Xem biểu đồ <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.div>
+
+                {/* Card 4: Boss Challenge */}
+                <motion.div 
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255, 255, 255, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => scrollToSection("ethical-challenge")}
+                  className="liquid-glass rounded-3xl p-8 border border-white/10 cursor-pointer flex flex-col justify-between space-y-6 hover:shadow-2xl hover:shadow-white/5 transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <ShieldAlert className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white text-xl font-bold tracking-tight">Thử Thách Làm Sếp</h3>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      Nhập vai nhà quản trị điều hành doanh nghiệp trước những mâu thuẫn sinh tồn giữa tối đa hóa lợi nhuận và trách nhiệm xã hội.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    Chơi game ngay <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.div>
+
+                {/* Card 5: GDP Sectors Matrix */}
+                <motion.div 
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255, 255, 255, 0.3)" }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => scrollToSection("gdp-sectors")}
+                  className="liquid-glass rounded-3xl p-8 border border-white/10 cursor-pointer flex flex-col justify-between space-y-6 hover:shadow-2xl hover:shadow-white/5 transition-all duration-300 md:col-span-2 lg:col-span-1"
+                >
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                      <Building className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white text-xl font-bold tracking-tight">Cơ Cấu GDP Việt Nam</h3>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      Phân tích cấu trúc kinh tế định hướng XHCN thông qua tỷ lệ đóng góp GDP thực tế của khối Nhà nước, Tư nhân và FDI.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                    Xem phân tích <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </motion.div>
+
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Hero Section */}
-        <main className="relative z-10 flex-1 flex flex-col justify-start items-center text-center px-6 pt-8 md:pt-12 pb-20">
-
-          {/* Main Heading H1 */}
-          <h1
-            className="text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-7xl font-normal text-foreground select-text animate-fade-rise"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
-          >
-            Nơi{" "}
-            <em className="not-italic text-muted-foreground">giá trị thặng dư</em> được{" "}
-            <em className="not-italic text-muted-foreground">thấu suốt qua lao động.</em>
-          </h1>
-
-          {/* Subtext Description */}
-          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mt-5 leading-relaxed select-text animate-fade-rise-delay">
-            Chúng tôi thiết kế công cụ trực quan hóa học thuyết kinh tế chính trị Mác - Lênin.
-            Giữa guồng quay biến động của thị trường, bạn sẽ tìm thấy câu trả lời về bản chất thực sự của tiền lương và thặng dư.
-          </p>
-
-        </main>
-
-        {/* Footer spacer/pusher */}
-        <div className="relative z-10 w-full py-4" />
-
-      </header>
-
-      {/* 2. ABOUT SECTION */}
-      <div id="about-section">
-        <AboutSection />
-      </div>
-
-      {/* 3. FEATURED VIDEO SECTION */}
-      <FeaturedVideoSection />
-
-      {/* 4. PHILOSOPHY SECTION */}
-      <PhilosophySection />
-
-      {/* 5. SERVICES SECTION */}
-      <ServicesSection />
+            </div>
+          </section>
+        </>
+      )}
 
       {/* ========================================================================= */}
       {/* ======================= INTERACTIVE FUNCTIONAL WIDGETS ================== */}
       {/* ========================================================================= */}
 
       {/* 6. SURPLUS VALUE CALCULATOR SECTION */}
-      <section id="surplus-value" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center">
-        <div className="max-w-5xl w-full space-y-12">
+      {activeView === "calculator" && (
+        <section id="surplus-value" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
             <div>
@@ -793,10 +1052,22 @@ export default function App() {
 
         </div>
       </section>
+      )}
 
       {/* 7. MARXIST AI CONSULTANT SECTION */}
-      <section id="marxist-ai" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center">
-        <div className="max-w-5xl w-full space-y-12">
+      {activeView === "ai-consultant" && (
+        <section id="marxist-ai" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
 
           <div className="border-b border-white/10 pb-6">
             <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trợ lý học tập</span>
@@ -884,10 +1155,22 @@ export default function App() {
 
         </div>
       </section>
+      )}
 
       {/* 8. MARKET DECODER SECTION */}
-      <section id="market-dynamics" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center">
-        <div className="max-w-5xl w-full space-y-12">
+      {activeView === "market-dynamics" && (
+        <section id="market-dynamics" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
             <div>
@@ -990,10 +1273,22 @@ export default function App() {
 
         </div>
       </section>
+      )}
 
       {/* 9. ETHICAL BOSS CHALLENGE SECTION */}
-      <section id="ethical-challenge" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center">
-        <div className="max-w-5xl w-full space-y-12">
+      {activeView === "ethical-challenge" && (
+        <section id="ethical-challenge" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
 
           <div className="border-b border-white/10 pb-6">
             <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trò chơi đóng vai</span>
@@ -1131,10 +1426,22 @@ export default function App() {
 
         </div>
       </section>
+      )}
 
       {/* 10. GDP SECTOR MATRIX SECTION */}
-      <section id="gdp-sectors" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center">
-        <div className="max-w-5xl w-full space-y-12">
+      {activeView === "gdp-sectors" && (
+        <section id="gdp-sectors" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
 
           <div className="border-b border-white/10 pb-6">
             <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Cơ Cấu Hiến Định</span>
@@ -1244,6 +1551,7 @@ export default function App() {
 
         </div>
       </section>
+      )}
 
       {/* 11. FOOTER */}
       <footer className="px-6 md:px-28 py-16 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 bg-background z-10 relative text-white/40 text-xs">
