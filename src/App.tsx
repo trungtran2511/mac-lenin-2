@@ -445,12 +445,12 @@ export default function App() {
           <nav className="flex flex-row justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full">
 
             {/* Logo */}
-            <button 
+            <button
               onClick={() => scrollToSection("theory")}
-              className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer"
+              className="text-3xl tracking-tight text-foreground bg-transparent border-none outline-none cursor-pointer -ml-4"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              KTCT Easy<sup className="text-xs ml-0.5">®</sup>
+              Group 2 with love
             </button>
 
             {/* Desktop Nav Links */}
