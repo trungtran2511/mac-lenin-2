@@ -89,6 +89,11 @@
   animation: fade-rise 0.8s ease-out 0.4s both;
 }
 
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .floating-particles-canvas {
   position: fixed;
   inset: 0;
@@ -2727,4 +2732,3 @@
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
   z-index: 4;
 }
-

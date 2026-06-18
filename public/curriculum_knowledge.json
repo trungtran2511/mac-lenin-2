@@ -265,6 +265,162 @@
       ],
       "correctAnswer": 1,
       "explanation": "Hội nhập kinh tế quốc tế là việc một quốc gia chủ động tham gia vào đời sống kinh tế toàn cầu, mở cửa thị trường, tham gia các định chế thương mại tự do nhằm phát huy lợi thế so sánh và phát triển kinh tế."
+    },
+    {
+      "id": "q19",
+      "chapter": 1,
+      "question": "Bốn chức năng cơ bản của Kinh tế chính trị Mác - Lênin gồm những chức năng nào?",
+      "options": [
+        "Dự báo, kế toán, quản trị và tiếp thị",
+        "Nhận thức, thực tiễn, phương pháp luận và giáo dục",
+        "Đầu tư, phân phối, tiêu dùng và tiết kiệm",
+        "Sản xuất, kiểm kê, thương mại và ngân hàng"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Giáo trình xác định môn học có bốn chức năng cơ bản: nhận thức bản chất quy luật kinh tế, định hướng thực tiễn, cung cấp phương pháp luận và giáo dục thế giới quan khoa học."
+    },
+    {
+      "id": "q20",
+      "chapter": 1,
+      "question": "Vì sao phương pháp trừu tượng hóa khoa học giữ vai trò đặc thù trong nghiên cứu kinh tế chính trị?",
+      "options": [
+        "Vì nó thay thế hoàn toàn việc quan sát hiện thực kinh tế",
+        "Vì nó giúp loại bỏ hiện tượng ngẫu nhiên, bề ngoài để nắm bản chất và quy luật sâu xa",
+        "Vì nó chỉ dùng công thức toán học để giải thích mọi hiện tượng",
+        "Vì nó tập trung vào tâm lý cá nhân của người tiêu dùng"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Trừu tượng hóa khoa học không phủ nhận hiện thực, mà gạt bỏ các yếu tố ngẫu nhiên, thứ yếu để phát hiện quan hệ bản chất, phạm trù và quy luật kinh tế."
+    },
+    {
+      "id": "q21",
+      "chapter": 2,
+      "question": "Lượng giá trị của hàng hóa được đo bằng yếu tố nào?",
+      "options": [
+        "Sở thích cá nhân của người mua",
+        "Thời gian lao động xã hội cần thiết để sản xuất hàng hóa",
+        "Mức quảng cáo của doanh nghiệp",
+        "Số lượng tiền mặt đang lưu thông trong một cửa hàng"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Theo học thuyết giá trị, lượng giá trị hàng hóa được quyết định bởi thời gian lao động xã hội cần thiết, tức thời gian cần để sản xuất trong điều kiện bình thường của xã hội."
+    },
+    {
+      "id": "q22",
+      "chapter": 2,
+      "question": "Lao động cụ thể trong sản xuất hàng hóa tạo ra yếu tố nào?",
+      "options": [
+        "Giá trị sử dụng của hàng hóa",
+        "Giá trị thặng dư tuyệt đối",
+        "Lợi nhuận độc quyền",
+        "Tư bản tài chính"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Lao động cụ thể là lao động có hình thức nghề nghiệp nhất định, tạo ra công dụng của vật phẩm, tức giá trị sử dụng của hàng hóa."
+    },
+    {
+      "id": "q23",
+      "chapter": 3,
+      "question": "Điều kiện để sức lao động trở thành hàng hóa là gì?",
+      "options": [
+        "Người lao động vừa tự do về thân thể vừa không có tư liệu sản xuất để tự tổ chức lao động",
+        "Người lao động sở hữu toàn bộ nhà máy và máy móc",
+        "Nhà nước ấn định mọi mức lương bằng nhau",
+        "Hàng hóa không còn được trao đổi trên thị trường"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Sức lao động trở thành hàng hóa khi người lao động tự do bán sức lao động của mình, đồng thời không có tư liệu sản xuất cần thiết nên phải bán sức lao động để sinh sống."
+    },
+    {
+      "id": "q24",
+      "chapter": 3,
+      "question": "Tư bản bất biến (c) khác tư bản khả biến (v) chủ yếu ở điểm nào?",
+      "options": [
+        "Tư bản bất biến dùng mua sức lao động, tư bản khả biến dùng mua máy móc",
+        "Tư bản bất biến không làm thay đổi lượng giá trị, còn tư bản khả biến thông qua sức lao động tạo ra giá trị mới và giá trị thặng dư",
+        "Tư bản bất biến chỉ tồn tại trong kinh tế số, tư bản khả biến chỉ tồn tại trong nông nghiệp",
+        "Tư bản bất biến luôn nhỏ hơn tư bản khả biến"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Tư bản bất biến chuyển giá trị cũ vào sản phẩm, còn tư bản khả biến dùng mua sức lao động, là nguồn gốc trực tiếp tạo ra giá trị mới lớn hơn giá trị của bản thân nó."
+    },
+    {
+      "id": "q25",
+      "chapter": 4,
+      "question": "Các hình thức tổ chức độc quyền thường được giáo trình nêu gồm nhóm nào?",
+      "options": [
+        "Cartel, Syndicate, Trust, Consortium",
+        "Hộ gia đình, hợp tác xã, tổ dân phố, câu lạc bộ",
+        "Chợ truyền thống, siêu thị, cửa hàng tiện lợi, sàn thương mại",
+        "Thuế, phí, lệ phí và trợ cấp"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Khi tích tụ và tập trung sản xuất phát triển cao, các tổ chức độc quyền có thể xuất hiện dưới nhiều hình thức như Cartel, Syndicate, Trust và Consortium."
+    },
+    {
+      "id": "q26",
+      "chapter": 4,
+      "question": "Tư bản tài chính hình thành từ sự kết hợp giữa những bộ phận nào?",
+      "options": [
+        "Tư bản thương nghiệp và kinh tế hộ gia đình",
+        "Tư bản ngân hàng độc quyền và tư bản công nghiệp độc quyền",
+        "Ngân sách nhà nước và quỹ phúc lợi xã hội",
+        "Tiền lương công nhân và chi tiêu tiêu dùng"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Giáo trình trình bày tư bản tài chính là kết quả của sự kết hợp giữa tư bản ngân hàng độc quyền và tư bản công nghiệp độc quyền."
+    },
+    {
+      "id": "q27",
+      "chapter": 5,
+      "question": "Nền kinh tế thị trường định hướng XHCN ở Việt Nam vận hành theo nguyên tắc tổng quát nào?",
+      "options": [
+        "Vừa vận hành theo quy luật thị trường, vừa bảo đảm định hướng XHCN dưới sự lãnh đạo của Đảng và quản lý của Nhà nước",
+        "Loại bỏ hoàn toàn mọi quan hệ thị trường",
+        "Chỉ thừa nhận một thành phần kinh tế duy nhất",
+        "Để thị trường tự phát quyết định toàn bộ mục tiêu xã hội"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Đặc trưng cốt lõi là kết hợp cơ chế thị trường với định hướng XHCN, bảo đảm mục tiêu dân giàu, nước mạnh, dân chủ, công bằng, văn minh."
+    },
+    {
+      "id": "q28",
+      "chapter": 5,
+      "question": "Quan hệ lợi ích kinh tế đặt ra yêu cầu gì đối với Nhà nước?",
+      "options": [
+        "Không cần can thiệp vì mọi lợi ích luôn tự thống nhất",
+        "Điều tiết, hài hòa các lợi ích cá nhân, tập thể và xã hội",
+        "Chỉ bảo vệ lợi ích của một nhóm doanh nghiệp lớn",
+        "Xóa bỏ mọi động lực lợi ích vật chất"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Quan hệ lợi ích kinh tế có thể phát sinh mâu thuẫn giữa cá nhân, tập thể và xã hội, vì vậy Nhà nước cần điều tiết để bảo đảm thống nhất lợi ích và phát triển lành mạnh."
+    },
+    {
+      "id": "q29",
+      "chapter": 6,
+      "question": "Một mục tiêu quan trọng của công nghiệp hóa, hiện đại hóa ở Việt Nam là gì?",
+      "options": [
+        "Giữ nguyên cơ cấu kinh tế thủ công để tránh thay đổi xã hội",
+        "Xây dựng cơ cấu kinh tế hợp lý và nâng cao năng suất lao động xã hội",
+        "Tách nền kinh tế khỏi mọi quan hệ quốc tế",
+        "Chỉ phát triển một ngành kinh tế duy nhất"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Công nghiệp hóa, hiện đại hóa hướng tới phát triển lực lượng sản xuất, xây dựng cơ cấu kinh tế hợp lý và nâng cao năng suất lao động xã hội."
+    },
+    {
+      "id": "q30",
+      "chapter": 6,
+      "question": "Phương châm hội nhập kinh tế quốc tế của Việt Nam theo giáo trình nhấn mạnh điều gì?",
+      "options": [
+        "Chủ động, tích cực hội nhập trên cơ sở tôn trọng độc lập chủ quyền và cùng có lợi",
+        "Hội nhập bằng mọi giá, kể cả đánh đổi độc lập chủ quyền",
+        "Chỉ nhập khẩu hàng hóa, không tham gia đầu tư hay thương mại quốc tế",
+        "Đóng cửa thị trường để tránh cạnh tranh"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Việt Nam thực hiện hội nhập kinh tế quốc tế theo phương châm chủ động, tích cực, trên cơ sở tôn trọng độc lập chủ quyền và hợp tác cùng có lợi."
     }
   ]
 }

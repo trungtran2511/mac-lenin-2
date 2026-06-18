@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   Compass,
   ArrowRight,
@@ -124,6 +124,11 @@ interface EconomyData {
 interface ChatMessage {
   role: "user" | "assistant";
   text: string;
+}
+
+interface FloatingChatPosition {
+  x: number;
+  y: number;
 }
 
 const FALLBACK_DATA: EconomyData = {
@@ -314,6 +319,7 @@ const FALLBACK_DATA: EconomyData = {
 
 export default function App() {
   const dragConstraintsRef = useRef<HTMLDivElement>(null);
+  const floatingChatDragControls = useDragControls();
   const [economyData, setEconomyData] = useState<EconomyData>(FALLBACK_DATA);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
@@ -403,6 +409,64 @@ export default function App() {
   // Floating mascot chat overlay states
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false);
   const [floatingAiGrievance, setFloatingAiGrievance] = useState("");
+  const [floatingChatPosition, setFloatingChatPosition] = useState<FloatingChatPosition>({ x: 12, y: 12 });
+
+  const getFloatingChatSize = () => {
+    if (typeof window === "undefined") {
+      return { width: 540, height: 750 };
+    }
+
+    if (window.innerWidth < 640) {
+      return {
+        width: Math.min(480, window.innerWidth - 24),
+        height: Math.min(675, Math.round(window.innerHeight * 0.78))
+      };
+    }
+
+    if (window.innerWidth < 768) {
+      return { width: 480, height: 650 };
+    }
+
+    return { width: 540, height: 750 };
+  };
+
+  const clampFloatingChatPosition = (position: FloatingChatPosition) => {
+    if (typeof window === "undefined") return position;
+
+    const { width, height } = getFloatingChatSize();
+    const margin = 12;
+    const maxX = Math.max(margin, window.innerWidth - width - margin);
+    const maxY = Math.max(margin, window.innerHeight - height - margin);
+
+    return {
+      x: Math.min(Math.max(position.x, margin), maxX),
+      y: Math.min(Math.max(position.y, margin), maxY)
+    };
+  };
+
+  const getDefaultFloatingChatPosition = () => {
+    if (typeof window === "undefined") {
+      return { x: 12, y: 12 };
+    }
+
+    const { width, height } = getFloatingChatSize();
+    const mascotWidth = window.innerWidth >= 768 ? 192 : 160;
+    const rightGap = window.innerWidth >= 768 ? 24 : 14;
+    const rightInset = 16;
+    const bottomInset = 24;
+
+    return clampFloatingChatPosition({
+      x: window.innerWidth - width - mascotWidth - rightGap - rightInset,
+      y: window.innerHeight - height - bottomInset
+    });
+  };
+
+  const handleResetQuiz = () => {
+    setCurrentQuizIndex(0);
+    setUserSelectedOption(null);
+    setQuizScore(0);
+    setShowQuizSummary(false);
+  };
 
   // Update welcome message when AI Mode changes
   useEffect(() => {
@@ -422,6 +486,21 @@ export default function App() {
       ]);
     }
   }, [aiMode]);
+
+  useEffect(() => {
+    if (!isFloatingChatOpen) return;
+
+    setFloatingChatPosition(getDefaultFloatingChatPosition());
+  }, [isFloatingChatOpen]);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setFloatingChatPosition(prev => clampFloatingChatPosition(prev));
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
 
   // Load data from public folder
   useEffect(() => {
@@ -534,6 +613,24 @@ export default function App() {
     return null;
   };
 
+  const isLikelyCurriculumQuestion = (message: string) => {
+    if (!curriculumData) return false;
+    const msgLower = message.toLowerCase().trim();
+    const curriculumTerms = [
+      "kinh tế chính trị", "mác", "lênin", "giáo trình", "trắc nghiệm", "ôn tập",
+      "hàng hóa", "tiền tệ", "quy luật giá trị", "lao động", "thặng dư", "tư bản",
+      "độc quyền", "kinh tế thị trường", "xhcn", "công nghiệp hóa", "hiện đại hóa",
+      "hội nhập", "lợi ích kinh tế", "chương 1", "chương 2", "chương 3", "chương 4",
+      "chương 5", "chương 6"
+    ];
+
+    return curriculumTerms.some(term => msgLower.includes(term))
+      || curriculumData.chapters.some(chapter => msgLower.includes(`chương ${chapter.id}`))
+      || curriculumData.quiz_questions.some(question =>
+        msgLower.includes(question.question.toLowerCase().slice(0, 28))
+      );
+  };
+
   const handleSendChat = async (messageText: string) => {
     if (!messageText.trim()) return;
 
@@ -557,21 +654,33 @@ export default function App() {
 
     // 2. Call API (Google Gemini API or Web2API endpoint)
     const apiUrl = import.meta.env.VITE_GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K-vxbvz_i4u7stZxySIhTLR8Y0YPEfTiHCTc3fv3e6g";
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
     const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
 
-    const promptText = aiMode === "academic"
-      ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
-      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
-
     const curriculumContext = curriculumData
-      ? curriculumData.chapters.map(c => `[${c.title}]: ${c.summary}`).join("\n\n")
+      ? [
+        curriculumData.chapters.map(c => `[${c.title}]: ${c.summary}`).join("\n\n"),
+        "NGÂN HÀNG CÂU HỎI TRẮC NGHIỆM:",
+        curriculumData.quiz_questions
+          .map(q => `Chương ${q.chapter} - ${q.question}\nĐáp án đúng: ${String.fromCharCode(65 + q.correctAnswer)}. ${q.options[q.correctAnswer]}\nLuận giải: ${q.explanation}`)
+          .join("\n\n")
+      ].join("\n\n")
       : "";
+
+    const curriculumScopeHint = aiMode === "academic" && !isLikelyCurriculumQuestion(messageText)
+      ? "[Nội dung này nằm ngoài phạm vi giáo trình chính thức]\n"
+      : "";
+
+    const promptText = aiMode === "academic"
+      ? `${curriculumScopeHint}Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
+      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
 
     const systemInstructionText = aiMode === "academic"
       ? `Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. 
-         Bạn chỉ được phép sử dụng dữ liệu Giáo trình Kinh tế Chính trị Mác - Lênin dưới đây để trả lời câu hỏi ôn tập của người dùng. Không được tự ý bịa đặt hoặc sử dụng thông tin ngoài lề giáo trình.
-         Nếu câu hỏi của người dùng nằm ngoài phạm vi Giáo trình dưới đây, hãy bắt đầu câu trả lời bằng dòng chữ: "[Nội dung này nằm ngoài phạm vi giáo trình chính thức]" và sau đó mới dùng kiến thức chung của mình để giải đáp một cách ngắn gọn, trung lập.
+         Ưu tiên tuyệt đối dữ liệu Giáo trình Kinh tế Chính trị Mác - Lênin và ngân hàng trắc nghiệm dưới đây để trả lời câu hỏi ôn tập của người dùng.
+         Nếu dữ liệu giáo trình không đủ để trả lời trực tiếp, bạn phải bắt đầu câu trả lời bằng đúng dòng: "[Nội dung này nằm ngoài phạm vi giáo trình chính thức]".
+         Khi có cảnh báo ngoài phạm vi, chỉ được bổ sung kiến thức chung thật ngắn gọn, trung lập, và phải nói rõ phần đó không phải trích từ giáo trình.
+         Không được bịa số liệu, tác giả, chương mục hoặc đáp án trắc nghiệm không có trong dữ liệu.
 
          DỮ LIỆU GIÁO TRÌNH:
          ${curriculumContext}
@@ -1398,16 +1507,16 @@ export default function App() {
               </div>
 
               {/* Sub-tab Switcher */}
-              <div className="flex bg-neutral-900 border border-white/10 rounded-xl p-1 gap-1">
+              <div className="flex w-full sm:w-auto bg-neutral-900 border border-white/10 rounded-xl p-1 gap-1">
                 <button
                   onClick={() => setQuizSubTab("syllabus")}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "syllabus" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "syllabus" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
                 >
                   Tóm Tắt Giáo Trình
                 </button>
                 <button
                   onClick={() => setQuizSubTab("practice")}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "practice" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "practice" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
                 >
                   Trắc Nghiệm Ôn Luyện
                 </button>
@@ -1505,15 +1614,16 @@ export default function App() {
               <div className="space-y-8">
                 {/* Chapter selector filter */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900/60 p-4 rounded-2xl border border-white/5">
-                  <div className="flex items-center gap-3">
+                  <div className="flex w-full min-w-0 flex-col sm:flex-row sm:items-center gap-3">
                     <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn chương luyện tập:</label>
                     <select
                       value={activeChapterId === null ? "all" : activeChapterId}
                       onChange={e => {
                         const val = e.target.value;
                         setActiveChapterId(val === "all" ? null : parseInt(val));
+                        handleResetQuiz();
                       }}
-                      className="bg-neutral-950 rounded-xl text-xs md:text-sm font-semibold py-2 px-3 border border-white/10 text-white outline-none"
+                      className="w-full sm:w-auto min-w-0 bg-neutral-950 rounded-xl text-xs md:text-sm font-semibold py-2 px-3 border border-white/10 text-white outline-none"
                     >
                       <option value="all">Tất cả các chương</option>
                       {curriculumData?.chapters.map(ch => (
@@ -1522,7 +1632,7 @@ export default function App() {
                     </select>
                   </div>
                   
-                  <div className="text-xs font-semibold text-white/50 font-mono">
+                  <div className="text-xs font-semibold text-white/50 font-mono whitespace-nowrap">
                     Tổng số câu: {curriculumData ? (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length) : 0} câu
                   </div>
                 </div>
@@ -1590,8 +1700,8 @@ export default function App() {
                   </div>
                 ) : (
                   /* Question Display Card */
-                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 shadow-xl animate-fade-rise">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                  <div className="liquid-glass rounded-3xl p-5 md:p-8 border border-white/10 space-y-6 shadow-xl animate-fade-rise">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-4">
                       <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
                         Câu hỏi {currentQuizIndex + 1} / {activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length}
                       </span>
@@ -1640,11 +1750,11 @@ export default function App() {
                                     }
                                   }}
                                   disabled={hasAnswered}
-                                  className={`text-left p-4 rounded-2xl border text-xs md:text-sm leading-relaxed transition-all flex items-start justify-between gap-3 cursor-pointer ${btnStyle}`}
+                                  className={`text-left p-4 rounded-2xl border text-xs md:text-sm leading-relaxed transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
                                 >
-                                  <div className="flex gap-2.5">
+                                  <div className="flex min-w-0 gap-2.5">
                                     <span className="font-mono opacity-50">{String.fromCharCode(65 + idx)}.</span>
-                                    <span>{option}</span>
+                                    <span className="min-w-0 overflow-wrap-anywhere">{option}</span>
                                   </div>
                                   {hasAnswered && isCorrectOption && (
                                     <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
@@ -1776,7 +1886,7 @@ export default function App() {
                     {msg.role === "user" ? <User className="w-4 h-4" /> : <img src={animeTeacher} alt="Thầy Nam AI" className="w-full h-full object-cover" />}
                   </div>
 
-                  <div className={`p-4 rounded-2xl text-xs md:text-sm leading-relaxed border ${msg.role === "user"
+                  <div className={`p-4 rounded-2xl text-xs md:text-sm leading-relaxed border whitespace-pre-line overflow-wrap-anywhere ${msg.role === "user"
                     ? "bg-white/5 border-white/10 text-white rounded-tr-none"
                     : "bg-neutral-900/50 border-white/5 text-white/80 rounded-tl-none"
                     }`}>
@@ -1786,12 +1896,25 @@ export default function App() {
               ))}
 
               {isAiLoading && (
-                <div className="flex gap-3 mr-auto max-w-[85%]">
-                  <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-8 h-8 flex items-center justify-center overflow-hidden">
-                    <img src={animeTeacher} alt="Thầy Nam AI" className="w-full h-full object-cover animate-pulse" />
+                <div className="flex flex-col gap-3 mr-auto max-w-[85%] animate-fade-rise">
+                  <div className="flex gap-3 items-center">
+                    <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-8 h-8 flex items-center justify-center overflow-hidden">
+                      <img src={animeTeacher} alt="Thầy Nam AI" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="text-[10px] text-white/40 font-mono tracking-wider uppercase animate-pulse">
+                      Thầy Nam AI đang phân tích...
+                    </div>
                   </div>
-                  <div className="p-4 rounded-2xl text-xs bg-white/5 border border-white/5 text-white/50 italic">
-                    Thầy Nam AI đang phân tích hiện tượng thặng dư...
+
+                  <div className="pl-11 py-1">
+                    <div className="Strich-container scale-[0.72] origin-left">
+                      <div className="Strich1"></div>
+                      <div className="Strich2"></div>
+                      <div className="bubble"></div>
+                      <div className="bubble1"></div>
+                      <div className="bubble2"></div>
+                      <div className="bubble3"></div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2337,10 +2460,26 @@ export default function App() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="pointer-events-auto fixed right-[180px] md:right-[210px] bottom-24 w-[320px] md:w-[360px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
+              drag
+              dragControls={floatingChatDragControls}
+              dragListener={false}
+              dragConstraints={dragConstraintsRef}
+              dragMomentum={false}
+              dragElastic={0}
+              onDragEnd={(_, info) => {
+                setFloatingChatPosition(prev => clampFloatingChatPosition({
+                  x: prev.x + info.offset.x,
+                  y: prev.y + info.offset.y
+                }));
+              }}
+              style={{ left: floatingChatPosition.x, top: floatingChatPosition.y }}
+              className="pointer-events-auto absolute w-[min(480px,calc(100vw-24px))] h-[min(78vh,675px)] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md sm:w-[480px] md:w-[540px] sm:h-[650px] md:h-[750px]"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5">
+              <div
+                onPointerDown={event => floatingChatDragControls.start(event)}
+                className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5 cursor-grab active:cursor-grabbing select-none"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-neutral-900">
                     <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-cover" />
@@ -2386,13 +2525,13 @@ export default function App() {
                 {chatMessages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
+                    className={`flex gap-3 max-w-[92%] sm:max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
                   >
                     <div className={`rounded-xl flex-shrink-0 w-7 h-7 flex items-center justify-center border overflow-hidden ${msg.role === "user" ? "p-1.5 bg-white text-black border-white" : "p-0 bg-neutral-900 border-white/10"}`}>
                       {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />}
                     </div>
 
-                    <div className={`p-3 rounded-2xl text-xs leading-relaxed border ${msg.role === "user"
+                    <div className={`p-3 rounded-2xl text-xs leading-relaxed border whitespace-pre-line overflow-wrap-anywhere ${msg.role === "user"
                       ? "bg-white/5 border-white/10 text-white rounded-tr-none"
                       : "bg-neutral-900/50 border-white/5 text-white/80 rounded-tl-none"}`}
                     >
@@ -2415,8 +2554,6 @@ export default function App() {
                     {/* Shifting loading bubbles */}
                     <div className="pl-10 py-1">
                       <div className="Strich-container scale-[0.6] origin-left">
-                        <div className="Strich1"></div>
-                        <div className="Strich2"></div>
                         <div className="bubble"></div>
                         <div className="bubble1"></div>
                         <div className="bubble2"></div>
