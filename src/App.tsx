@@ -2337,7 +2337,7 @@ export default function App() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="pointer-events-auto fixed right-32 bottom-24 w-[320px] md:w-[360px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
+              className="pointer-events-auto fixed right-[180px] md:right-[210px] bottom-24 w-[320px] md:w-[360px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5">
@@ -2402,12 +2402,26 @@ export default function App() {
                 ))}
 
                 {isAiLoading && (
-                  <div className="flex gap-3 mr-auto max-w-[85%]">
-                    <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-7 h-7 flex items-center justify-center overflow-hidden">
-                      <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover animate-pulse" />
+                  <div className="flex flex-col gap-3 mr-auto items-start max-w-[85%] animate-fade-rise">
+                    <div className="flex gap-3 items-center">
+                      <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-7 h-7 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="text-[10px] text-white/40 font-mono tracking-wider uppercase animate-pulse">
+                        Thầy Nam AI đang suy ngẫm...
+                      </div>
                     </div>
-                    <div className="p-3 rounded-2xl text-[10px] bg-white/5 border border-white/5 text-white/50 italic">
-                      Thầy đang giải mã câu hỏi...
+                    
+                    {/* Shifting loading bubbles */}
+                    <div className="pl-10 py-1">
+                      <div className="Strich-container scale-[0.6] origin-left">
+                        <div className="Strich1"></div>
+                        <div className="Strich2"></div>
+                        <div className="bubble"></div>
+                        <div className="bubble1"></div>
+                        <div className="bubble2"></div>
+                        <div className="bubble3"></div>
+                      </div>
                     </div>
                   </div>
                 )}
