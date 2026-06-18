@@ -45,6 +45,7 @@ import PhilosophySection from "./components/PhilosophySection";
 import RainbowPreloader from "./components/RainbowPreloader";
 import ServicesSection from "./components/ServicesSection";
 import animeTeacher from "./assets/anime_teacher.png";
+import chibiTeacher from "./assets/chibi_teacher.png";
 
 // Define strict TypeScript contracts for safety
 interface JobOffer {
@@ -310,6 +311,7 @@ const FALLBACK_DATA: EconomyData = {
 };
 
 export default function App() {
+  const dragConstraintsRef = useRef<HTMLDivElement>(null);
   const [economyData, setEconomyData] = useState<EconomyData>(FALLBACK_DATA);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
@@ -344,6 +346,10 @@ export default function App() {
 
   // Hero search query state
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Floating mascot chat overlay states
+  const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false);
+  const [floatingAiGrievance, setFloatingAiGrievance] = useState("");
 
   // Update welcome message when AI Mode changes
   useEffect(() => {
@@ -416,18 +422,16 @@ export default function App() {
     setDilemmaIndex(0);
   };
 
-  const handleSendGrievance = async () => {
-    if (!aiGrievance.trim()) return;
+  const handleSendChat = async (messageText: string) => {
+    if (!messageText.trim()) return;
 
-    const userText = aiGrievance;
-    setChatMessages(prev => [...prev, { role: "user", text: userText }]);
-    setAiGrievance("");
+    setChatMessages(prev => [...prev, { role: "user", text: messageText }]);
     setIsAiLoading(true);
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K-vxbvz_i4u7stZxySIhTLR8Y0YPEfTiHCTc3fv3e6g";
     const promptText = aiMode === "academic"
-      ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${userText}"`
-      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${userText}"`;
+      ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
+      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
 
     const systemInstructionText = aiMode === "academic"
       ? "Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. Hãy giải đáp các câu hỏi ôn tập, câu hỏi trắc nghiệm hoặc lý thuyết học phần của người dùng dựa trên nội dung chuẩn của Giáo trình môn học. Hãy giải thích rõ ràng các khái niệm như hàng hóa, tiền tệ, tư bản, giá trị thặng dư, quy luật giá trị, tích lũy tư bản, các thành phần kinh tế,... bằng tiếng Việt ngắn gọn, súc tích, khoa học và dễ hiểu nhất để sinh viên ôn thi đạt điểm cao."
@@ -462,6 +466,20 @@ export default function App() {
     } finally {
       setIsAiLoading(false);
     }
+  };
+
+  const handleSendGrievance = () => {
+    if (!aiGrievance.trim()) return;
+    const query = aiGrievance;
+    setAiGrievance("");
+    handleSendChat(query);
+  };
+
+  const handleSendFloatingGrievance = () => {
+    if (!floatingAiGrievance.trim()) return;
+    const query = floatingAiGrievance;
+    setFloatingAiGrievance("");
+    handleSendChat(query);
   };
 
   const scrollToSection = (id: string) => {
@@ -1807,6 +1825,151 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Draggable Chibi Mascot & Quick Chat Overlay */}
+      <div ref={dragConstraintsRef} className="fixed inset-0 pointer-events-none z-50">
+        
+        {/* Chat Window Panel */}
+        <AnimatePresence>
+          {isFloatingChatOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="pointer-events-auto fixed right-6 bottom-24 md:bottom-28 w-[320px] md:w-[380px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-neutral-900">
+                    <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-sm tracking-wide">Thầy Nam AI Coach</h3>
+                    <span className="text-[10px] text-emerald-400 font-medium font-mono flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sẵn sàng trợ giúp
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsFloatingChatOpen(false)}
+                  className="p-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white transition-all cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Mode Toggle inside Floating Chat */}
+              <div className="px-4 py-2 border-b border-white/5 bg-white/[0.01] flex items-center justify-between gap-4">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-white/40 font-semibold">Chế độ hỏi đáp:</span>
+                <div className="flex bg-neutral-950/80 border border-white/10 rounded-lg p-0.5">
+                  <button
+                    onClick={() => setAiMode("practical")}
+                    className={`px-3 py-1 rounded-md text-[9px] font-bold tracking-wide transition-all cursor-pointer ${aiMode === "practical" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
+                  >
+                    Góc Gỡ Rối
+                  </button>
+                  <button
+                    onClick={() => setAiMode("academic")}
+                    className={`px-3 py-1 rounded-md text-[9px] font-bold tracking-wide transition-all cursor-pointer ${aiMode === "academic" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
+                  >
+                    Ôn Tập
+                  </button>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 p-5 overflow-y-auto space-y-4 scrollbar-thin">
+                {chatMessages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
+                  >
+                    <div className={`rounded-xl flex-shrink-0 w-7 h-7 flex items-center justify-center border overflow-hidden ${msg.role === "user" ? "p-1.5 bg-white text-black border-white" : "p-0 bg-neutral-900 border-white/10"}`}>
+                      {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />}
+                    </div>
+
+                    <div className={`p-3 rounded-2xl text-xs leading-relaxed border ${msg.role === "user"
+                      ? "bg-white/5 border-white/10 text-white rounded-tr-none"
+                      : "bg-neutral-900/50 border-white/5 text-white/80 rounded-tl-none"}`}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+
+                {isAiLoading && (
+                  <div className="flex gap-3 mr-auto max-w-[85%]">
+                    <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-7 h-7 flex items-center justify-center overflow-hidden">
+                      <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover animate-pulse" />
+                    </div>
+                    <div className="p-3 rounded-2xl text-[10px] bg-white/5 border border-white/5 text-white/50 italic">
+                      Thầy đang giải mã câu hỏi...
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-3 bg-neutral-950/80 border-t border-white/10 flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={floatingAiGrievance}
+                  onChange={e => setFloatingAiGrievance(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSendFloatingGrievance();
+                    }
+                  }}
+                  placeholder={aiMode === "practical" ? "Bị sếp ép OT, quỵt lương... Hỏi thầy ngay!" : "Nhập câu hỏi trắc nghiệm hoặc lý thuyết..."}
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-white/35 focus:outline-none focus:border-white focus:bg-white/10 h-10"
+                />
+                <button
+                  disabled={isAiLoading || !floatingAiGrievance.trim()}
+                  onClick={handleSendFloatingGrievance}
+                  className="p-2.5 rounded-xl bg-white hover:bg-stone-200 disabled:bg-neutral-800 disabled:text-neutral-500 text-black transition-all cursor-pointer flex items-center justify-center border-none"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Draggable Chibi Mascot Button */}
+        <motion.div
+          drag
+          dragConstraints={dragConstraintsRef}
+          dragMomentum={false}
+          dragElastic={0.05}
+          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
+          className="pointer-events-auto fixed z-50 w-16 h-16 md:w-20 md:h-20 cursor-grab"
+          style={{ right: 24, bottom: 24 }}
+          onTap={() => setIsFloatingChatOpen(prev => !prev)}
+        >
+          <div className="relative w-full h-full group">
+            {/* Glowing ring animation */}
+            <div className="absolute -inset-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-md opacity-45 group-hover:opacity-75 transition-opacity duration-300 animate-pulse" />
+            
+            {/* Character cutout shadow frame */}
+            <div className="relative w-full h-full rounded-full border border-white/20 bg-neutral-900/90 shadow-lg overflow-hidden flex items-center justify-center p-1 group-hover:border-white/40 transition-colors">
+              <img
+                src={chibiTeacher}
+                alt="Thầy Nam Chibi"
+                className="w-[90%] h-[90%] object-contain select-none pointer-events-none transform group-hover:scale-105 transition-transform"
+              />
+            </div>
+            
+            {/* Quick alert indicator dot */}
+            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-background rounded-full animate-bounce"></span>
+          </div>
+        </motion.div>
+
+      </div>
 
     </div>
   );
