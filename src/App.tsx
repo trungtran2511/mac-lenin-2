@@ -487,13 +487,79 @@ export default function App() {
     setDilemmaIndex(0);
   };
 
+  const findOfflineAnswer = (message: string) => {
+    if (!curriculumData) return null;
+    const msgLower = message.toLowerCase().trim();
+
+    // Mapping keywords to Chapter IDs
+    const keywordMap = [
+      {
+        chapterId: 3,
+        keywords: ["giá trị thặng dư", "tích lũy tư bản", "bóc lột", "ngày lao động", "thặng dư", "tích tụ", "tập trung", "m'", "sức lao động"]
+      },
+      {
+        chapterId: 2,
+        keywords: ["hàng hóa", "tiền tệ", "quy luật giá trị", "giá trị sử dụng", "lao động", "thị trường", "sản xuất hàng hóa"]
+      },
+      {
+        chapterId: 4,
+        keywords: ["độc quyền", "xuất khẩu tư bản", "độc quyền nhà nước", "tập trung sản xuất", "tổ chức độc quyền"]
+      },
+      {
+        chapterId: 5,
+        keywords: ["thành phần kinh tế", "kinh tế thị trường", "sở hữu", "xhcn", "định hướng xã hội chủ nghĩa"]
+      },
+      {
+        chapterId: 6,
+        keywords: ["công nghiệp hóa", "hiện đại hóa", "cnh", "hđh", "lợi ích kinh tế", "quan hệ lợi ích"]
+      },
+      {
+        chapterId: 1,
+        keywords: ["đối tượng nghiên cứu", "phương pháp nghiên cứu", "chức năng", "kinh tế chính trị học", "mác-lênin"]
+      }
+    ];
+
+    for (const item of keywordMap) {
+      if (item.keywords.some(kw => msgLower.includes(kw))) {
+        const chapter = curriculumData.chapters.find(c => c.id === item.chapterId);
+        if (chapter) {
+          return {
+            chapterId: chapter.id,
+            title: chapter.title,
+            summary: chapter.summary
+          };
+        }
+      }
+    }
+    return null;
+  };
+
   const handleSendChat = async (messageText: string) => {
     if (!messageText.trim()) return;
 
     setChatMessages(prev => [...prev, { role: "user", text: messageText }]);
     setIsAiLoading(true);
 
+    // 1. Local Offline Curriculum Lookup first (only in academic mode to respect direct curriculum lookups)
+    if (aiMode === "academic") {
+      const offlineMatch = findOfflineAnswer(messageText);
+      if (offlineMatch) {
+        setTimeout(() => {
+          setChatMessages(prev => [...prev, {
+            role: "assistant",
+            text: `📖 **[Thông tin chính thức từ Giáo trình - Chương ${offlineMatch.chapterId}]**\n\n*${offlineMatch.title}*\n\n${offlineMatch.summary}\n\n---\n*💡 Đồng chí cần hỏi giải thích sâu hơn hoặc khía cạnh ngoài giáo trình? Hãy nhập thêm chi tiết nhé! Thầy Nam AI luôn sẵn sàng.*`
+          }]);
+          setIsAiLoading(false);
+        }, 600);
+        return;
+      }
+    }
+
+    // 2. Call API (Google Gemini API or Web2API endpoint)
+    const apiUrl = import.meta.env.VITE_GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K-vxbvz_i4u7stZxySIhTLR8Y0YPEfTiHCTc3fv3e6g";
+    const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
+
     const promptText = aiMode === "academic"
       ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
       : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
@@ -514,23 +580,44 @@ export default function App() {
       : "Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp.";
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }] }],
-          systemInstruction: {
-            parts: [{
-              text: systemInstructionText
-            }]
-          }
-        })
-      });
+      let response;
+      if (isGoogleDirect) {
+        response = await fetch(`${apiUrl}?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+            systemInstruction: {
+              parts: [{ text: systemInstructionText }]
+            }
+          })
+        });
+      } else {
+        response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash",
+            messages: [
+              { role: "system", content: systemInstructionText },
+              { role: "user", content: promptText }
+            ]
+          })
+        });
+      }
 
       if (!response.ok) throw new Error("Failed to connect to AI");
 
       const resData = await response.json();
-      const aiResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Mác AI đang suy ngẫm, vui lòng thử lại nhé đồng chí!";
+      let aiResponse = "";
+      if (isGoogleDirect) {
+        aiResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Mác AI đang suy ngẫm, vui lòng thử lại nhé đồng chí!";
+      } else {
+        aiResponse = resData.choices?.[0]?.message?.content || resData.candidates?.[0]?.content?.parts?.[0]?.text || "Mác AI đang suy ngẫm, vui lòng thử lại nhé đồng chí!";
+      }
 
       setChatMessages(prev => [...prev, { role: "assistant", text: aiResponse }]);
     } catch (err) {
