@@ -39,7 +39,10 @@ import {
 
 import AboutSection from "./components/AboutSection";
 import FeaturedVideoSection from "./components/FeaturedVideoSection";
+import FloatingParticles from "./components/FloatingParticles";
+import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
+import RainbowPreloader from "./components/RainbowPreloader";
 import ServicesSection from "./components/ServicesSection";
 import animeTeacher from "./assets/anime_teacher.png";
 
@@ -62,17 +65,25 @@ interface TechScenario {
   description: string;
 }
 
-interface ChartDataPoint {
-  month: string;
-  original_value: number;
-  market_price: number;
+interface DialecticalChartData {
+  step: string;
+  quantity: number;
+  quality: number;
 }
 
-interface MarketEvent {
+interface DialecticalDebate {
   id: string;
   title: string;
   description: string;
-  chart_data: ChartDataPoint[];
+  side_a: string;
+  side_b: string;
+  side_a_arguments: string[];
+  side_b_arguments: string[];
+  resolution: {
+    title: string;
+    explanation: string;
+  };
+  chart_data: DialecticalChartData[];
 }
 
 interface Choice {
@@ -102,7 +113,7 @@ interface EconomicSector {
 interface EconomyData {
   job_offers: JobOffer[];
   tech_scenarios: TechScenario[];
-  market_events: MarketEvent[];
+  dialectical_debates: DialecticalDebate[];
   ethical_dilemmas: EthicalDilemma[];
   economic_sectors: EconomicSector[];
 }
@@ -115,76 +126,118 @@ interface ChatMessage {
 const FALLBACK_DATA: EconomyData = {
   "job_offers": [
     {
-      "id": "it-fresher",
-      "title": "Kỹ sư IT Fresher",
-      "salary": 12000000,
-      "cost_of_living": 9500000,
-      "hours_per_day": 8,
-      "necessary_hours": 5.5,
-      "surplus_hours": 2.5,
-      "description": "Lương khởi điểm tốt tại Việt Nam, tuy nhiên bạn phải cống hiến giá trị thặng dư trực tiếp cho dự án phần mềm xuất khẩu của công ty."
+      "id": "student-tutor",
+      "title": "Gia sư (Dạy kèm học sinh)",
+      "salary": 2500000,
+      "cost_of_living": 2000000,
+      "hours_per_day": 4,
+      "necessary_hours": 2.5,
+      "surplus_hours": 1.5,
+      "description": "Lương theo giờ của gia sư khá cao so với mặt bằng làm thêm của sinh viên. Tuy nhiên, bạn thường chịu chiết khấu 30-40% tháng lương đầu tiên cho trung tâm gia sư - một phần giá trị thặng dư bị chiếm đoạt trực tiếp bởi giới trung gian môi giới sức lao động."
     },
     {
-      "id": "tech-driver",
-      "title": "Tài xế công nghệ (Shipper/Grab)",
-      "salary": 7000000,
-      "cost_of_living": 8500000,
-      "hours_per_day": 8,
-      "necessary_hours": 7.2,
+      "id": "cafe-staff",
+      "title": "Nhân viên phục vụ quán Cafe",
+      "salary": 1800000,
+      "cost_of_living": 2200000,
+      "hours_per_day": 4,
+      "necessary_hours": 3.2,
       "surplus_hours": 0.8,
-      "description": "Thu nhập bấp bênh, thấp hơn chi phí sống tối thiểu để tái tạo sức lao động. Bạn chịu khấu hao xe cộ và rủi ro tự thân."
+      "description": "Mức lương theo giờ rất thấp (15k-18k/h), không đủ trang trải chi phí sinh hoạt tối thiểu để tái tạo sức lao động khỏe mạnh. Quán thu lợi nhuận lớn từ các cốc nước bạn pha chế và bưng bê, nhưng tiền lương của bạn chỉ tương xứng với một phần rất nhỏ của lượng giá trị mới mà bạn tạo ra."
     },
     {
-      "id": "office-staff",
-      "title": "Nhân viên văn phòng hành chính",
-      "salary": 9000000,
-      "cost_of_living": 8000000,
-      "hours_per_day": 8,
-      "necessary_hours": 6.0,
+      "id": "delivery-rider",
+      "title": "Shipper công nghệ (Grab/Shopee Food)",
+      "salary": 4500000,
+      "cost_of_living": 4000000,
+      "hours_per_day": 6,
+      "necessary_hours": 5.0,
+      "surplus_hours": 1.0,
+      "description": "Bạn phải tự túc phương tiện làm việc (Tư bản bất biến - c) và chịu toàn bộ rủi ro hao mòn xe cộ, tai nạn đường phố. Ứng dụng công nghệ chiết khấu trực tiếp 20-30% doanh thu mỗi cuốc xe của bạn dưới dạng phí nền tảng."
+    },
+    {
+      "id": "freelance-coder",
+      "title": "Freelance Coder (Viết code thuê)",
+      "salary": 5000000,
+      "cost_of_living": 3500000,
+      "hours_per_day": 6,
+      "necessary_hours": 4.0,
       "surplus_hours": 2.0,
-      "description": "Lương cơ bản của nhân viên hành chính sự vụ, đủ trang trải chi phí phòng trọ và ăn uống tối thiểu tại các đô thị lớn."
+      "description": "Bạn tự đầu tư máy tính cấu hình cao (c) và chịu chi phí điện nước tại nhà. Sản phẩm phần mềm bạn viết ra mang lại giá trị sử dụng lớn cho khách hàng, nhưng qua tay các đầu mối thầu dự án trung gian, phần lớn giá trị thặng dư đã bị cắt xén."
     }
   ],
   "tech_scenarios": [
     {
       "id": "ai-copilot",
-      "title": "Tích hợp Generative AI vào quy trình code",
+      "title": "Sử dụng Generative AI hỗ trợ công việc",
       "labor_reduction_pct": 50,
-      "description": "Thời gian lao động tất yếu giảm một nửa nhờ AI hỗ trợ. Bạn sẽ bị ép nhận thêm gấp đôi số task để tối ưu hóa giá trị thặng dư tương đối."
+      "description": "Áp dụng AI giúp rút ngắn 50% thời gian lao động tất yếu (tạo ra lượng sản phẩm tương đương tiền lương). Thay vì được nghỉ ngơi sớm, bạn sẽ bị sếp giao thêm gấp đôi số task để gia tăng giá trị thặng dư tương đối."
     }
   ],
-  "market_events": [
+  "dialectical_debates": [
     {
-      "id": "hanoi-apartments",
-      "title": "Cơn sốt chung cư Hà Nội (Cung < Cầu)",
-      "description": "Giá cả căn hộ chung cư tăng vọt ly khai khỏi giá trị thực tế do lượng cung khan hiếm và áp lực đầu cơ.",
+      "id": "study-vs-work",
+      "title": "Mâu thuẫn: Đi làm thêm sớm vs. Tập trung học tập",
+      "description": "Sự giằng co giữa nhu cầu tài chính, trải nghiệm thực tế ngay lập tức và mục tiêu tích lũy tri thức chuyên môn dài hạn tại trường đại học.",
+      "side_a": "Cực A: Đi làm kiếm tiền ngay (Vật chất ngắn hạn)",
+      "side_b": "Cực B: Tập trung học tập (Tích lũy tri thức dài hạn)",
+      "side_a_arguments": [
+        "Có tiền trang trải chi phí sinh hoạt ngay lập tức, giảm bớt gánh nặng cho gia đình.",
+        "Tiếp xúc sớm với môi trường xã hội, rèn luyện kỹ năng giao tiếp và xử lý tình huống.",
+        "Có kinh nghiệm thực tế ghi vào CV trước khi ra trường."
+      ],
+      "side_b_arguments": [
+        "Tập trung học tập đạt bằng cấp cao (Giỏi/Xuất sắc), mở ra cơ hội việc làm lương cao sau này.",
+        "Có thời gian nghiên cứu khoa học, tham gia các hoạt động nghiên cứu học thuật sâu sắc.",
+        "Tránh bị kiệt sức, stress hoặc sa sút học tập dẫn đến trượt môn, kéo dài thời gian ra trường."
+      ],
+      "resolution": {
+        "title": "Giải quyết mâu thuẫn biện chứng theo Quy luật Lượng - Chất",
+        "explanation": "Không được coi hai mặt đối lập này là loại trừ nhau hoàn toàn. Bản chất của sự phát triển là tích lũy dần về LƯỢNG (tri thức chuyên môn bền vững trên giảng đường + kỹ năng thực tế có được qua làm thêm chừng mực, hợp lý). Khi lượng tích lũy đủ lớn đến 'Điểm nút' (tốt nghiệp), bạn sẽ thực hiện 'Bước nhảy' biến đổi về CHẤT - từ một sinh viên thành một chuyên gia có giá trị lao động cao, thay vì sa đà làm việc chân tay giá trị thấp từ sớm."
+      },
       "chart_data": [
-        { "month": "Tháng 1", "original_value": 100, "market_price": 100 },
-        { "month": "Tháng 2", "original_value": 100, "market_price": 110 },
-        { "month": "Tháng 3", "original_value": 102, "market_price": 135 },
-        { "month": "Tháng 4", "original_value": 103, "market_price": 160 },
-        { "month": "Tháng 5", "original_value": 105, "market_price": 185 },
-        { "month": "Tháng 6", "original_value": 106, "market_price": 170 }
+        { "step": "Tuần 1", "quantity": 10, "quality": 2.0 },
+        { "step": "Tuần 4", "quantity": 25, "quality": 2.1 },
+        { "step": "Tuần 8", "quantity": 50, "quality": 2.3 },
+        { "step": "Tuần 12 (Độ)", "quantity": 80, "quality": 2.5 },
+        { "step": "Tuần 16 (Bước nhảy)", "quantity": 115, "quality": 3.6 },
+        { "step": "Tuần 20 (Chất mới)", "quantity": 125, "quality": 3.8 }
       ]
     },
     {
-      "id": "it-layoffs",
-      "title": "Làn sóng sa thải ngành IT (Cung > Cầu)",
-      "description": "Thị trường công nghệ suy thoái làm giảm nhu cầu nhân sự. Lực lượng lao động dư thừa nhiều khiến lương khởi điểm sụt giảm.",
+      "id": "saving-vs-spending",
+      "title": "Mâu thuẫn: Chi tiêu tiết kiệm tối đa vs. Nâng cao chất lượng sống",
+      "description": "Sự mâu thuẫn giữa việc thắt lưng buộc bụng tích lũy tiền tệ phòng thân và việc chi tiền để nâng cấp bản thân, sức khỏe tinh thần.",
+      "side_a": "Cực A: Tiết kiệm tối đa (Thắt lưng buộc bụng)",
+      "side_b": "Cực B: Nâng cao chất lượng sống (Đầu tư trải nghiệm)",
+      "side_a_arguments": [
+        "Tích lũy quỹ dự phòng an toàn trước các rủi ro ốm đau, mất việc làm thêm.",
+        "Rèn luyện lối sống tối giản, không bị lôi kéo bởi các trào lưu tiêu dùng lãng phí.",
+        "Có một khoản vốn nhỏ sau khi tốt nghiệp để tự lập."
+      ],
+      "side_b_arguments": [
+        "Đầu tư vào dinh dưỡng, chăm sóc sức khỏe thể chất và tinh thần tốt để làm việc hiệu quả.",
+        "Mua sắm công cụ học tập tốt (máy tính, sách vở chất lượng, các khóa học kỹ năng).",
+        "Tạo động lực tinh thần để học tập và làm việc thông qua các phần thưởng trải nghiệm."
+      ],
+      "resolution": {
+        "title": "Giải quyết mâu thuẫn biện chứng theo Quy luật Mâu thuẫn",
+        "explanation": "Tiết kiệm và Chi tiêu là hai mặt đối lập thống nhất trong cùng một chủ thể quản lý tài chính cá nhân. Giải quyết biện chứng ở đây không phải là chọn một bên cực đoan, mà là 'Đấu tranh và thống nhất': Sử dụng tiết kiệm như nền tảng để tạo sự an tâm, nhưng có kế hoạch chi tiêu thông minh hướng tới việc 'tái sản xuất sức lao động' (ăn uống đủ chất, mua sách vở, học tập). Sự cân bằng biện chứng này giúp sức lao động của bạn liên tục được nâng cấp giá trị."
+      },
       "chart_data": [
-        { "month": "Tháng 1", "original_value": 100, "market_price": 110 },
-        { "month": "Tháng 2", "original_value": 100, "market_price": 100 },
-        { "month": "Tháng 3", "original_value": 98, "market_price": 85 },
-        { "month": "Tháng 4", "original_value": 97, "market_price": 75 },
-        { "month": "Tháng 5", "original_value": 96, "market_price": 80 },
-        { "month": "Tháng 6", "original_value": 96, "market_price": 82 }
+        { "step": "Tháng 1", "quantity": 5, "quality": 1.5 },
+        { "step": "Tháng 3", "quantity": 15, "quality": 1.6 },
+        { "step": "Tháng 6", "quantity": 30, "quality": 1.8 },
+        { "step": "Tháng 9 (Độ)", "quantity": 45, "quality": 2.0 },
+        { "step": "Tháng 12 (Bước nhảy)", "quantity": 70, "quality": 3.5 },
+        { "step": "Tháng 15 (Chất mới)", "quantity": 80, "quality": 3.7 }
       ]
     }
   ],
   "ethical_dilemmas": [
     {
       "id": "waste-dilemma",
-      "scenario": "Nhà máy dệt nhuộm phát sinh lượng nước thải hóa chất lớn. Chi phí lắp hệ thống lọc tuần hoàn đạt chuẩn bảo vệ môi trường rất cao.",
+      "scenario": "Nhà máy dệt nhuộm của bạn phát sinh lượng nước thải hóa chất lớn. Chi phí lắp đặt hệ thống lọc nước tuần hoàn đạt chuẩn bảo vệ môi trường của Nhà nước rất cao, ảnh hưởng trực tiếp tới lợi nhuận quý này.",
       "choices": [
         {
           "text": "Xả trộm nước thải ra sông vào đêm mưa để tiết kiệm tối đa chi phí sản xuất.",
@@ -193,40 +246,40 @@ const FALLBACK_DATA: EconomyData = {
             "competitiveness": 25,
             "social_responsibility": -45
           },
-          "explanation": "Quy luật cạnh tranh tư bản chủ nghĩa ép buộc bạn giảm chi phí để sinh tồn, tuy nhiên hành động này hủy hoại thiên nhiên."
+          "explanation": "Quy luật cạnh tranh buộc các nhà tư bản phải tìm mọi cách giảm chi phí cá biệt dưới mức chi phí xã hội để chiến thắng đối thủ. Tuy nhiên, việc hủy hoại môi trường sống của cộng đồng sẽ bị Nhà nước phát hiện và xử lý nghiêm khắc."
         },
         {
-          "text": "Đầu tư hệ thống lọc nước tuần hoàn đạt chuẩn ESG, chấp nhận giảm biên lợi nhuận.",
+          "text": "Đầu tư hệ thống lọc nước tuần hoàn đạt chuẩn, chấp nhận giảm biên lợi nhuận ngắn hạn.",
           "impact": {
             "profit": -20,
             "competitiveness": -15,
             "social_responsibility": 45
           },
-          "explanation": "Doanh nghiệp thể hiện trách nhiệm xã hội cao, nhưng phải chịu áp lực tài chính ngắn hạn do giảm biên lợi nhuận thặng dư."
+          "explanation": "Hành động này thể hiện đạo đức kinh doanh và trách nhiệm xã hội cao. Dù làm giảm tỷ suất giá trị thặng dư ngắn hạn, nó đảm bảo sự phát triển bền vững và uy tín lâu dài của doanh nghiệp trong nền kinh tế thị trường định hướng XHCN."
         }
       ]
     },
     {
-      "id": "ai-replacement",
-      "scenario": "Phần mềm AI mới có thể thay thế 70% công việc của bộ phận hỗ trợ khách hàng và soạn thảo giấy tờ văn phòng.",
+      "id": "safety-dilemma",
+      "scenario": "Công ty xây dựng của bạn đang đấu thầu dự án chung cư giá rẻ. Để chiến thắng thầu, bạn cần cắt giảm tối đa chi phí. Bạn có nên giảm bớt các tiêu chuẩn an toàn lao động và bảo hộ cho công nhân công trường?",
       "choices": [
         {
-          "text": "Sa thải lập tức các nhân viên cũ để cắt giảm chi phí lương và tăng lợi nhuận thặng dư.",
+          "text": "Cắt bớt trang bị bảo hộ lao động và kéo dài giờ làm việc của công nhân.",
           "impact": {
-            "profit": 40,
+            "profit": 30,
             "competitiveness": 30,
-            "social_responsibility": -30
+            "social_responsibility": -40
           },
-          "explanation": "Tăng máy móc tư bản bất biến 'c' và giảm lao động sống tư bản khả biến 'v' giúp gia tăng năng suất và thặng dư siêu ngạch."
+          "explanation": "Bạn đang áp dụng phương pháp sản xuất giá trị thặng dư tuyệt đối (kéo dài ngày lao động) và tiết kiệm chi phí tư bản bất biến (trang thiết bị bảo hộ). Điều này gia tăng lợi nhuận nhanh chóng nhưng đẩy tính mạng công nhân vào nguy hiểm."
         },
         {
-          "text": "Giữ lại nhân sự, đào tạo họ chuyển sang vai trò kiểm duyệt nội dung AI hoặc dịch vụ khách hàng cao cấp.",
+          "text": "Đảm bảo trang bị bảo hộ hiện đại và huấn luyện an toàn lao động đầy đủ.",
           "impact": {
-            "profit": -10,
-            "competitiveness": -5,
-            "social_responsibility": 35
+            "profit": -15,
+            "competitiveness": -10,
+            "social_responsibility": 40
           },
-          "explanation": "Giúp bảo vệ an sinh xã hội cho người nghèo, tuy nhiên chi phí đào tạo làm tăng chi phí lưu thông của doanh nghiệp."
+          "explanation": "Hao phí để đảm bảo an toàn cho sức lao động thực chất là chi phí cần thiết để bảo toàn và phát triển lực lượng sản xuất cốt lõi. Sếp có trách nhiệm bảo vệ tính mạng người lao động trước áp lực tối đa hóa thặng dư."
         }
       ]
     }
@@ -237,21 +290,21 @@ const FALLBACK_DATA: EconomyData = {
       "name": "Kinh tế Nhà nước",
       "gdp_contribution": 29.5,
       "constitutional_role": "Giữ vai trò chủ đạo trong nền kinh tế quốc dân.",
-      "description": "Bao gồm các tài sản công, đất đai, tài nguyên và Doanh nghiệp Nhà nước (như EVN, Viettel, Petrovietnam) giúp Nhà nước điều tiết vĩ mô theo định hướng XHCN."
+      "description": "Kinh tế Nhà nước bao gồm tài sản công, đất đai, tài nguyên thiên nhiên và các Doanh nghiệp Nhà nước lớn (EVN, Viettel, Petrovietnam). Khối này giữ vai trò then chốt, là công cụ vật chất quan trọng để Nhà nước điều tiết vĩ mô, ổn định kinh tế và dẫn dắt các thành phần kinh tế khác phát triển theo định hướng XHCN."
     },
     {
       "id": "private-economy",
       "name": "Kinh tế Tư nhân",
       "gdp_contribution": 45.0,
       "constitutional_role": "Là một động lực quan trọng của nền kinh tế thị trường định hướng XHCN.",
-      "description": "Bao gồm các hộ kinh doanh cá thể và doanh nghiệp tư nhân trong nước (như Vingroup, Hoà Phát, FPT), tạo đại đa số việc làm mới."
+      "description": "Bao gồm các hộ kinh doanh cá thể, các doanh nghiệp tư nhân trong nước (Vingroup, FPT, Hòa Phát). Khối này đóng vai trò năng động, thúc đẩy tính cạnh tranh của thị trường, đóng góp lớn vào GDP, tạo phần lớn việc làm cho người lao động Việt Nam và thúc đẩy đổi mới công nghệ."
     },
     {
       "id": "fdi-economy",
-      "name": "Kinh tế FDI",
+      "name": "Kinh tế FDI (Vốn nước ngoài)",
       "gdp_contribution": 25.5,
-      "constitutional_role": "Được khuyến khích và tạo điều kiện phát triển thuận lợi.",
-      "description": "Bao gồm các tập đoàn đa quốc gia đầu tư nhà máy sản xuất (Samsung, Intel, LG), giúp kết nối Việt Nam với chuỗi cung ứng toàn cầu."
+      "constitutional_role": "Là một bộ phận quan trọng được khuyến khích phát triển lâu dài.",
+      "description": "Bao gồm các doanh nghiệp có vốn đầu tư trực tiếp từ nước ngoài (Samsung, Intel, LG). Khối này giúp Việt Nam thu hút nguồn vốn ngoại tệ lớn, chuyển giao công nghệ hiện đại, đào tạo kỹ năng quản lý tiên tiến và hội nhập sâu rộng vào chuỗi giá trị toàn cầu."
     }
   ]
 };
@@ -263,22 +316,23 @@ export default function App() {
   const [activeView, setActiveView] = useState<'home' | 'calculator' | 'ai-consultant' | 'market-dynamics' | 'ethical-challenge' | 'gdp-sectors'>('home');
 
   // Job offer page states
-  const [selectedJobId, setSelectedJobId] = useState("it-fresher");
+  const [selectedJobId, setSelectedJobId] = useState("student-tutor");
   const [workMonths, setWorkMonths] = useState(1);
   const [isAiApplied, setIsAiApplied] = useState(false);
 
-  // AI Consultant states
+  // AI Coach states
+  const [aiMode, setAiMode] = useState<'academic' | 'practical'>('practical');
   const [aiGrievance, setAiGrievance] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      text: "Chào đồng chí trẻ! Tôi là Thầy Nam AI (được huấn luyện bởi lý luận Marxist chân chính). Bạn đang gặp bất công gì ở nơi công sở: Bị ép KPI vô lý, OT không lương hay quỵt hoa hồng? Hãy chia sẻ bên dưới, tôi sẽ cùng bạn bóc trần bản chất của sự bóc lột thặng dư nhé! 🛠️"
+      text: "Chào đồng chí trẻ! Tôi là Thầy Nam AI. Bạn đang gặp bất công gì ở chỗ làm thêm: Bị ép KPI vô lý, OT không lương hay quỵt hoa hồng? Hãy chia sẻ bên dưới, tôi sẽ cùng bạn bóc trần bản chất của sự bóc lột thặng dư bằng lý luận nhé! 🛠️"
     }
   ]);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  // Market events states
-  const [selectedEventId, setSelectedEventId] = useState("hanoi-apartments");
+  // Dialectical Debate Board states
+  const [selectedDebateId, setSelectedDebateId] = useState("study-vs-work");
 
   // Ethical Dilemma states
   const [dilemmaIndex, setDilemmaIndex] = useState(0);
@@ -290,6 +344,25 @@ export default function App() {
 
   // Hero search query state
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Update welcome message when AI Mode changes
+  useEffect(() => {
+    if (aiMode === "practical") {
+      setChatMessages([
+        {
+          role: "assistant",
+          text: "Chào đồng chí trẻ! Tôi là Thầy Nam AI. Bạn đang gặp bất công gì ở chỗ làm thêm: Bị ép KPI vô lý, OT không lương hay quỵt hoa hồng? Hãy chia sẻ bên dưới, tôi sẽ cùng bạn bóc trần bản chất của sự bóc lột thặng dư bằng lý luận nhé! 🛠️"
+        }
+      ]);
+    } else {
+      setChatMessages([
+        {
+          role: "assistant",
+          text: "Chào đồng chí! Tôi là Thầy Nam AI. Bạn đang gặp khó khăn gì với bài tập ôn thi Kinh tế chính trị Mác - Lênin? Hãy nhập câu hỏi trắc nghiệm hoặc lý thuyết cần giải đáp chuẩn giáo trình vào đây nhé! 📚"
+        }
+      ]);
+    }
+  }, [aiMode]);
 
   // Load data from public folder
   useEffect(() => {
@@ -315,7 +388,7 @@ export default function App() {
     ? currentJob.necessary_hours * (1 - economyData.tech_scenarios[0].labor_reduction_pct / 100)
     : currentJob.necessary_hours;
   const surplusHours = isAiApplied
-    ? 8 - necessaryHours
+    ? (currentJob.hours_per_day) - necessaryHours
     : currentJob.surplus_hours;
 
   const surplusRatio = (surplusHours / necessaryHours) * 100;
@@ -352,7 +425,13 @@ export default function App() {
     setIsAiLoading(true);
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AQ.Ab8RN6K-vxbvz_i4u7stZxySIhTLR8Y0YPEfTiHCTc3fv3e6g";
-    const promptText = `Nỗi uất ức đi làm của sinh viên/người lao động: "${userText}"`;
+    const promptText = aiMode === "academic"
+      ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${userText}"`
+      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${userText}"`;
+
+    const systemInstructionText = aiMode === "academic"
+      ? "Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. Hãy giải đáp các câu hỏi ôn tập, câu hỏi trắc nghiệm hoặc lý thuyết học phần của người dùng dựa trên nội dung chuẩn của Giáo trình môn học. Hãy giải thích rõ ràng các khái niệm như hàng hóa, tiền tệ, tư bản, giá trị thặng dư, quy luật giá trị, tích lũy tư bản, các thành phần kinh tế,... bằng tiếng Việt ngắn gọn, súc tích, khoa học và dễ hiểu nhất để sinh viên ôn thi đạt điểm cao."
+      : "Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp.";
 
     try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -362,7 +441,7 @@ export default function App() {
           contents: [{ parts: [{ text: promptText }] }],
           systemInstruction: {
             parts: [{
-              text: "Bạn là một nhà kinh tế chính trị học Marxist thông thái nhưng nói chuyện cực kỳ hài hước và bắt trend Gen Z Việt Nam. Người dùng sẽ kể cho bạn nỗi đau đi làm (ví dụ: bị quỵt lương, bắt tăng ca không lương, ép KPI vô lý). Hãy giải thích cho họ hiểu họ đang bị chiếm đoạt thặng dư thế nào (ví dụ: bóc lột thặng dư tuyệt đối qua tăng ca, bóc lột thặng dư tương đối qua ép năng suất) dựa trên lý thuyết của Các Mác. Dùng tiếng Việt trẻ trung, hài hước, ví von sinh động và kết thúc bằng một lời khuyên dí dỏm."
+              text: systemInstructionText
             }]
           }
         })
@@ -447,7 +526,9 @@ export default function App() {
   const PIE_COLORS = ["#ffffff", "#a3a3a3", "#404040"];
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background antialiased font-sans">
+    <div className="relative min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background antialiased font-sans overflow-x-hidden">
+      <FloatingParticles />
+      <RainbowPreloader />
 
       {/* 1. HERO SECTION & HEADER */}
       {activeView === "home" ? (
@@ -703,8 +784,10 @@ export default function App() {
           {/* 5. SERVICES SECTION */}
           <ServicesSection />
 
+          <HomeFeatureCards onNavigate={scrollToSection} />
+
           {/* INTERACTIVE DASHBOARD GRID */}
-          <section className="relative bg-background px-6 md:px-28 py-24 border-t border-white/10 flex flex-col items-center animate-fade-rise">
+          <section className="hidden">
             <div className="max-w-6xl w-full space-y-12">
               <div className="text-center space-y-3">
                 <span className="text-white/40 text-xs tracking-widest uppercase block font-mono">Trải nghiệm thực nghiệm</span>
@@ -835,7 +918,7 @@ export default function App() {
 
       {/* 6. SURPLUS VALUE CALCULATOR SECTION */}
       {activeView === "calculator" && (
-        <section id="surplus-value" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="surplus-value" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
@@ -943,35 +1026,61 @@ export default function App() {
 
               <div className="space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/5 pb-4">
-                  <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Phân tách ngày làm việc tiêu chuẩn 8 giờ</h3>
+                  <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Phân tách ngày làm việc tiêu chuẩn {currentJob.hours_per_day} giờ</h3>
                   <div className="flex items-center gap-4 text-[10px] uppercase font-mono tracking-wider text-white/50">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-white rounded-full"></span> Tất yếu</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-neutral-600 rounded-full"></span> Thặng dư</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-white rounded-full"></span> Tất yếu (v)</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-neutral-600 rounded-full"></span> Thặng dư (m)</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="w-full h-8 bg-neutral-950 rounded-full overflow-hidden flex p-1 border border-white/5">
                     <div
-                      style={{ width: `${(necessaryHours / 8) * 100}%` }}
+                      style={{ width: `${(necessaryHours / currentJob.hours_per_day) * 100}%` }}
                       className="bg-white h-full rounded-full flex items-center justify-center text-[10px] font-bold text-black transition-all duration-300"
                     >
                       {necessaryHours.toFixed(1)} giờ
                     </div>
                     <div
-                      style={{ width: `${(surplusHours / 8) * 100}%` }}
+                      style={{ width: `${(surplusHours / currentJob.hours_per_day) * 100}%` }}
                       className="bg-neutral-600 h-full rounded-full flex items-center justify-center text-[10px] font-bold text-white transition-all duration-300 ml-1"
                     >
                       {surplusHours.toFixed(1)} giờ
                     </div>
                   </div>
                   <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest font-mono">
-                    <span>Vào làm (08:00)</span>
+                    <span>Bắt đầu ca làm</span>
                     <span className="text-white font-semibold">
-                      Đủ tiền công cá nhân ({(8 + necessaryHours).toFixed(1)}h)
+                      Đạt đủ giá trị sức lao động tại {necessaryHours.toFixed(1)}h
                     </span>
-                    <span>Tan làm (17:00)</span>
+                    <span>Kết thúc ca</span>
                   </div>
+                </div>
+              </div>
+
+              {/* Detailed Academic Definitions Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/5 pt-6">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tư bản khả biến (v)</div>
+                  <div className="text-xs font-semibold text-white mt-1">{(currentJob.salary).toLocaleString()} đ</div>
+                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Tiền công/lương hàng tháng của bạn</div>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tư bản bất biến (c)</div>
+                  <div className="text-xs font-semibold text-white mt-1">
+                    {selectedJobId === "delivery-rider" ? "Xe máy, xăng xe" : selectedJobId === "freelance-coder" ? "Laptop, điện nước" : "Chủ quán trang bị"}
+                  </div>
+                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Công cụ tư liệu lao động tự túc</div>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tất yếu (t)</div>
+                  <div className="text-xs font-semibold text-white mt-1">{necessaryHours.toFixed(1)} giờ</div>
+                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Thời gian làm bù đắp sức lao động</div>
+                </div>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Thặng dư (t')</div>
+                  <div className="text-xs font-semibold text-white mt-1">{surplusHours.toFixed(1)} giờ</div>
+                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Thời gian làm lợi không công cho sếp</div>
                 </div>
               </div>
 
@@ -980,11 +1089,11 @@ export default function App() {
                   <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">Tỷ suất giá trị thặng dư (m')</span>
                   <div className="text-3xl font-serif text-white">{surplusRatio.toFixed(1)}%</div>
                   <p className="text-xs text-white/50 leading-relaxed mt-1">
-                    Cứ mỗi đồng lương bạn được nhận về tay, bạn đã làm lợi không công cho doanh nghiệp thêm {surplusRatio.toFixed(0)} đồng thặng dư.
+                    Trình độ bóc lột sức lao động của giới chủ là {surplusRatio.toFixed(0)}%. Bạn đang làm lợi thêm {surplusRatio.toFixed(0)}% giá trị bên ngoài tiền lương.
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">Mô tả lý luận thực tế</span>
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">Mác luận giải thực tế</span>
                   <p className="text-xs text-white/50 leading-relaxed mt-1">{currentJob.description}</p>
                 </div>
               </div>
@@ -1048,6 +1157,28 @@ export default function App() {
               </div>
 
             </div>
+
+            {/* Positive Bulletin: Knowledge is Power */}
+            <div className="border-t border-white/5 pt-6 mt-4">
+              <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Bản tin tích cực: Sức mạnh tri thức lao động
+                  </span>
+                  <h4 className="text-white font-bold text-sm">Nâng cao Giá Trị Sức Lao Động của Bản Thân!</h4>
+                  <p className="text-xs text-white/60 leading-relaxed">
+                    Theo lý thuyết của Các Mác, tiền lương đại diện cho giá trị sức lao động để duy trì cuộc sống. Để giảm bớt sự bóc lột thặng dư và nâng tầm vị thế bản thân, con đường bền vững nhất là <strong>tập trung học tập tích lũy tri thức chuyên môn sâu sắc</strong>. Khi chất lượng sức lao động của bạn tăng lên (CHẤT), giá trị trao đổi của nó trên thị trường lao động sẽ tăng vọt, biến bạn thành lực lượng lao động chất lượng cao tự chủ!
+                  </p>
+                </div>
+                <button
+                  onClick={() => scrollToSection("marxist-ai")}
+                  className="px-5 py-3 rounded-xl bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 whitespace-nowrap cursor-pointer flex items-center gap-2"
+                >
+                  Tham khảo Thầy Nam AI <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -1056,7 +1187,7 @@ export default function App() {
 
       {/* 7. MARXIST AI CONSULTANT SECTION */}
       {activeView === "ai-consultant" && (
-        <section id="marxist-ai" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="marxist-ai" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
@@ -1069,14 +1200,32 @@ export default function App() {
               </button>
             </div>
 
-          <div className="border-b border-white/10 pb-6">
-            <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trợ lý học tập</span>
-            <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-              <Bot className="text-white w-8 h-8" /> Trợ Lý AI: Giải Mã Nỗi Đau Đi Làm
-            </h2>
-            <p className="text-white/50 text-xs md:text-sm mt-1">
-              Phân tích sự chiếm đoạt thặng dư tại nơi công sở bằng tiếng lóng sinh viên.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+            <div>
+              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trợ lý học tập & Hướng nghiệp</span>
+              <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                <Bot className="text-white w-8 h-8" /> Thầy Nam AI: Marxist Coach
+              </h2>
+              <p className="text-white/50 text-xs md:text-sm mt-1">
+                Lý luận Mác - Lênin đồng hành cùng đời sống sinh viên.
+              </p>
+            </div>
+
+            {/* Mode Switcher */}
+            <div className="flex bg-neutral-900 border border-white/10 rounded-xl p-1 gap-1">
+              <button
+                onClick={() => setAiMode("practical")}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${aiMode === "practical" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+              >
+                Góc Gỡ Rối (Gen Z Slang)
+              </button>
+              <button
+                onClick={() => setAiMode("academic")}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${aiMode === "academic" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+              >
+                Ôn Tập & Giải Đề
+              </button>
+            </div>
           </div>
 
           {/* 💡 Layperson Simple Explanation Box */}
@@ -1085,7 +1234,9 @@ export default function App() {
             <div>
               <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
               <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Bị sếp bắt tăng ca không lương (OT) là hình thức <strong>bóc lột thặng dư tuyệt đối</strong> (kéo dài thời gian làm việc). Bị sếp ép tăng KPI hoặc dùng công nghệ AI để bắt làm gấp đôi task trong cùng 8 tiếng là hình thức <strong>bóc lột thặng dư tương đối</strong> (nâng cao năng suất lao động để rút ngắn thời gian làm cho bản thân).
+                {aiMode === "practical" 
+                  ? "Bị sếp bắt tăng ca không lương (OT) là hình thức bóc lột thặng dư tuyệt đối (kéo dài thời gian làm việc). Bị sếp ép tăng KPI hoặc dùng công nghệ AI để bắt làm gấp đôi task trong cùng ca là bóc lột thặng dư tương đối."
+                  : "Giáo trình Kinh tế chính trị học quy định chuẩn tắc các học thuyết lớn: Học thuyết giá trị (Hàng hóa, Tiền tệ, Quy luật giá trị), Học thuyết giá trị thặng dư (c, v, m, m', p), và Các thành phần kinh tế định hướng XHCN."}
               </p>
             </div>
           </div>
@@ -1157,9 +1308,9 @@ export default function App() {
       </section>
       )}
 
-      {/* 8. MARKET DECODER SECTION */}
+      {/* 8. DIALECTICAL DEBATE SECTION */}
       {activeView === "market-dynamics" && (
-        <section id="market-dynamics" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="market-dynamics" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
@@ -1174,21 +1325,21 @@ export default function App() {
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
             <div>
-              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Quy luật thị trường</span>
+              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Quy luật mâu thuẫn & Lượng - Chất</span>
               <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                <TrendingUp className="text-white w-8 h-8" /> Giải Mã Biến Động Thị Trường
+                <TrendingUp className="text-white w-8 h-8" /> Võ Đài Biện Chứng Sinh Viên
               </h2>
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn hiện tượng:</label>
+              <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn mâu thuẫn:</label>
               <select
-                value={selectedEventId}
-                onChange={e => setSelectedEventId(e.target.value)}
+                value={selectedDebateId}
+                onChange={e => setSelectedDebateId(e.target.value)}
                 className="liquid-glass rounded-xl text-xs md:text-sm font-medium py-2.5 px-4 pr-10 border border-white/10 text-white outline-none appearance-none"
               >
-                {economyData.market_events.map(ev => (
-                  <option key={ev.id} value={ev.id} className="bg-background text-white">{ev.title}</option>
+                {economyData.dialectical_debates.map(deb => (
+                  <option key={deb.id} value={deb.id} className="bg-background text-white">{deb.title}</option>
                 ))}
               </select>
             </div>
@@ -1200,84 +1351,123 @@ export default function App() {
             <div>
               <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
               <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Giá cả của chung cư hay lương IT biến động lên xuống mỗi ngày là do sự thay đổi của Cung và Cầu trên thị trường. Tuy nhiên, dù giá cả có trồi sụt thế nào thì về lâu dài nó vẫn luôn xoay quanh <strong>giá trị thực tế</strong> của hàng hóa (tức là lượng công sức lao động cần thiết để sản xuất ra nó).
+                Thế giới quan Marxist coi <strong>mâu thuẫn biện chứng</strong> là nguồn gốc của sự phát triển. Các mặt đối lập không tiêu diệt nhau hoàn toàn mà vừa đấu tranh vừa thống nhất. Đồng thời, sự tích lũy dần về <strong>LƯỢNG</strong> (ví dụ: số tuần học tập và rèn luyện) khi đạt đến 'Điểm nút' sẽ dẫn đến bước nhảy biến đổi về <strong>CHẤT</strong> (nâng tầm trình độ bản sắc).
               </p>
             </div>
           </div>
 
-          {/* Chart & Explanation */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Two Opposing Forces */}
+          {(() => {
+            const currentDebate = economyData.dialectical_debates.find(d => d.id === selectedDebateId) || economyData.dialectical_debates[0];
+            return (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Side A */}
+                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 bg-white/[0.01] space-y-4">
+                    <div className="flex items-center gap-2.5 border-b border-white/5 pb-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                      <h3 className="font-bold text-white text-sm uppercase tracking-wider font-mono">{currentDebate.side_a}</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      {currentDebate.side_a_arguments.map((arg, idx) => (
+                        <li key={idx} className="text-xs text-white/70 leading-relaxed flex items-start gap-2">
+                          <span className="text-red-400/80 mt-0.5">•</span>
+                          <span>{arg}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-            <div className="lg:col-span-2 liquid-glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">
-                Tương quan Đường Giá cả & Đường Giá trị
-              </h3>
-
-              <div className="h-72 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={economyData.market_events.find(e => e.id === selectedEventId)?.chart_data || []}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-                    <XAxis dataKey="month" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
-                    <YAxis stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
-                    <ChartTooltip
-                      contentStyle={{ backgroundColor: "rgba(10, 31, 53, 0.95)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "12px" }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 11, color: "#fff" }} />
-                    <Line
-                      type="monotone"
-                      dataKey="original_value"
-                      name="Giá trị thực tế (Hao phí lao động)"
-                      stroke="#ffffff"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="market_price"
-                      name="Giá cả thị trường"
-                      stroke="#a3a3a3"
-                      strokeDasharray="5 5"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            <div className="liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <h3 className="font-bold text-white flex items-center gap-2">
-                  <HelpCircle className="w-5 h-5 text-white" /> Phân Tích Cung Cầu
-                </h3>
-                <p className="text-xs text-white/60 leading-relaxed">
-                  {economyData.market_events.find(e => e.id === selectedEventId)?.description}
-                </p>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                  <strong className="text-xs text-white font-bold block mb-1">Mác luận giải:</strong>
-                  <p className="text-xs text-white/50 leading-relaxed italic">
-                    "Sự mất cân đối tạm thời giữa Cung và Cầu làm nảy sinh chênh lệch giá cả, nhưng về lâu dài, giá trị thực tế vẫn đóng vai trò là trục định tâm cân bằng thị trường."
-                  </p>
+                  {/* Side B */}
+                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 bg-white/[0.01] space-y-4">
+                    <div className="flex items-center gap-2.5 border-b border-white/5 pb-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                      <h3 className="font-bold text-white text-sm uppercase tracking-wider font-mono">{currentDebate.side_b}</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      {currentDebate.side_b_arguments.map((arg, idx) => (
+                        <li key={idx} className="text-xs text-white/70 leading-relaxed flex items-start gap-2">
+                          <span className="text-blue-400/80 mt-0.5">•</span>
+                          <span>{arg}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
 
-              <div className="text-[10px] text-white/30 tracking-wider font-mono">
-                *Mô phỏng quy luật kinh tế học chính trị.
-              </div>
-            </div>
+                {/* Recharts Chart: Lượng và Chất */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2 liquid-glass rounded-3xl p-6 border border-white/10 space-y-4">
+                    <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">
+                      Biểu đồ Biện Chứng: Tích lũy Lượng - Biến đổi Chất
+                    </h3>
+                    <div className="h-72 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                          data={currentDebate.chart_data}
+                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+                          <XAxis dataKey="step" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
+                          <YAxis yAxisId="left" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} label={{ value: 'Lượng (Tích lũy)', angle: -90, position: 'insideLeft', fill: 'rgba(255, 255, 255, 0.4)', offset: 10 }} />
+                          <YAxis yAxisId="right" orientation="right" stroke="rgba(52, 211, 153, 0.6)" fontSize={11} label={{ value: 'Chất (Trình độ/Giá trị)', angle: 90, position: 'insideRight', fill: 'rgba(52, 211, 153, 0.6)', offset: 10 }} />
+                          <ChartTooltip
+                            contentStyle={{ backgroundColor: "rgba(10, 31, 53, 0.95)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "12px" }}
+                          />
+                          <Legend wrapperStyle={{ fontSize: 11, color: "#fff" }} />
+                          <Line
+                            yAxisId="left"
+                            type="monotone"
+                            dataKey="quantity"
+                            name="Lượng tích lũy"
+                            stroke="#ffffff"
+                            strokeWidth={3}
+                            dot={{ r: 4 }}
+                          />
+                          <Line
+                            yAxisId="right"
+                            type="monotone"
+                            dataKey="quality"
+                            name="Chất mới phát triển"
+                            stroke="#34d399"
+                            strokeWidth={3}
+                            dot={{ r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Resolution card */}
+                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="font-bold text-white flex items-center gap-2">
+                        <Award className="w-5 h-5 text-white" /> Khối Hợp Nhất (Synthesis)
+                      </h3>
+                      <strong className="text-xs text-white font-bold block mb-1">
+                        {currentDebate.resolution.title}
+                      </strong>
+                      <p className="text-xs text-white/60 leading-relaxed">
+                        {currentDebate.resolution.explanation}
+                      </p>
+                    </div>
+
+                    <div className="text-[10px] text-white/30 tracking-wider font-mono">
+                      *Minh họa trực quan Quy luật Lượng - Chất của phép biện chứng duy vật.
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
           </div>
-
-        </div>
-      </section>
+        </section>
       )}
 
       {/* 9. ETHICAL BOSS CHALLENGE SECTION */}
       {activeView === "ethical-challenge" && (
-        <section id="ethical-challenge" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="ethical-challenge" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
@@ -1430,7 +1620,7 @@ export default function App() {
 
       {/* 10. GDP SECTOR MATRIX SECTION */}
       {activeView === "gdp-sectors" && (
-        <section id="gdp-sectors" className="relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="gdp-sectors" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}

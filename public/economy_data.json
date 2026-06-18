@@ -1,76 +1,118 @@
 {
   "job_offers": [
     {
-      "id": "it-fresher",
-      "title": "Kỹ sư IT Fresher",
-      "salary": 12000000,
-      "cost_of_living": 9500000,
-      "hours_per_day": 8,
-      "necessary_hours": 5.5,
-      "surplus_hours": 2.5,
-      "description": "Lương khởi điểm khá tốt tại Việt Nam, tuy nhiên bạn phải ngồi code cống hiến giá trị thặng dư trực tiếp cho dự án phần mềm xuất khẩu của công ty."
+      "id": "student-tutor",
+      "title": "Gia sư (Dạy kèm học sinh)",
+      "salary": 2500000,
+      "cost_of_living": 2000000,
+      "hours_per_day": 4,
+      "necessary_hours": 2.5,
+      "surplus_hours": 1.5,
+      "description": "Lương theo giờ của gia sư khá cao so với mặt bằng làm thêm của sinh viên. Tuy nhiên, bạn thường chịu chiết khấu 30-40% tháng lương đầu tiên cho trung tâm gia sư - một phần giá trị thặng dư bị chiếm đoạt trực tiếp bởi giới trung gian môi giới sức lao động."
     },
     {
-      "id": "tech-driver",
-      "title": "Tài xế công nghệ (Shipper/Grab)",
-      "salary": 7000000,
-      "cost_of_living": 8500000,
-      "hours_per_day": 8,
-      "necessary_hours": 7.2,
+      "id": "cafe-staff",
+      "title": "Nhân viên phục vụ quán Cafe",
+      "salary": 1800000,
+      "cost_of_living": 2200000,
+      "hours_per_day": 4,
+      "necessary_hours": 3.2,
       "surplus_hours": 0.8,
-      "description": "Mức thu nhập bấp bênh, thấp hơn chi phí sống tối thiểu để tái tạo sức lao động khỏe mạnh. Bạn đang phải chịu khấu hao xe cộ và rủi ro tai nạn giao thông tự thân."
+      "description": "Mức lương theo giờ rất thấp (15k-18k/h), không đủ trang trải chi phí sinh hoạt tối thiểu để tái tạo sức lao động khỏe mạnh. Quán thu lợi nhuận lớn từ các cốc nước bạn pha chế và bưng bê, nhưng tiền lương của bạn chỉ tương xứng với một phần rất nhỏ của lượng giá trị mới mà bạn tạo ra."
     },
     {
-      "id": "office-staff",
-      "title": "Nhân viên văn phòng hành chính",
-      "salary": 9000000,
-      "cost_of_living": 8000000,
-      "hours_per_day": 8,
-      "necessary_hours": 6.0,
+      "id": "delivery-rider",
+      "title": "Shipper công nghệ (Grab/Shopee Food)",
+      "salary": 4500000,
+      "cost_of_living": 4000000,
+      "hours_per_day": 6,
+      "necessary_hours": 5.0,
+      "surplus_hours": 1.0,
+      "description": "Bạn phải tự túc phương tiện làm việc (Tư bản bất biến - c) và chịu toàn bộ rủi ro hao mòn xe cộ, tai nạn đường phố. Ứng dụng công nghệ chiết khấu trực tiếp 20-30% doanh thu mỗi cuốc xe của bạn dưới dạng phí nền tảng."
+    },
+    {
+      "id": "freelance-coder",
+      "title": "Freelance Coder (Viết code thuê)",
+      "salary": 5000000,
+      "cost_of_living": 3500000,
+      "hours_per_day": 6,
+      "necessary_hours": 4.0,
       "surplus_hours": 2.0,
-      "description": "Mức lương cơ bản của nhân viên hành sự vụ, đủ trả tiền phòng trọ và ăn uống cơ bản tại đô thị lớn, tạo thặng dư thầm lặng thông qua các công việc giấy tờ."
+      "description": "Bạn tự đầu tư máy tính cấu hình cao (c) và chịu chi phí điện nước tại nhà. Sản phẩm phần mềm bạn viết ra mang lại giá trị sử dụng lớn cho khách hàng, nhưng qua tay các đầu mối thầu dự án trung gian, phần lớn giá trị thặng dư đã bị cắt xén."
     }
   ],
   "tech_scenarios": [
     {
       "id": "ai-copilot",
-      "title": "Tích hợp Generative AI vào quy trình code",
+      "title": "Sử dụng Generative AI hỗ trợ công việc",
       "labor_reduction_pct": 50,
-      "description": "Khi áp dụng AI, thời gian lao động tất yếu để hoàn thành một task giảm một nửa. Dưới áp lực của nhà tư bản, bạn không được về sớm mà sẽ phải nhận thêm gấp đôi số task, làm gia tăng tỷ suất giá trị thặng dư thặng dư tuyệt đối và tương đối."
+      "description": "Áp dụng AI giúp rút ngắn 50% thời gian lao động tất yếu (tạo ra lượng sản phẩm tương đương tiền lương). Thay vì được nghỉ ngơi sớm, bạn sẽ bị sếp giao thêm gấp đôi số task để gia tăng giá trị thặng dư tương đối."
     }
   ],
-  "market_events": [
+  "dialectical_debates": [
     {
-      "id": "hanoi-apartments",
-      "title": "Cơn sốt chung cư Hà Nội (Cung < Cầu)",
-      "description": "Do nhu cầu thực tế và đầu cơ tăng cao trong khi quỹ đất và giấy phép dự án bị siết chặt, giá cả căn hộ chung cư ly khai mạnh mẽ khỏi giá trị thực tế của nó (chi phí xây dựng và tiền sử dụng đất).",
+      "id": "study-vs-work",
+      "title": "Mâu thuẫn: Đi làm thêm sớm vs. Tập trung học tập",
+      "description": "Sự giằng co giữa nhu cầu tài chính, trải nghiệm thực tế ngay lập tức và mục tiêu tích lũy tri thức chuyên môn dài hạn tại trường đại học.",
+      "side_a": "Cực A: Đi làm kiếm tiền ngay (Vật chất ngắn hạn)",
+      "side_b": "Cực B: Tập trung học tập (Tích lũy tri thức dài hạn)",
+      "side_a_arguments": [
+        "Có tiền trang trải chi phí sinh hoạt ngay lập tức, giảm bớt gánh nặng cho gia đình.",
+        "Tiếp xúc sớm với môi trường xã hội, rèn luyện kỹ năng giao tiếp và xử lý tình huống.",
+        "Có kinh nghiệm thực tế ghi vào CV trước khi ra trường."
+      ],
+      "side_b_arguments": [
+        "Tập trung học tập đạt bằng cấp cao (Giỏi/Xuất sắc), mở ra cơ hội việc làm lương cao sau này.",
+        "Có thời gian nghiên cứu khoa học, tham gia các hoạt động nghiên cứu học thuật sâu sắc.",
+        "Tránh bị kiệt sức, stress hoặc sa sút học tập dẫn đến trượt môn, kéo dài thời gian ra trường."
+      ],
+      "resolution": {
+        "title": "Giải quyết mâu thuẫn biện chứng theo Quy luật Lượng - Chất",
+        "explanation": "Không được coi hai mặt đối lập này là loại trừ nhau hoàn toàn. Bản chất của sự phát triển là tích lũy dần về LƯỢNG (tri thức chuyên môn bền vững trên giảng đường + kỹ năng thực tế có được qua làm thêm chừng mực, hợp lý). Khi lượng tích lũy đủ lớn đến 'Điểm nút' (tốt nghiệp), bạn sẽ thực hiện 'Bước nhảy' biến đổi về CHẤT - từ một sinh viên thành một chuyên gia có giá trị lao động cao, thay vì sa đà làm việc chân tay giá trị thấp từ sớm."
+      },
       "chart_data": [
-        { "month": "Tháng 1", "original_value": 100, "market_price": 100 },
-        { "month": "Tháng 2", "original_value": 100, "market_price": 110 },
-        { "month": "Tháng 3", "original_value": 102, "market_price": 135 },
-        { "month": "Tháng 4", "original_value": 103, "market_price": 160 },
-        { "month": "Tháng 5", "original_value": 105, "market_price": 185 },
-        { "month": "Tháng 6", "original_value": 106, "market_price": 170 }
+        { "step": "Tuần 1", "quantity": 10, "quality": 2.0 },
+        { "step": "Tuần 4", "quantity": 25, "quality": 2.1 },
+        { "step": "Tuần 8", "quantity": 50, "quality": 2.3 },
+        { "step": "Tuần 12 (Độ)", "quantity": 80, "quality": 2.5 },
+        { "step": "Tuần 16 (Bước nhảy)", "quantity": 115, "quality": 3.6 },
+        { "step": "Tuần 20 (Chất mới)", "quantity": 125, "quality": 3.8 }
       ]
     },
     {
-      "id": "it-layoffs",
-      "title": "Làn sóng sa thải ngành IT (Cung > Cầu)",
-      "description": "Sau thời kỳ tuyển dụng ồ ạt, thị trường công nghệ suy thoái khiến nhu cầu nhân lực sụt giảm nặng nề. Lực lượng lao động dư thừa nhiều làm giá cả sức lao động (mức lương deal đầu vào) sụt giảm xuống dưới giá trị thực tế.",
+      "id": "saving-vs-spending",
+      "title": "Mâu thuẫn: Chi tiêu tiết kiệm tối đa vs. Nâng cao chất lượng sống",
+      "description": "Sự mâu thuẫn giữa việc thắt lưng buộc bụng tích lũy tiền tệ phòng thân và việc chi tiền để nâng cấp bản thân, sức khỏe tinh thần.",
+      "side_a": "Cực A: Tiết kiệm tối đa (Thắt lưng buộc bụng)",
+      "side_b": "Cực B: Nâng cao chất lượng sống (Đầu tư trải nghiệm)",
+      "side_a_arguments": [
+        "Tích lũy quỹ dự phòng an toàn trước các rủi ro ốm đau, mất việc làm thêm.",
+        "Rèn luyện lối sống tối giản, không bị lôi kéo bởi các trào lưu tiêu dùng lãng phí.",
+        "Có một khoản vốn nhỏ sau khi tốt nghiệp để tự lập."
+      ],
+      "side_b_arguments": [
+        "Đầu tư vào dinh dưỡng, chăm sóc sức khỏe thể chất và tinh thần tốt để làm việc hiệu quả.",
+        "Mua sắm công cụ học tập tốt (máy tính, sách vở chất lượng, các khóa học kỹ năng).",
+        "Tạo động lực tinh thần để học tập và làm việc thông qua các phần thưởng trải nghiệm."
+      ],
+      "resolution": {
+        "title": "Giải quyết mâu thuẫn biện chứng theo Quy luật Mâu thuẫn",
+        "explanation": "Tiết kiệm và Chi tiêu là hai mặt đối lập thống nhất trong cùng một chủ thể quản lý tài chính cá nhân. Giải quyết biện chứng ở đây không phải là chọn một bên cực đoan, mà là 'Đấu tranh và thống nhất': Sử dụng tiết kiệm như nền tảng để tạo sự an tâm, nhưng có kế hoạch chi tiêu thông minh hướng tới việc 'tái sản xuất sức lao động' (ăn uống đủ chất, mua sách vở, học tập). Sự cân bằng biện chứng này giúp sức lao động của bạn liên tục được nâng cấp giá trị."
+      },
       "chart_data": [
-        { "month": "Tháng 1", "original_value": 100, "market_price": 110 },
-        { "month": "Tháng 2", "original_value": 100, "market_price": 100 },
-        { "month": "Tháng 3", "original_value": 98, "market_price": 85 },
-        { "month": "Tháng 4", "original_value": 97, "market_price": 75 },
-        { "month": "Tháng 5", "original_value": 96, "market_price": 80 },
-        { "month": "Tháng 6", "original_value": 96, "market_price": 82 }
+        { "step": "Tháng 1", "quantity": 5, "quality": 1.5 },
+        { "step": "Tháng 3", "quantity": 15, "quality": 1.6 },
+        { "step": "Tháng 6", "quantity": 30, "quality": 1.8 },
+        { "step": "Tháng 9 (Độ)", "quantity": 45, "quality": 2.0 },
+        { "step": "Tháng 12 (Bước nhảy)", "quantity": 70, "quality": 3.5 },
+        { "step": "Tháng 15 (Chất mới)", "quantity": 80, "quality": 3.7 }
       ]
     }
   ],
   "ethical_dilemmas": [
     {
       "id": "waste-dilemma",
-      "scenario": "Nhà máy dệt nhuộm của bạn phát sinh lượng nước thải hóa chất lớn. Chi phí lắp đặt hệ thống lọc tuần hoàn đạt chuẩn bảo vệ môi trường rất cao, ảnh hưởng trực tiếp tới lợi nhuận quý này.",
+      "scenario": "Nhà máy dệt nhuộm của bạn phát sinh lượng nước thải hóa chất lớn. Chi phí lắp đặt hệ thống lọc nước tuần hoàn đạt chuẩn bảo vệ môi trường của Nhà nước rất cao, ảnh hưởng trực tiếp tới lợi nhuận quý này.",
       "choices": [
         {
           "text": "Xả trộm nước thải ra sông vào đêm mưa để tiết kiệm tối đa chi phí sản xuất.",
@@ -79,40 +121,40 @@
             "competitiveness": 25,
             "social_responsibility": -45
           },
-          "explanation": "Quy luật cạnh tranh tư bản chủ nghĩa ép buộc bạn phải giảm chi phí để bán rẻ hơn đối thủ. Tuy nhiên, hành động này hủy hoại môi trường và nếu bị Nhà nước thanh tra phát hiện, bạn sẽ bị phạt nặng hoặc đình chỉ hoạt động."
+          "explanation": "Quy luật cạnh tranh buộc các nhà tư bản phải tìm mọi cách giảm chi phí cá biệt dưới mức chi phí xã hội để chiến thắng đối thủ. Tuy nhiên, việc hủy hoại môi trường sống của cộng đồng sẽ bị Nhà nước phát hiện và xử lý nghiêm khắc."
         },
         {
-          "text": "Đầu tư hệ thống lọc nước tuần hoàn đạt chuẩn ESG, chấp nhận giảm biên lợi nhuận.",
+          "text": "Đầu tư hệ thống lọc nước tuần hoàn đạt chuẩn, chấp nhận giảm biên lợi nhuận ngắn hạn.",
           "impact": {
             "profit": -20,
             "competitiveness": -15,
             "social_responsibility": 45
           },
-          "explanation": "Hành động này thể hiện trách nhiệm xã hội cao và tuân thủ định hướng phát triển bền vững của Nhà nước, nhưng doanh nghiệp sẽ chịu áp lực tài chính ngắn hạn do biên lợi nhuận giảm sút."
+          "explanation": "Hành động này thể hiện đạo đức kinh doanh và trách nhiệm xã hội cao. Dù làm giảm tỷ suất giá trị thặng dư ngắn hạn, nó đảm bảo sự phát triển bền vững và uy tín lâu dài của doanh nghiệp trong nền kinh tế thị trường định hướng XHCN."
         }
       ]
     },
     {
-      "id": "ai-replacement",
-      "scenario": "Một phần mềm AI mới có thể thay thế 70% công việc của bộ phận hỗ trợ khách hàng và soạn thảo giấy tờ văn phòng.",
+      "id": "safety-dilemma",
+      "scenario": "Công ty xây dựng của bạn đang đấu thầu dự án chung cư giá rẻ. Để chiến thắng thầu, bạn cần cắt giảm tối đa chi phí. Bạn có nên giảm bớt các tiêu chuẩn an toàn lao động và bảo hộ cho công nhân công trường?",
       "choices": [
         {
-          "text": "Sa thải lập tức các nhân viên cũ để cắt giảm chi phí lương và tăng lợi nhuận thặng dư.",
+          "text": "Cắt bớt trang bị bảo hộ lao động và kéo dài giờ làm việc của công nhân.",
           "impact": {
-            "profit": 40,
+            "profit": 30,
             "competitiveness": 30,
-            "social_responsibility": -30
+            "social_responsibility": -40
           },
-          "explanation": "Việc thay đổi cấu tạo hữu cơ của tư bản (tăng máy móc tư bản bất biến 'c', giảm lao động sống tư bản khả biến 'v') giúp nâng cao năng suất lao động cá biệt và tạo ra giá trị thặng dư siêu ngạch. Tuy nhiên, nó đẩy người lao động vào cảnh thất nghiệp."
+          "explanation": "Bạn đang áp dụng phương pháp sản xuất giá trị thặng dư tuyệt đối (kéo dài ngày lao động) và tiết kiệm chi phí tư bản bất biến (trang thiết bị bảo hộ). Điều này gia tăng lợi nhuận nhanh chóng nhưng đẩy tính mạng công nhân vào nguy hiểm."
         },
         {
-          "text": "Giữ lại nhân sự, đào tạo họ chuyển sang vai trò kiểm duyệt nội dung AI hoặc dịch vụ khách hàng cao cấp.",
+          "text": "Đảm bảo trang bị bảo hộ hiện đại và huấn luyện an toàn lao động đầy đủ.",
           "impact": {
-            "profit": -10,
-            "competitiveness": -5,
-            "social_responsibility": 35
+            "profit": -15,
+            "competitiveness": -10,
+            "social_responsibility": 40
           },
-          "explanation": "Giúp bảo vệ an sinh xã hội cho người nghèo, tuy nhiên chi phí đào tạo lại làm tăng chi phí lưu thông của doanh nghiệp và giảm lợi thế giá cả cạnh tranh ngắn hạn."
+          "explanation": "Hao phí để đảm bảo an toàn cho sức lao động thực chất là chi phí cần thiết để bảo toàn và phát triển lực lượng sản xuất cốt lõi. Sếp có trách nhiệm bảo vệ tính mạng người lao động trước áp lực tối đa hóa thặng dư."
         }
       ]
     }
@@ -123,21 +165,21 @@
       "name": "Kinh tế Nhà nước",
       "gdp_contribution": 29.5,
       "constitutional_role": "Giữ vai trò chủ đạo trong nền kinh tế quốc dân.",
-      "description": "Kinh tế Nhà nước bao gồm các tài sản công, đất đai, tài nguyên và các Doanh nghiệp Nhà nước (như EVN, Viettel, Petrovietnam). Đây là lực lượng vật chất quan trọng để Nhà nước ổn định kinh tế vĩ mô, định hướng và điều tiết sự phát triển kinh tế - xã hội theo định hướng xã hội chủ nghĩa."
+      "description": "Kinh tế Nhà nước bao gồm tài sản công, đất đai, tài nguyên thiên nhiên và các Doanh nghiệp Nhà nước lớn (EVN, Viettel, Petrovietnam). Khối này giữ vai trò then chốt, là công cụ vật chất quan trọng để Nhà nước điều tiết vĩ mô, ổn định kinh tế và dẫn dắt các thành phần kinh tế khác phát triển theo định hướng XHCN."
     },
     {
       "id": "private-economy",
       "name": "Kinh tế Tư nhân",
       "gdp_contribution": 45.0,
       "constitutional_role": "Là một động lực quan trọng của nền kinh tế thị trường định hướng XHCN.",
-      "description": "Bao gồm các hộ kinh doanh cá thể, các công ty tư nhân trong nước (như Vingroup, Hoà Phát, FPT). Khối này đóng vai trò cực kỳ năng động, thúc đẩy đổi mới sáng tạo, giải quyết đại đa số việc làm cho thị trường lao động Việt Nam và tạo nguồn thu thuế lớn."
+      "description": "Bao gồm các hộ kinh doanh cá thể, các doanh nghiệp tư nhân trong nước (Vingroup, FPT, Hòa Phát). Khối này đóng vai trò năng động, thúc đẩy tính cạnh tranh của thị trường, đóng góp lớn vào GDP, tạo phần lớn việc làm cho người lao động Việt Nam và thúc đẩy đổi mới công nghệ."
     },
     {
       "id": "fdi-economy",
-      "name": "Kinh tế FDI (Vốn đầu tư nước ngoài)",
+      "name": "Kinh tế FDI (Vốn nước ngoài)",
       "gdp_contribution": 25.5,
-      "constitutional_role": "Được khuyến khích và tạo điều kiện phát triển thuận lợi.",
-      "description": "Bao gồm các doanh nghiệp nước ngoài đặt nhà máy sản xuất tại Việt Nam (như Samsung, Intel, LG). Khối này giúp Việt Nam tiếp cận công nghệ hiện đại, phương thức quản lý tiên tiến và hội nhập trực tiếp vào chuỗi cung ứng toàn cầu toàn cầu."
+      "constitutional_role": "Là một bộ phận quan trọng được khuyến khích phát triển lâu dài.",
+      "description": "Bao gồm các doanh nghiệp có vốn đầu tư trực tiếp từ nước ngoài (Samsung, Intel, LG). Khối này giúp Việt Nam thu hút nguồn vốn ngoại tệ lớn, chuyển giao công nghệ hiện đại, đào tạo kỹ năng quản lý tiên tiến và hội nhập sâu rộng vào chuỗi giá trị toàn cầu."
     }
   ]
 }
