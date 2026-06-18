@@ -82,11 +82,31 @@ Là một học sinh ôn thi môn Kinh tế chính trị, tôi muốn xem biểu
 **Kịch bản chấp nhận**:
 1. **Cho** trang cấu trúc kinh tế, **Khi** nhấp vào khối "Kinh tế Nhà nước", **Thì** văn bản giải thích vai trò "chủ đạo" được hiển thị rõ ràng.
 
+### Kịch bản 7 - Mascot Chibi Tương Tác & Lời Thoại (Độ ưu tiên: P1)
+Là một người học, tôi muốn di chuột vào Mascot Chibi để Mascot to ra và hiển thị bong bóng thoại chứa các lời bình dí dỏm, gợi nhắc học tập theo giáo trình.
+
+**Kiểm thử độc lập**: Di chuột vào Mascot Chibi sẽ kích hoạt phóng to nhẹ, đồng thời một bong bóng thoại (Speech Bubble) dạng glassmorphism hiện lên góc trên hiển thị ngẫu nhiên các câu nói như "Hôm nay học Triết nè! 📚". Khi di chuột ra ngoài, bong bóng thoại ẩn đi.
+
+---
+
+### Kịch bản 8 - Tự Học & Trắc Nghiệm Chuẩn Giáo Trình (Độ ưu tiên: P1)
+Là một sinh viên đang ôn thi, tôi muốn chuyển sang tab "Tự Học" để làm bài trắc nghiệm chuẩn theo từng chương giáo trình, nhận đáp án đúng/sai tức thì kèm theo phần giải thích chuẩn học thuật và có thể bấm nút hỏi thêm Thầy Nam AI.
+
+**Kiểm thử độc lập**: Click vào tab "Tự Học & Trắc Nghiệm", chọn làm trắc nghiệm Chương 2, chọn 1 đáp án. Giao diện đổi màu đáp án (Xanh/Đỏ), hiển thị lý thuyết giải thích chi tiết. Bấm "Hỏi Thầy Nam AI câu này" sẽ tự động chuyển sang tab Chat AI và chèn câu hỏi.
+
+---
+
+### Kịch bản 9 - Tải Giáo Trình Học Tập (Độ ưu tiên: P2)
+Là một người dùng, tôi muốn bấm nút để tải trực tiếp file PDF Giáo trình Kinh tế chính trị Mác - Lênin về máy.
+
+**Kiểm thử độc lập**: Click vào nút "Tải Giáo Trình" trên giao diện, trình duyệt sẽ tự động kích hoạt tải file `GIÁO TRÌNH FULL.pdf`.
+
 ---
 
 ### Các trường hợp đặc biệt (Edge Cases)
 - **Thiếu hoặc sai Gemini API Key**: Ứng dụng phải hiển thị hướng dẫn người dùng thiết lập `VITE_GEMINI_API_KEY` trong file `.env` một cách thân thiện thay vì bị crash.
 - **Biểu đồ hiển thị trên màn hình nhỏ**: Các biểu đồ Recharts phải tự co giãn theo chiều rộng container (responsive) để tránh vỡ giao diện trên điện thoại.
+- **Tải tệp lớn**: Nút tải giáo trình phải được cấu hình chính xác đường dẫn tĩnh để tránh lỗi 404 khi tải tệp PDF 32.6MB.
 
 ## Yêu cầu chức năng *(bắt buộc)*
 
@@ -99,12 +119,19 @@ Là một học sinh ôn thi môn Kinh tế chính trị, tôi muốn xem biểu
 - **FR-006**: Hệ thống PHẢI vẽ biểu đồ Line Chart (Recharts) hiển thị đường Giá trị gốc và Giá cả thực tế cho các sự kiện thị trường.
 - **FR-007**: Hệ thống PHẢI hiển thị trắc nghiệm mini-quiz cập nhật động 3 thanh chỉ số của Sếp (Lợi nhuận, Sức cạnh tranh, Trách nhiệm xã hội).
 - **FR-008**: Hệ thống PHẢI hiển thị biểu đồ Pie Chart (Recharts) thể hiện các thành phần kinh tế Việt Nam.
+- **FR-009**: Hệ thống PHẢI phóng to Mascot Chibi gấp 1.5 lần kích thước cũ (lên `w-40 h-52 md:w-48 md:h-60`) và hiển thị lời thoại bong bóng ngẫu nhiên khi di chuột vào.
+- **FR-010**: Hệ thống PHẢI tải tóm tắt kiến thức giáo trình và bộ câu hỏi trắc nghiệm từ `curriculum_knowledge.json`.
+- **FR-011**: Hệ thống PHẢI tích hợp dữ liệu giáo trình tóm tắt vào Prompt cho Thầy Nam AI ở chế độ Academic để trả lời chính xác, tránh lệch chuẩn.
+- **FR-012**: Hệ thống PHẢI cung cấp giao diện tự học trắc nghiệm hỗ trợ chấm điểm, giải thích chi tiết và chuyển tiếp câu hỏi sang Thầy Nam AI.
+- **FR-013**: Hệ thống PHẢI hỗ trợ tải trực tiếp tệp `GIÁO TRÌNH FULL.pdf` từ thư mục public.
 
 ### Thực thể dữ liệu chính
 - **JobOffer (Công việc)**: Lương, chi phí sống tối thiểu, số giờ làm, tỷ lệ phân chia thời gian.
 - **MarketEvent (Biến động thị trường)**: Tên sự kiện, biểu đồ dữ liệu chu kỳ.
 - **EthicalDilemma (Tình huống đạo đức)**: Câu hỏi, các phương án lựa chọn và tác động chỉ số tương ứng.
 - **EconomicSector (Khối kinh tế)**: Tỷ lệ GDP, vai trò theo Hiến pháp.
+- **CurriculumChapter (Chương giáo trình)**: Tên chương, tóm tắt lý thuyết trọng tâm.
+- **QuizQuestion (Câu hỏi trắc nghiệm)**: Chương, câu hỏi, 4 lựa chọn, đáp án đúng, giải thích chi tiết.
 
 ## Tiêu chí thành công *(bắt buộc)*
 
@@ -112,6 +139,9 @@ Là một học sinh ôn thi môn Kinh tế chính trị, tôi muốn xem biểu
 - **SC-001**: Thời gian chuyển đổi trang qua state dưới 100ms.
 - **SC-002**: Các tính toán toán học và cập nhật thanh trạng thái diễn ra tức thì sau khi người dùng tương tác.
 - **SC-003**: Biểu đồ tự co giãn mượt mà khi thay đổi kích thước cửa sổ trình duyệt.
+- **SC-004**: Bong bóng thoại hiển thị tức thì khi hover vào mascot.
+- **SC-005**: Chatbot Thầy Nam AI phản hồi lý thuyết dựa trên tóm tắt giáo trình chính xác, không trả lời lệch hoặc bịa đặt kiến thức.
+
 
 ## Giả định
 - Ứng dụng chạy offline hoàn toàn ngoại trừ chức năng Trợ lý AI cần kết nối Internet để gọi API Gemini.

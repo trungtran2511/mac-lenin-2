@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, Bot, Briefcase, Building, ShieldAlert, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Bot, Briefcase, Building, ShieldAlert, TrendingUp, BookOpen } from "lucide-react";
 
 type HomeFeatureCardsProps = {
   onNavigate: (target: string) => void;
@@ -21,6 +21,14 @@ const featureCards = [
     description: "Hai chế độ: Giải đáp trắc nghiệm ôn tập triết học chuẩn giáo trình và gỡ rối nỗi uất ức đi làm bằng slang Gen Z.",
     icon: Bot,
     visualClass: "feature-visual-ai",
+  },
+  {
+    target: "self-study",
+    eyebrow: "Học tập chủ động",
+    title: "Tự Học & Trắc Nghiệm Giáo Trình",
+    description: "Hệ thống ôn luyện trắc nghiệm chuẩn theo từng chương giáo trình Kinh tế chính trị Mác - Lênin. Có giải thích chi tiết và tải giáo trình.",
+    icon: BookOpen,
+    visualClass: "feature-visual-study",
   },
   {
     target: "market-dynamics",
@@ -80,7 +88,7 @@ export default function HomeFeatureCards({ onNavigate }: HomeFeatureCardsProps) 
                 whileHover={{ y: -6 }}
                 whileTap={{ scale: 0.985 }}
                 onClick={() => onNavigate(card.target)}
-                className={`feature-gateway-card text-left ${index === 4 ? "lg:col-span-2" : ""}`}
+                className="feature-gateway-card text-left"
               >
                 <div className={`feature-gateway-media ${card.visualClass}`}>
                   <div className="feature-orbit" />

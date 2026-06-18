@@ -87,20 +87,68 @@ Xây dựng một ứng dụng Single Page Application (SPA) trên nền React c
 
 ## Đề xuất thay đổi tệp tin
 
-### [NEW] [economy_data.json](file:///d:/DemoCodeTriet/my-mln-learning-2/public/economy_data.json)
-Tạo tệp cơ sở dữ liệu JSON chứa toàn bộ dữ liệu mẫu về công việc, sự kiện cung cầu, tình huống trắc nghiệm sếp doanh nghiệp và các khối kinh tế Việt Nam.
+### 💬 Chức năng 6: Mascot Chibi Tương Tác & Lời Thoại (Interactive Mascot)
+- **Cải tiến Kích thước**: Phóng to Mascot thêm 1.5 lần, chuyển class kích thước sang `w-40 h-52 md:w-48 md:h-60` để Mascot hiển thị nổi bật và sinh động hơn.
+- **Bong bóng thoại (Speech Bubble)**:
+  - Sử dụng React state `isMascotHovered` và `hover` event listener trên container của Mascot.
+  - Khi hover, hiển thị một bong bóng thoại (Speech Bubble) có viền kính mờ (glassmorphism), nền tối mờ, chữ trắng ở phía trên Mascot.
+  - Nội dung bong bóng thoại sẽ lấy ngẫu nhiên từ danh sách các câu nói:
+    - *"Hôm nay học Triết nè! 📚"*
+    - *"Bạn đã ôn thi Chương 2 chưa đó? 🤔"*
+    - *"Bị sếp bóc lột? Hỏi thầy Nam AI ngay! 🛠️"*
+    - *"Tải Giáo trình Mác - Lênin về tự học nhé! 📥"*
+    - *"Tích lũy đủ về lượng sẽ biến đổi về chất! 📈"*
+    - *"Lao động thặng dư chính là... sếp thích điều này! 🤫"*
+  - Bong bóng thoại sẽ ẩn đi mượt mà khi di chuột ra ngoài.
 
-### [MODIFY] [vite.config.js](file:///d:/DemoCodeTriet/my-mln-learning-2/vite.config.js)
-Tích hợp plugin `@tailwindcss/vite` để hỗ trợ CSS.
+### 📖 Chức năng 7: Hệ thống Tự Học & Trắc Nghiệm (Self-Study Quiz)
+- **Tải dữ liệu**: Đọc danh sách chương và câu hỏi trắc nghiệm tự học từ `curriculum_knowledge.json`.
+- **Giao diện Trắc nghiệm**:
+  - Giao diện có cấu trúc chia theo chương (Chương 1 đến 6) và chế độ làm ngẫu nhiên (Quiz tổng hợp).
+  - Hiển thị từng câu hỏi một cách trực quan, bao gồm thanh tiến trình (Progress Bar).
+  - Khi người dùng click chọn 1 đáp án:
+    - Kiểm tra đáp án chính xác.
+    - Đổi màu đáp án đã chọn: Xanh lá cây nếu đúng, Đỏ nếu sai, và highlight đáp án đúng (nếu chọn sai).
+    - Hiển thị ngay hộp thoại giải thích chi tiết trích từ Giáo trình chuẩn để người học ghi nhớ kiến thức.
+    - Tích hợp nút *"Hỏi Thầy Nam AI câu này"*: Tự động chuyển tab sang Chat AI, tự động điền câu hỏi để Thầy giải thích sâu hơn.
+- **Chức năng Tải Giáo trình**:
+  - Thiết kế card tải học liệu đẹp mắt ở trang chủ và tab tự học.
+  - Cho phép click tải tệp `public/GIÁO TRÌNH FULL.pdf` (được chép từ thư mục gốc).
 
-### [MODIFY] [package.json](file:///d:/DemoCodeTriet/my-mln-learning-2/package.json)
-Bổ sung các thư viện: `recharts`, `lucide-react`, `@google/genai` (trong `dependencies`) và `tailwindcss`, `@tailwindcss/vite` (trong `devDependencies`).
+### 🤖 Đào tạo Thầy Nam AI bằng Giáo trình
+- **Đọc dữ liệu học thuyết**: Lấy phần tóm tắt lý thuyết 6 chương giáo trình từ `curriculum_knowledge.json`.
+- **Logic Prompting**:
+  - Khi AI được đặt ở chế độ `academic` (Ôn tập & giải đề), hệ thống sẽ tiêm (inject) toàn bộ tóm tắt lý thuyết học thuật 6 chương vào Prompt gửi cho Gemini.
+  - **Ràng buộc trả lời**: Buộc AI đối chiếu chặt chẽ câu hỏi của học viên với dữ liệu giáo trình để đưa ra câu trả lời chuẩn chỉ nhất. Chỉ khi câu hỏi hoàn toàn nằm ngoài phạm vi giáo trình được cung cấp, AI mới hiển thị dòng chữ cảnh báo rõ *"Nội dung này nằm ngoài phạm vi giáo trình chính thức"* rồi mới sử dụng kiến thức chung của Gemini để bổ sung lời giải thích ngắn gọn, tránh lấy dữ liệu lung tung.
 
-### [MODIFY] [src/index.css](file:///d:/DemoCodeTriet/my-mln-learning-2/src/index.css)
-Nhúng Tailwind v4: `@import "tailwindcss";`. Thiết lập chủ đề tối (Dark Mode) mặc định cho toàn bộ trang.
 
-### [MODIFY] [src/App.jsx](file:///d:/DemoCodeTriet/my-mln-learning-2/src/App.jsx)
-Viết lại hoàn chỉnh tệp chính hiển thị giao diện Sidebar, Trang chủ tổng quan và 5 trang tính năng chuyên sâu với đầy đủ logic tính toán và gọi API Gemini.
+---
+
+## Nội dung cần người dùng duyệt
+
+> [!IMPORTANT]
+> - **Chibi Mascot**: Kích thước mới to gấp 1.5 lần, hiển thị bóng thoại khi di chuột vào.
+> - **Nguồn học liệu**: Dữ liệu tóm tắt lý thuyết và câu hỏi trắc nghiệm được lưu ở file tĩnh `public/curriculum_knowledge.json`.
+> - **Tải giáo trình**: Giáo trình PDF được lưu ở `public/GIÁO TRÌNH FULL.pdf`.
+
+## Câu hỏi thảo luận
+
+> [!NOTE]
+> - **Cập nhật prompt AI**: Chúng tôi đã tối ưu hóa Prompt của Thầy Nam AI bằng cách đính kèm trực tiếp kiến thức giáo trình tóm tắt vào ngữ cảnh (context), giúp thầy trả lời chính xác 100% theo chương trình. Bạn có đồng ý với giải pháp tiêm ngữ cảnh trực tiếp này không?
+
+## Đề xuất thay đổi tệp tin
+
+### [NEW] [curriculum_knowledge.json](file:///d:/DemoCodeTriet/my-mln-learning-2/public/curriculum_knowledge.json)
+Tạo tệp JSON chứa tóm tắt lý thuyết 6 chương giáo trình và 18 câu hỏi trắc nghiệm chuẩn.
+
+### [NEW] [public/GIÁO TRÌNH FULL.pdf](file:///d:/DemoCodeTriet/my-mln-learning-2/public/GIÁO TRÌNH FULL.pdf)
+Tệp tài liệu gốc được sao chép vào thư mục public để hỗ trợ tính năng tải về trực tiếp.
+
+### [MODIFY] [src/App.tsx](file:///d:/DemoCodeTriet/my-mln-learning-2/src/App.tsx)
+- Cải tiến kích thước Chibi Mascot và bổ sung sự kiện hover hiển thị bóng thoại ngẫu nhiên.
+- Tạo tab giao diện "Tự Học & Trắc Nghiệm" và tích hợp bộ câu hỏi từ JSON.
+- Tích hợp logic tiêm lý thuyết giáo trình vào prompt gọi Gemini API.
+- Bổ sung nút tải giáo trình PDF.
 
 ---
 
@@ -112,7 +160,8 @@ Viết lại hoàn chỉnh tệp chính hiển thị giao diện Sidebar, Trang 
 
 ### Kiểm thử thủ công
 - Chạy ứng dụng trên môi trường dev local.
-- Click chuyển đổi qua lại giữa tất cả các trang qua Sidebar và Dashboard Cards để xác nhận React state cập nhật mượt mà.
-- Chọn các công việc khác nhau, nhập số tháng và kiểm tra logic hiển thị thời gian thặng dư và số trà sữa quy đổi.
-- Nhập tình huống đi làm OT/bị trừ lương để kiểm tra phản hồi từ Trợ lý AI.
-- Đảm bảo biểu đồ Recharts hiển thị chính xác các đường Giá trị - Giá cả và tỷ lệ GDP.
+- Kiểm tra tính năng hover vào Mascot Chibi xem bong bóng thoại có hiện lên ngẫu nhiên và biến mất khi hover out không.
+- Thực hiện làm bài trắc nghiệm ở tab Tự Học, kiểm tra việc hiển thị đúng/sai, giải thích và nút chuyển tiếp sang chatbot Thầy Nam.
+- Kiểm tra phản hồi của Thầy Nam AI ở chế độ Ôn Tập xem có chính xác theo giáo trình không.
+- Kiểm tra nút Tải Giáo trình xem tệp PDF tải về có nguyên vẹn và mở bình thường không.
+

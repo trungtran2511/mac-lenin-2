@@ -21,7 +21,9 @@ import {
   HelpCircle,
   TrendingUp,
   Building,
-  Briefcase
+  Briefcase,
+  Download,
+  RotateCcw
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -315,7 +317,58 @@ export default function App() {
   const [economyData, setEconomyData] = useState<EconomyData>(FALLBACK_DATA);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'home' | 'calculator' | 'ai-consultant' | 'market-dynamics' | 'ethical-challenge' | 'gdp-sectors'>('home');
+  const [activeView, setActiveView] = useState<'home' | 'calculator' | 'ai-consultant' | 'market-dynamics' | 'ethical-challenge' | 'gdp-sectors' | 'self-study'>('home');
+
+  // Mascot Hover states
+  const [isMascotHovered, setIsMascotHovered] = useState(false);
+  const [mascotBubbleText, setMascotBubbleText] = useState("");
+
+  const MASCOT_DIALOGUES = [
+    "Hôm nay học Triết nè! 📚",
+    "Bạn đã ôn thi Chương 2 chưa đó? 🤔",
+    "Bị sếp bóc lột? Hỏi thầy Nam AI ngay! 🛠️",
+    "Tải Giáo trình Mác - Lênin về tự học nhé! 📥",
+    "Tích lũy đủ về lượng sẽ biến đổi về chất! 📈",
+    "Lao động thặng dư chính là... sếp thích điều này! 🤫",
+    "Học tập giúp nâng cấp giá trị sức lao động đó! 💡",
+    "Quy luật giá trị vận hành thế nào nhỉ? 📈"
+  ];
+
+  const handleMascotMouseEnter = () => {
+    setIsMascotHovered(true);
+    const randomIndex = Math.floor(Math.random() * MASCOT_DIALOGUES.length);
+    setMascotBubbleText(MASCOT_DIALOGUES[randomIndex]);
+  };
+
+  // Curriculum Data states
+  interface CurriculumChapter {
+    id: number;
+    title: string;
+    summary: string;
+  }
+  interface QuizQuestion {
+    id: string;
+    chapter: number;
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
+  }
+  interface CurriculumData {
+    chapters: CurriculumChapter[];
+    quiz_questions: QuizQuestion[];
+  }
+
+  const [curriculumData, setCurriculumData] = useState<CurriculumData | null>(null);
+
+  // Self-study & practice quiz states
+  const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice'>('syllabus');
+  const [activeChapterId, setActiveChapterId] = useState<number | null>(1); // null means All Chapters
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [userSelectedOption, setUserSelectedOption] = useState<number | null>(null);
+  const [quizScore, setQuizScore] = useState(0);
+  const [showQuizSummary, setShowQuizSummary] = useState(false);
+  const [selectedChapterDetails, setSelectedChapterDetails] = useState<number>(1);
 
   // Job offer page states
   const [selectedJobId, setSelectedJobId] = useState("student-tutor");
@@ -385,6 +438,18 @@ export default function App() {
       .catch(err => {
         console.warn("Using embedded fallback data due to fetch error:", err);
       });
+
+    fetch("/curriculum_knowledge.json")
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load curriculum knowledge");
+        return res.json();
+      })
+      .then(data => {
+        setCurriculumData(data);
+      })
+      .catch(err => {
+        console.error("Error loading curriculum knowledge:", err);
+      });
   }, []);
 
   // Job calculations
@@ -433,8 +498,19 @@ export default function App() {
       ? `Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
       : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
 
+    const curriculumContext = curriculumData
+      ? curriculumData.chapters.map(c => `[${c.title}]: ${c.summary}`).join("\n\n")
+      : "";
+
     const systemInstructionText = aiMode === "academic"
-      ? "Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. Hãy giải đáp các câu hỏi ôn tập, câu hỏi trắc nghiệm hoặc lý thuyết học phần của người dùng dựa trên nội dung chuẩn của Giáo trình môn học. Hãy giải thích rõ ràng các khái niệm như hàng hóa, tiền tệ, tư bản, giá trị thặng dư, quy luật giá trị, tích lũy tư bản, các thành phần kinh tế,... bằng tiếng Việt ngắn gọn, súc tích, khoa học và dễ hiểu nhất để sinh viên ôn thi đạt điểm cao."
+      ? `Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. 
+         Bạn chỉ được phép sử dụng dữ liệu Giáo trình Kinh tế Chính trị Mác - Lênin dưới đây để trả lời câu hỏi ôn tập của người dùng. Không được tự ý bịa đặt hoặc sử dụng thông tin ngoài lề giáo trình.
+         Nếu câu hỏi của người dùng nằm ngoài phạm vi Giáo trình dưới đây, hãy bắt đầu câu trả lời bằng dòng chữ: "[Nội dung này nằm ngoài phạm vi giáo trình chính thức]" và sau đó mới dùng kiến thức chung của mình để giải đáp một cách ngắn gọn, trung lập.
+
+         DỮ LIỆU GIÁO TRÌNH:
+         ${curriculumContext}
+
+         Hãy giải thích rõ ràng các khái niệm, quy luật bằng tiếng Việt khoa học, dễ hiểu nhất để sinh viên ôn thi đạt điểm cao.`
       : "Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp.";
 
     try {
@@ -498,6 +574,9 @@ export default function App() {
     } else if (id === "marxist-ai") {
       setActiveView("ai-consultant");
       window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (id === "self-study") {
+      setActiveView("self-study");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (id === "market-dynamics") {
       setActiveView("market-dynamics");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -522,6 +601,8 @@ export default function App() {
       scrollToSection("surplus-value");
     } else if (query.includes("mác") || query.includes("ai") || query.includes("assistant") || query.includes("bot")) {
       scrollToSection("marxist-ai");
+    } else if (query.includes("tự học") || query.includes("trắc nghiệm") || query.includes("giáo trình") || query.includes("study") || query.includes("quiz")) {
+      scrollToSection("self-study");
     } else if (query.includes("thị trường") || query.includes("cung cầu") || query.includes("market") || query.includes("price")) {
       scrollToSection("market-dynamics");
     } else if (query.includes("sếp") || query.includes("đạo đức") || query.includes("boss") || query.includes("ethical")) {
@@ -536,6 +617,7 @@ export default function App() {
   const navLinks = [
     { label: "Trang Chủ", target: "theory", active: activeView === "home" },
     { label: "Tính Lương", target: "surplus-value", active: activeView === "calculator" },
+    { label: "Tự Học", target: "self-study", active: activeView === "self-study" },
     { label: "Lý Luận", target: "about-section", active: false },
     { label: "Mác AI", target: "marxist-ai", active: activeView === "ai-consultant" },
     { label: "Cơ Cấu GDP", target: "gdp-sectors", active: activeView === "gdp-sectors" },
@@ -546,7 +628,6 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background antialiased font-sans overflow-x-hidden">
       <FloatingParticles />
-      <RainbowPreloader />
 
       {/* 1. HERO SECTION & HEADER */}
       {activeView === "home" ? (
@@ -1203,6 +1284,338 @@ export default function App() {
       </section>
       )}
 
+      {/* 6.5. SELF-STUDY & PRACTICE SECTION */}
+      {activeView === "self-study" && (
+        <section id="self-study" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+
+            {/* Back Button */}
+            <div className="pb-4">
+              <button
+                onClick={() => scrollToSection("theory")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
+              </button>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+              <div>
+                <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Tự học lý luận & Giải trắc nghiệm</span>
+                <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  <BookOpen className="text-white w-8 h-8" /> Tự Học & Ôn Tập Giáo Trình
+                </h2>
+                <p className="text-white/50 text-xs md:text-sm mt-1">
+                  Đọc tóm tắt giáo trình lý thuyết và luyện tập bộ câu hỏi trắc nghiệm chuẩn xác.
+                </p>
+              </div>
+
+              {/* Sub-tab Switcher */}
+              <div className="flex bg-neutral-900 border border-white/10 rounded-xl p-1 gap-1">
+                <button
+                  onClick={() => setQuizSubTab("syllabus")}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "syllabus" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                >
+                  Tóm Tắt Giáo Trình
+                </button>
+                <button
+                  onClick={() => setQuizSubTab("practice")}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "practice" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                >
+                  Trắc Nghiệm Ôn Luyện
+                </button>
+              </div>
+            </div>
+
+            {/* 📥 Download Curriculum Section */}
+            <div className="liquid-glass border border-emerald-500/20 bg-emerald-500/5 p-6 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20">
+                  <Download className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-lg">Tải Giáo Trình Đầy Đủ (PDF)</h3>
+                  <p className="text-xs text-white/60 leading-relaxed mt-1">
+                    Bản scan chất lượng cao của giáo trình chính thức môn Kinh tế chính trị Mác - Lênin (32.6 MB). Lưu trữ và học tập ngoại tuyến mọi lúc mọi nơi.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="/GIÁO TRÌNH FULL.pdf"
+                download="GIÁO TRÌNH FULL.pdf"
+                className="w-full md:w-auto px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm text-center transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
+              >
+                <Download className="w-4 h-4" /> Tải về ngay
+              </a>
+            </div>
+
+            {/* Sub-tab 1: Syllabus summary */}
+            {quizSubTab === "syllabus" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Chapters list sidebar */}
+                <div className="space-y-3">
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono px-2">Danh sách chương học</span>
+                  {curriculumData?.chapters.map(chapter => (
+                    <button
+                      key={chapter.id}
+                      onClick={() => setSelectedChapterDetails(chapter.id)}
+                      className={`w-full text-left p-4 rounded-2xl border transition-all flex flex-col gap-1.5 cursor-pointer ${selectedChapterDetails === chapter.id ? "bg-white border-white text-black" : "bg-neutral-900/50 border-white/5 text-white/70 hover:bg-white/5 hover:text-white"}`}
+                    >
+                      <span className={`text-[10px] font-bold uppercase tracking-wider font-mono ${selectedChapterDetails === chapter.id ? "text-neutral-500" : "text-white/40"}`}>
+                        Chương {chapter.id}
+                      </span>
+                      <h4 className="text-xs font-bold leading-tight">{chapter.title}</h4>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Chapter details content panel */}
+                <div className="md:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between">
+                  {(() => {
+                    const activeCh = curriculumData?.chapters.find(c => c.id === selectedChapterDetails);
+                    if (!activeCh) return null;
+                    return (
+                      <>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                            <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
+                              Hệ thống tri thức
+                            </span>
+                            <span className="text-white/40 text-[10px] font-mono">Chương {activeCh.id}</span>
+                          </div>
+                          
+                          <h3 className="text-xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
+                          
+                          <div className="text-xs text-white/70 leading-relaxed space-y-4 whitespace-pre-line font-light">
+                            {activeCh.summary}
+                          </div>
+                        </div>
+
+                        <div className="border-t border-white/5 pt-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <span className="text-[10px] text-white/30 font-mono italic">
+                            *Tóm tắt cô đọng theo giáo trình của Bộ Giáo dục & Đào tạo.
+                          </span>
+                          <button
+                            onClick={() => {
+                              setActiveChapterId(activeCh.id);
+                              setQuizSubTab("practice");
+                              handleResetQuiz();
+                            }}
+                            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+                          >
+                            Luyện trắc nghiệm Chương {activeCh.id} <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 2: Practice Quiz */}
+            {quizSubTab === "practice" && (
+              <div className="space-y-8">
+                {/* Chapter selector filter */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900/60 p-4 rounded-2xl border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn chương luyện tập:</label>
+                    <select
+                      value={activeChapterId === null ? "all" : activeChapterId}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setActiveChapterId(val === "all" ? null : parseInt(val));
+                      }}
+                      className="bg-neutral-950 rounded-xl text-xs md:text-sm font-semibold py-2 px-3 border border-white/10 text-white outline-none"
+                    >
+                      <option value="all">Tất cả các chương</option>
+                      {curriculumData?.chapters.map(ch => (
+                        <option key={ch.id} value={ch.id}>Chương {ch.id}: {ch.title.substring(0, 40)}...</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="text-xs font-semibold text-white/50 font-mono">
+                    Tổng số câu: {curriculumData ? (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length) : 0} câu
+                  </div>
+                </div>
+
+                {/* Show quiz questions or results */}
+                {!curriculumData ? (
+                  <div className="liquid-glass rounded-3xl p-12 text-center text-white/50 text-sm border border-white/10">
+                    Đang tải danh sách câu hỏi học tập...
+                  </div>
+                ) : (activeChapterId === null ? curriculumData.quiz_questions : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId)).length === 0 ? (
+                  <div className="liquid-glass rounded-3xl p-12 text-center text-white/50 text-sm border border-white/10">
+                    Không tìm thấy câu hỏi luyện tập cho phần này.
+                  </div>
+                ) : showQuizSummary ? (
+                  /* Quiz Score Summary View */
+                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 text-center space-y-6 max-w-xl mx-auto shadow-2xl animate-fade-rise">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
+                      <Award className="w-10 h-10 text-amber-400" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                        Kết Quả Luyện Tập
+                      </h3>
+                      <p className="text-xs text-white/50 font-mono">
+                        Chương: {activeChapterId === null ? "Tất cả các chương" : `Chương ${activeChapterId}`}
+                      </p>
+                    </div>
+
+                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 max-w-xs mx-auto">
+                      <div className="text-3xl font-serif text-white">
+                        {quizScore} / {activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length}
+                      </div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mt-1">Câu trả lời đúng</div>
+                      <div className="w-full bg-white/10 h-1.5 rounded-full mt-4 overflow-hidden">
+                        <div
+                          style={{ width: `${(quizScore / (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length)) * 100}%` }}
+                          className="bg-white h-full transition-all duration-500"
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-white/70 italic leading-relaxed max-w-md mx-auto">
+                      {quizScore === (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length)
+                        ? "“Đồng chí đạt điểm tuyệt đối! Tích lũy về Lượng cực kỳ xuất sắc, sẵn sàng cho Bước nhảy về Chất ở bài thi chính thức rồi!” 🎓"
+                        : quizScore >= (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length) / 2
+                        ? "“Lượng tri thức tích lũy khá tốt. Hãy tiếp tục ôn tập kỹ các lý luận cốt lõi để bài thi đạt kết quả xuất sắc nhất!” 🛠️"
+                        : "“Lượng tích lũy chưa đủ để thực hiện bước nhảy chất lượng. Hãy đọc lại tóm tắt chương học hoặc hỏi Thầy Nam AI nhé đồng chí!” 📚"}
+                    </p>
+
+                    <div className="flex gap-4 justify-center pt-2">
+                      <button
+                        onClick={handleResetQuiz}
+                        className="px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center gap-2 cursor-pointer border-none"
+                      >
+                        <RotateCcw className="w-4 h-4" /> Luyện tập lại
+                      </button>
+                      <button
+                        onClick={() => setQuizSubTab("syllabus")}
+                        className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all cursor-pointer"
+                      >
+                        Đọc lại giáo trình
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Question Display Card */
+                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 shadow-xl animate-fade-rise">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
+                        Câu hỏi {currentQuizIndex + 1} / {activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length}
+                      </span>
+                      <span className="text-[10px] text-white/40 font-mono">
+                        Đang đạt: {quizScore} câu đúng
+                      </span>
+                    </div>
+
+                    {(() => {
+                      const questionsList = activeChapterId === null ? curriculumData.quiz_questions : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId);
+                      const qObj = questionsList[currentQuizIndex];
+                      if (!qObj) return null;
+
+                      return (
+                        <div className="space-y-4">
+                          <h3 className="text-base font-semibold text-white leading-relaxed select-text">
+                            {qObj.question}
+                          </h3>
+                          
+                          {/* Options Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {qObj.options.map((option, idx) => {
+                              const isSelected = userSelectedOption === idx;
+                              const isCorrectOption = idx === qObj.correctAnswer;
+                              const hasAnswered = userSelectedOption !== null;
+
+                              let btnStyle = "bg-white/5 border-white/10 text-white/80 hover:bg-white/10";
+                              if (hasAnswered) {
+                                if (isCorrectOption) {
+                                  btnStyle = "bg-emerald-500/10 border-emerald-500 text-emerald-300 font-medium";
+                                } else if (isSelected) {
+                                  btnStyle = "bg-red-500/10 border-red-500 text-red-300 font-medium";
+                                } else {
+                                  btnStyle = "bg-white/[0.02] border-white/5 text-white/30 cursor-not-allowed";
+                                }
+                              }
+
+                              return (
+                                <button
+                                  key={idx}
+                                  onClick={() => {
+                                    if (userSelectedOption !== null) return;
+                                    setUserSelectedOption(idx);
+                                    if (idx === qObj.correctAnswer) {
+                                      setQuizScore(prev => prev + 1);
+                                    }
+                                  }}
+                                  disabled={hasAnswered}
+                                  className={`text-left p-4 rounded-2xl border text-xs md:text-sm leading-relaxed transition-all flex items-start justify-between gap-3 cursor-pointer ${btnStyle}`}
+                                >
+                                  <div className="flex gap-2.5">
+                                    <span className="font-mono opacity-50">{String.fromCharCode(65 + idx)}.</span>
+                                    <span>{option}</span>
+                                  </div>
+                                  {hasAnswered && isCorrectOption && (
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                                  )}
+                                  {hasAnswered && isSelected && !isCorrectOption && (
+                                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Feedback Explanation Panel */}
+                          {userSelectedOption !== null && (
+                            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-xs md:text-sm text-white/90 leading-relaxed animate-fade-rise space-y-2 mt-4">
+                              <div className="flex items-center gap-2 text-[10px] font-bold font-mono tracking-wider text-white/50 uppercase">
+                                <HelpCircle className="w-4 h-4" /> Luận giải học thuật của Thầy Nam:
+                              </div>
+                              <p className="font-light">{qObj.explanation}</p>
+                              <div className="pt-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-white/5 mt-4">
+                                <button
+                                  onClick={() => {
+                                    setAiMode("academic");
+                                    setActiveView("ai-consultant");
+                                    handleSendChat(`Tôi đang học câu trắc nghiệm này: "${qObj.question}". Các đáp án là: A. ${qObj.options[0]}, B. ${qObj.options[1]}, C. ${qObj.options[2]}, D. ${qObj.options[3]}. Bạn giải thích kỹ hơn giùm tôi lý thuyết liên quan đến câu này được không?`);
+                                  }}
+                                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                  <Bot className="w-4 h-4" /> Hỏi Thầy Nam AI câu này
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setUserSelectedOption(null);
+                                    if (currentQuizIndex < questionsList.length - 1) {
+                                      setCurrentQuizIndex(prev => prev + 1);
+                                    } else {
+                                      setShowQuizSummary(true);
+                                    }
+                                  }}
+                                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                                >
+                                  {currentQuizIndex < questionsList.length - 1 ? "Câu tiếp theo" : "Hoàn thành ôn luyện"} <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            )}
+
+          </div>
+        </section>
+      )}
+
       {/* 7. MARXIST AI CONSULTANT SECTION */}
       {activeView === "ai-consultant" && (
         <section id="marxist-ai" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
@@ -1833,11 +2246,11 @@ export default function App() {
         <AnimatePresence>
           {isFloatingChatOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="pointer-events-auto fixed right-6 bottom-24 md:bottom-28 w-[320px] md:w-[380px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="pointer-events-auto fixed right-32 bottom-24 w-[320px] md:w-[360px] h-[450px] md:h-[500px] liquid-glass border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 bg-black/90 backdrop-blur-md"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/5">
@@ -1940,32 +2353,47 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Draggable Chibi Mascot Button */}
+        {/* Draggable Chibi Mascot Sticker - Magnified & Borderless */}
         <motion.div
           drag
           dragConstraints={dragConstraintsRef}
           dragMomentum={false}
           dragElastic={0.05}
-          whileDrag={{ scale: 1.1, cursor: "grabbing" }}
-          className="pointer-events-auto fixed z-50 w-16 h-16 md:w-20 md:h-20 cursor-grab"
-          style={{ right: 24, bottom: 24 }}
+          whileDrag={{ scale: 1.05, cursor: "grabbing" }}
+          className="pointer-events-auto fixed z-50 w-40 h-52 md:w-48 md:h-60 cursor-grab"
+          style={{ right: 16, bottom: 24 }}
           onTap={() => setIsFloatingChatOpen(prev => !prev)}
+          onMouseEnter={handleMascotMouseEnter}
+          onMouseLeave={() => setIsMascotHovered(false)}
         >
           <div className="relative w-full h-full group">
-            {/* Glowing ring animation */}
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-md opacity-45 group-hover:opacity-75 transition-opacity duration-300 animate-pulse" />
-            
-            {/* Character cutout shadow frame */}
-            <div className="relative w-full h-full rounded-full border border-white/20 bg-neutral-900/90 shadow-lg overflow-hidden flex items-center justify-center p-1 group-hover:border-white/40 transition-colors">
+            {/* Speech Bubble */}
+            <AnimatePresence>
+              {isMascotHovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-3 rounded-2xl bg-neutral-950/90 border border-white/20 text-white text-[11px] font-medium text-center shadow-2xl pointer-events-none"
+                  style={{ backdropFilter: "blur(12px)" }}
+                >
+                  {mascotBubbleText}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 rotate-45 bg-neutral-950/90 border-r border-b border-white/20"></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Chibi character sticker container - completely borderless with high-detail drop shadow */}
+            <div className="relative w-full h-full overflow-visible flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
               <img
                 src={chibiTeacher}
                 alt="Thầy Nam Chibi"
-                className="w-[90%] h-[90%] object-contain select-none pointer-events-none transform group-hover:scale-105 transition-transform"
+                className="w-full h-full object-contain select-none pointer-events-none transform group-hover:scale-105 transition-transform"
               />
             </div>
             
-            {/* Quick alert indicator dot */}
-            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-background rounded-full animate-bounce"></span>
+            {/* Green circular indicator dot integrated directly above the character's right shoulder area */}
+            <span className="absolute top-2 right-4 w-4 h-4 bg-emerald-400 border-2 border-background rounded-full shadow-md animate-pulse z-10"></span>
           </div>
         </motion.div>
 

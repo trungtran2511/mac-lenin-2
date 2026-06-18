@@ -85,9 +85,50 @@
 
 ---
 
+## Giai đoạn 9: User Story 7 - Mascot Chibi Tương Tác (US7)
+
+**Mục tiêu**: Phóng to Mascot Chibi và hiển thị bong bóng thoại ngẫu nhiên khi hover.
+
+- [x] T018 [US7] Tăng kích thước Mascot Chibi gấp 1.5 lần và thêm state `isMascotHovered` trong tệp src/App.tsx
+- [x] T019 [US7] Thiết kế và lập trình bong bóng thoại glassmorphism hiển thị ngẫu nhiên các câu thoại khi hover vào Mascot Chibi trong tệp src/App.tsx
+
+---
+
+## Giai đoạn 10: User Story 8 - Tích Hợp Dữ Liệu Giáo Trình & Huấn Luyện AI (US8)
+
+**Mục tiêu**: Nạp dữ liệu giáo trình tóm tắt và ràng buộc prompt của chatbot Thầy Nam AI.
+
+- [x] T020 [US8] Tạo cơ sở dữ liệu tri thức tĩnh public/curriculum_knowledge.json chứa tóm tắt lý thuyết 6 chương và bộ 18 câu hỏi trắc nghiệm
+- [x] T021 [US8] Triển khai tải và lưu trữ dữ liệu curriculum_knowledge.json vào React state trong tệp src/App.tsx
+- [x] T022 [US8] Cấu hình prompt học thuật cho Thầy Nam AI sử dụng dữ liệu giáo trình tóm tắt và cơ chế cảnh báo ngoài giáo trình trong tệp src/App.tsx
+
+---
+
+## Giai đoạn 11: User Story 9 - Giao Diện Tự Học & Trắc Nghiệm (US9)
+
+**Mục tiêu**: Thiết kế màn hình Tự Học, đọc lý thuyết 6 chương và làm bài trắc nghiệm.
+
+- [x] T023 [US9] Thiết lập tab "Tự Học & Trắc Nghiệm" trong Sidebar điều hướng và thanh Top Navigation của tệp src/App.tsx
+- [x] T024 [US9] Xây dựng giao diện xem tóm tắt lý thuyết theo từng chương trong tệp src/App.tsx
+- [x] T025 [US9] Xây dựng giao diện làm bài trắc nghiệm trắc nghiệm chọn đáp án, kiểm tra kết quả, hiển thị điểm số và lời giải thích trong tệp src/App.tsx
+- [x] T026 [US9] Tích hợp nút "Hỏi Thầy Nam AI câu này" chuyển tiếp câu hỏi sang chatbox trong tệp src/App.tsx
+
+---
+
+## Giai đoạn 12: User Story 10 - Tải Giáo Trình Học Tập (US10)
+
+**Mục tiêu**: Tạo card tải giáo trình PDF chuẩn.
+
+- [x] T027 [US10] Thiết kế card Glassmorphism tải giáo trình liên kết trực tiếp với file public/GIÁO TRÌNH FULL.pdf trong tệp src/App.tsx
+
+---
+
 ## Giai đoạn cuối: Hoàn thiện (Polish)
 
 **Mục tiêu**: Tối ưu hóa UI/UX và kiểm thử hoàn chỉnh.
 
-- [x] T016 Chạy build ứng dụng `npm run build` để kiểm tra lỗi cú pháp và đóng gói
-- [x] T017 Điều chỉnh thiết kế responsive và hoàn thiện hiệu ứng chuyển trang trong tệp src/App.jsx
+- [x] T028 Chạy build ứng dụng `npm run build` để kiểm tra lỗi cú pháp và đóng gói
+- [x] T029 Điều chỉnh thiết kế responsive và hoàn thiện hiệu ứng chuyển trang trong tệp src/App.tsx
+- [x] T016 Chạy build ứng dụng `npm run build` cũ
+- [x] T017 Điều chỉnh thiết kế responsive cũ
+
