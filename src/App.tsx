@@ -2485,8 +2485,8 @@ export default function App() {
                     <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <h3 className="text-white font-bold text-sm tracking-wide">Thầy Nam AI Coach</h3>
-                    <span className="text-[10px] text-emerald-400 font-medium font-mono flex items-center gap-1.5">
+                    <h3 className="text-white font-bold text-[15px] md:text-base tracking-wide font-sans">Thầy Nam AI Coach</h3>
+                    <span className="text-[11px] md:text-xs text-emerald-400 font-medium font-sans flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sẵn sàng trợ giúp
                     </span>
                   </div>
@@ -2502,18 +2502,18 @@ export default function App() {
               </div>
 
               {/* Mode Toggle inside Floating Chat */}
-              <div className="px-4 py-2 border-b border-white/5 bg-white/[0.01] flex items-center justify-between gap-4">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-white/40 font-semibold">Chế độ hỏi đáp:</span>
+              <div className="px-5 py-3 border-b border-white/5 bg-white/[0.01] flex items-center justify-between gap-4">
+                <span className="text-[11px] uppercase font-sans tracking-wider text-white/40 font-bold">Chế độ hỏi đáp:</span>
                 <div className="flex bg-neutral-950/80 border border-white/10 rounded-lg p-0.5">
                   <button
                     onClick={() => setAiMode("practical")}
-                    className={`px-3 py-1 rounded-md text-[9px] font-bold tracking-wide transition-all cursor-pointer ${aiMode === "practical" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
+                    className={`px-4 py-1.5 rounded-md text-xs font-bold tracking-wide transition-all cursor-pointer ${aiMode === "practical" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
                   >
                     Góc Gỡ Rối
                   </button>
                   <button
                     onClick={() => setAiMode("academic")}
-                    className={`px-3 py-1 rounded-md text-[9px] font-bold tracking-wide transition-all cursor-pointer ${aiMode === "academic" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
+                    className={`px-4 py-1.5 rounded-md text-xs font-bold tracking-wide transition-all cursor-pointer ${aiMode === "academic" ? "bg-white text-black" : "text-white/50 hover:text-white"}`}
                   >
                     Ôn Tập
                   </button>
@@ -2521,17 +2521,17 @@ export default function App() {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 p-5 overflow-y-auto space-y-4 scrollbar-thin">
+              <div className="flex-1 p-6 overflow-y-auto space-y-5 scrollbar-thin">
                 {chatMessages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`flex gap-3 max-w-[92%] sm:max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
+                    className={`flex gap-3.5 max-w-[92%] sm:max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
                   >
-                    <div className={`rounded-xl flex-shrink-0 w-7 h-7 flex items-center justify-center border overflow-hidden ${msg.role === "user" ? "p-1.5 bg-white text-black border-white" : "p-0 bg-neutral-900 border-white/10"}`}>
-                      {msg.role === "user" ? <User className="w-3.5 h-3.5" /> : <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />}
+                    <div className={`rounded-xl flex-shrink-0 w-9 h-9 flex items-center justify-center border overflow-hidden ${msg.role === "user" ? "p-2 bg-white text-black border-white" : "p-0 bg-neutral-900 border-white/10"}`}>
+                      {msg.role === "user" ? <User className="w-5 h-5" /> : <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />}
                     </div>
 
-                    <div className={`p-3 rounded-2xl text-xs leading-relaxed border whitespace-pre-line overflow-wrap-anywhere ${msg.role === "user"
+                    <div className={`p-4 px-4.5 rounded-2xl text-sm md:text-[15px] leading-relaxed tracking-wide font-sans font-normal border whitespace-pre-line overflow-wrap-anywhere ${msg.role === "user"
                       ? "bg-white/5 border-white/10 text-white rounded-tr-none"
                       : "bg-neutral-900/50 border-white/5 text-white/80 rounded-tl-none"}`}
                     >
@@ -2542,17 +2542,17 @@ export default function App() {
 
                 {isAiLoading && (
                   <div className="flex flex-col gap-3 mr-auto items-start max-w-[85%] animate-fade-rise">
-                    <div className="flex gap-3 items-center">
-                      <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-7 h-7 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div className="flex gap-3.5 items-center">
+                      <div className="rounded-xl bg-neutral-900 border border-white/5 text-white w-9 h-9 flex items-center justify-center overflow-hidden flex-shrink-0">
                         <img src={chibiTeacher} alt="Thầy Nam" className="w-full h-full object-cover" />
                       </div>
-                      <div className="text-[10px] text-white/40 font-mono tracking-wider uppercase animate-pulse">
+                      <div className="text-xs text-white/40 font-sans tracking-wider uppercase animate-pulse">
                         Thầy Nam AI đang suy ngẫm...
                       </div>
                     </div>
                     
                     {/* Shifting loading bubbles */}
-                    <div className="pl-10 py-1">
+                    <div className="pl-12 py-1">
                       <div className="Strich-container scale-[0.6] origin-left">
                         <div className="bubble"></div>
                         <div className="bubble1"></div>
@@ -2565,7 +2565,7 @@ export default function App() {
               </div>
 
               {/* Chat Input */}
-              <div className="p-3 bg-neutral-950/80 border-t border-white/10 flex gap-2 items-center">
+              <div className="p-4 bg-neutral-950/80 border-t border-white/10 flex gap-2.5 items-center">
                 <input
                   type="text"
                   value={floatingAiGrievance}
@@ -2577,14 +2577,14 @@ export default function App() {
                     }
                   }}
                   placeholder={aiMode === "practical" ? "Bị sếp ép OT, quỵt lương... Hỏi thầy ngay!" : "Nhập câu hỏi trắc nghiệm hoặc lý thuyết..."}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-white/35 focus:outline-none focus:border-white focus:bg-white/10 h-10"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm md:text-[15px] text-white placeholder-white/35 focus:outline-none focus:border-white focus:bg-white/10 h-12 font-sans"
                 />
                 <button
                   disabled={isAiLoading || !floatingAiGrievance.trim()}
                   onClick={handleSendFloatingGrievance}
-                  className="p-2.5 rounded-xl bg-white hover:bg-stone-200 disabled:bg-neutral-800 disabled:text-neutral-500 text-black transition-all cursor-pointer flex items-center justify-center border-none"
+                  className="w-12 h-12 rounded-2xl bg-white hover:bg-stone-200 disabled:bg-neutral-800 disabled:text-neutral-500 text-black transition-all cursor-pointer flex items-center justify-center border-none flex-shrink-0"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
             </motion.div>
