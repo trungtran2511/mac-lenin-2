@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
-  Compass,
   ArrowRight,
   ArrowLeft,
   BookOpen,
@@ -44,7 +43,6 @@ import FeaturedVideoSection from "./components/FeaturedVideoSection";
 import FloatingParticles from "./components/FloatingParticles";
 import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
-import RainbowPreloader from "./components/RainbowPreloader";
 import ServicesSection from "./components/ServicesSection";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
@@ -402,9 +400,6 @@ export default function App() {
 
   // Sectors states
   const [selectedSectorId, setSelectedSectorId] = useState("state-economy");
-
-  // Hero search query state
-  const [searchQuery, setSearchQuery] = useState("");
 
   // Floating mascot chat overlay states
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false);
@@ -787,26 +782,6 @@ export default function App() {
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    }
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const query = searchQuery.toLowerCase().trim();
-    if (query.includes("lương") || query.includes("thặng dư") || query.includes("labor") || query.includes("salary") || query.includes("value")) {
-      scrollToSection("surplus-value");
-    } else if (query.includes("mác") || query.includes("ai") || query.includes("assistant") || query.includes("bot")) {
-      scrollToSection("marxist-ai");
-    } else if (query.includes("tự học") || query.includes("trắc nghiệm") || query.includes("giáo trình") || query.includes("study") || query.includes("quiz")) {
-      scrollToSection("self-study");
-    } else if (query.includes("thị trường") || query.includes("cung cầu") || query.includes("market") || query.includes("price")) {
-      scrollToSection("market-dynamics");
-    } else if (query.includes("sếp") || query.includes("đạo đức") || query.includes("boss") || query.includes("ethical")) {
-      scrollToSection("ethical-challenge");
-    } else if (query.includes("thành phần") || query.includes("gdp") || query.includes("kinh tế") || query.includes("sector")) {
-      scrollToSection("gdp-sectors");
-    } else {
-      scrollToSection("about-section");
     }
   };
 
