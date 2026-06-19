@@ -86,7 +86,7 @@ const JOB_PRESETS: JobPreset[] = [
     salary: 2500000,
     hoursPerDay: 4,
     workingDays: 12,
-    costOfLiving: 2000000,
+    costOfLiving: 5000000,
     region: "vung1",
     description: "Lương theo giờ của gia sư khá cao so với mặt bằng làm thêm của sinh viên. Tuy nhiên, bạn thường chịu chiết khấu 30-40% tháng lương đầu tiên cho trung tâm gia sư - một phần giá trị thặng dư bị chiếm đoạt trực tiếp bởi giới trung gian môi giới sức lao động."
   },
@@ -96,7 +96,7 @@ const JOB_PRESETS: JobPreset[] = [
     salary: 1800000,
     hoursPerDay: 4,
     workingDays: 26,
-    costOfLiving: 2200000,
+    costOfLiving: 5000000,
     region: "vung1",
     description: "Mức lương theo giờ rất thấp (15k-18k/h), không đủ trang trải chi phí sinh hoạt tối thiểu để tái tạo sức lao động khỏe mạnh. Quán thu lợi nhuận lớn từ các cốc nước bạn pha chế và bưng bê, nhưng tiền lương của bạn chỉ tương xứng với một phần rất nhỏ của lượng giá trị mới mà bạn tạo ra."
   },
@@ -106,7 +106,7 @@ const JOB_PRESETS: JobPreset[] = [
     salary: 4500000,
     hoursPerDay: 6,
     workingDays: 26,
-    costOfLiving: 4000000,
+    costOfLiving: 5000000,
     region: "vung1",
     description: "Bạn phải tự túc phương tiện làm việc (Tư bản bất biến - c) và chịu toàn bộ rủi ro hao mòn xe cộ, tai nạn đường phố. Ứng dụng công nghệ chiết khấu trực tiếp 20-30% doanh thu mỗi cuốc xe của bạn dưới dạng phí nền tảng."
   },
@@ -116,7 +116,7 @@ const JOB_PRESETS: JobPreset[] = [
     salary: 5000000,
     hoursPerDay: 6,
     workingDays: 20,
-    costOfLiving: 3500000,
+    costOfLiving: 5000000,
     region: "vung1",
     description: "Bạn tự đầu tư máy tính cấu hình cao (c) và chịu chi phí điện nước tại nhà. Sản phẩm phần mềm bạn viết ra mang lại giá trị sử dụng lớn cho khách hàng, nhưng qua tay các đầu mối thầu dự án trung gian, phần lớn giá trị thặng dư đã bị cắt xén."
   }
@@ -532,6 +532,16 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                   onChange={e => setCostInput(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
                 />
+                {region === "vung1" && costOfLiving < 4500000 && costOfLiving > 0 && (
+                  <p className="text-[10px] text-amber-400 font-sans mt-1 leading-normal">
+                    ⚠️ Thực tế tại Hà Nội/TP.HCM trọ + ăn tối thiểu cần 4.5M - 6M đ. Mức bạn nhập có vẻ hơi thấp!
+                  </p>
+                )}
+                {region === "vung2" && costOfLiving < 3200000 && costOfLiving > 0 && (
+                  <p className="text-[10px] text-amber-400 font-sans mt-1 leading-normal">
+                    ⚠️ Tại Vùng II đô thị, chi phí sống tối thiểu thường cần khoảng 3.2M - 4.5M đ.
+                  </p>
+                )}
               </div>
             </div>
 
