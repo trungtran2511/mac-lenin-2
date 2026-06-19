@@ -779,7 +779,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
           </AnimatePresence>
 
           {/* AI Analysis Result Board */}
-          {aiResult && (
+          {aiResult ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -823,6 +823,49 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                 </div>
               )}
             </motion.div>
+          ) : (
+            <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-4 shadow-xl bg-white/[0.02]">
+              <div className="border-b border-white/5 pb-3">
+                <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
+                  Trợ lý phân tích kinh tế
+                </span>
+                <h4 className="text-base font-extrabold text-white mt-0.5 flex items-center gap-2">
+                  <Sparkles className="w-4.5 h-4.5 text-emerald-400" /> Phân Tích Lý Luận Thặng Dư AI
+                </h4>
+              </div>
+              <p className="text-sm text-white/80 leading-relaxed font-sans font-medium">
+                Chào đồng chí! Công cụ này sử dụng mô hình trí tuệ nhân tạo **Gemini** để bóc tách và phân tích công việc làm thêm của bạn dưới lăng kính khoa học của **Kinh tế chính trị Mác - Lênin**:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-2">
+                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
+                  <strong className="text-xs text-emerald-300 font-bold block font-sans">🔍 Nhận diện & Đối chiếu ngành</strong>
+                  <p className="text-[11px] text-white/60 leading-normal">
+                    Tự động dịch các công việc làm thêm bình dân sang nhóm ngành chuẩn và so sánh với mức lương tối thiểu vùng quy định pháp luật.
+                  </p>
+                </div>
+                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
+                  <strong className="text-xs text-amber-300 font-bold block font-sans">⚖️ Tỷ suất thặng dư thực tế</strong>
+                  <p className="text-[11px] text-white/60 leading-normal">
+                    Phơi bày xem sếp đang "bào" bạn bao nhiêu phần trăm sức lực dưới dạng thời gian lao động thặng dư không công.
+                  </p>
+                </div>
+                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
+                  <strong className="text-xs text-red-300 font-bold block font-sans">💸 Cú lừa từ trợ cấp gia đình</strong>
+                  <p className="text-[11px] text-white/60 leading-normal">
+                    Nhận biết xem bố mẹ có đang phải "bơm máu" trả nốt phần chi phí sống thiếu hụt thay cho ông chủ tư bản hay không.
+                  </p>
+                </div>
+                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
+                  <strong className="text-xs text-purple-300 font-bold block font-sans">💡 Lời khuyên deal lương Gen Z</strong>
+                  <p className="text-[11px] text-white/60 leading-normal">
+                    Gợi ý giải pháp đàm phán nâng cao vị thế và deal mức lương xứng đáng, tránh bị bóc lột sập nguồn.
+                  </p>
+                </div>
+              </div>
+              <div className="text-[11px] text-emerald-300/80 font-sans italic text-center pt-2">
+                👉 Điền thông tin bên trái và nhấn nút "Phân tích công việc bằng AI" để bắt đầu!
+              </div>
+            </div>
           )}
 
           {/* Calculations Detail Box */}
