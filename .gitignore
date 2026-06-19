@@ -29,4 +29,7 @@ dist-ssr
 .beads-credential-key
 
 # Local configuration overrides
+.env
+.env.*
+!.env.example
 opencode.json

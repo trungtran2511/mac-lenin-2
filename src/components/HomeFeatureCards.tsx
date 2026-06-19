@@ -9,8 +9,8 @@ const featureCards = [
   {
     target: "surplus-value",
     eyebrow: "Lao động sinh viên",
-    title: "Tính Lương & Thặng Dư Làm Thêm",
-    description: "Khám phá bản chất lương làm thêm (Gia sư, Cafe, Shipper), phân tích giờ lao động tất yếu và giá trị thặng dư bị chiếm đoạt.",
+    title: "Hiểu Lương & Thặng Dư Làm Thêm",
+    description: "Mô phỏng một ca làm thêm để thấy lương có đủ sống không, phần nào trả cho bạn và phần nào tạo giá trị thêm cho chủ.",
     icon: Briefcase,
     visualClass: "feature-visual-labor",
   },
@@ -18,7 +18,7 @@ const featureCards = [
     target: "marxist-ai",
     eyebrow: "Trợ lý học tập",
     title: "Thầy Nam AI: Ôn Thi & Gỡ Rối",
-    description: "Hai chế độ: Giải đáp trắc nghiệm ôn tập triết học chuẩn giáo trình và gỡ rối nỗi uất ức đi làm bằng slang Gen Z.",
+    description: "Hai chế độ: Giải đáp trắc nghiệm Kinh tế chính trị Mác - Lênin chuẩn giáo trình và gỡ rối nỗi uất ức đi làm bằng slang Gen Z.",
     icon: Bot,
     visualClass: "feature-visual-ai",
   },
@@ -63,7 +63,7 @@ export default function HomeFeatureCards({ onNavigate }: HomeFeatureCardsProps) 
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 border-b border-white/10 pb-6">
           <div>
             <span className="text-white/40 text-xs tracking-widest uppercase block mb-2 font-mono">
-              Kinh te hoc Mac - Lenin
+              Kinh te chinh tri Mac - Lenin
             </span>
             <h2 className="text-4xl md:text-6xl text-white tracking-normal" style={{ fontFamily: "'Instrument Serif', serif" }}>
               Tru Cot Ly Luan Cot Loi

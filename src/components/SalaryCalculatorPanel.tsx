@@ -130,6 +130,12 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const [costInput, setCostInput] = useState("");
   const [daysInput, setDaysInput] = useState("26");
   const [region, setRegion] = useState<"vung1" | "vung2" | "vung3" | "vung4">("vung1");
+  const [dynamicMinWage, setDynamicMinWage] = useState<number>(22500);
+  const [locationInput, setLocationInput] = useState("Hà Nội");
+  const [isLoadingRegionData, setIsLoadingRegionData] = useState(false);
+  const [regionBriefExplanation, setRegionBriefExplanation] = useState(
+    "Chi phí sinh hoạt tối thiểu tại Hà Nội/TP.HCM khoảng 5M VND/tháng bao gồm thuê trọ cơ bản (2M - 2.5M), ăn uống (2M) và đi lại."
+  );
 
   // Output states
   const [workMonths, setWorkMonths] = useState(1);
@@ -146,6 +152,135 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     applyPreset(JOB_PRESETS[1]);
   }, []);
 
+  const fetchRegionEconomyData = async (targetLocation?: string) => {
+    const loc = (targetLocation || locationInput).trim();
+    if (!loc) return;
+
+    setIsLoadingRegionData(true);
+    setAiError(null);
+
+    const apiKey = (import.meta.env.VITE_GEMINI_API_KEY || "").trim();
+    const requestedModel = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+    const configuredApiUrl = (import.meta.env.VITE_GEMINI_API_URL || "").trim();
+
+    const isLikelyGoogleApiKey = apiKey.startsWith("AIza");
+    const isLikelyGoogleAuthKey = apiKey.startsWith("AQ.");
+    const isLikelyGoogleAiStudioKey = isLikelyGoogleApiKey || isLikelyGoogleAuthKey;
+
+    const isRuntimeLocalHost = (() => {
+      if (typeof window === "undefined") return false;
+      return ["localhost", "127.0.0.1", "::1", "0.0.0.0"].includes(window.location.hostname);
+    })();
+
+    const localDefaultApiUrl = isLikelyGoogleAiStudioKey
+      ? `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent`
+      : "/api/chat";
+
+    const apiUrl = configuredApiUrl ? configuredApiUrl : (isRuntimeLocalHost ? localDefaultApiUrl : "/api/chat");
+    const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
+
+    const systemPrompt = `Bạn là một chuyên gia thống kê kinh tế Việt Nam.
+Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không có markdown code block \`\`\`json ... \`\`\`, chỉ có chuỗi JSON thuần túy để parse được) chứa các trường sau:
+{
+  "average_living_cost_vnd": số_tiền_vnd_chi_phí_sinh_hoạt_tối_thiểu_một_tháng_cho_lao_động_trẻ_đơn_thân (ví dụ: 5000000),
+  "legal_min_wage_hourly_vnd": số_tiền_lương_tối_thiểu_vùng_theo_giờ (ví dụ: 22500),
+  "brief_explanation": "Giải thích ngắn gọn (dưới 100 chữ) bằng tiếng Việt về chi tiết các khoản chi phí tối thiểu gồm thuê nhà trọ, ăn uống tại địa phương này."
+}`;
+
+    const userPrompt = `Hãy tra cứu mức sống trung bình tối thiểu và lương tối thiểu vùng theo giờ mới nhất tại địa điểm sau ở Việt Nam: "${loc}"`;
+
+    try {
+      if (isGoogleDirect && !isLikelyGoogleAiStudioKey) {
+        throw new Error("Không có Gemini API key hợp lệ.");
+      }
+
+      let response;
+      if (isGoogleDirect) {
+        response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: userPrompt }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+          })
+        });
+      } else {
+        response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {})
+          },
+          body: JSON.stringify({
+            model: requestedModel,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ]
+          })
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`API response error: ${response.status}`);
+      }
+
+      const resData = await response.json();
+      let aiText = "";
+      if (isGoogleDirect) {
+        aiText = resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      } else {
+        aiText = resData.choices?.[0]?.message?.content || resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      }
+
+      let cleanText = aiText.trim();
+      if (cleanText.startsWith("```json")) {
+        cleanText = cleanText.substring(7);
+      }
+      if (cleanText.endsWith("```")) {
+        cleanText = cleanText.substring(0, cleanText.length - 3);
+      }
+      cleanText = cleanText.trim();
+
+      const parsed = JSON.parse(cleanText);
+      if (parsed && typeof parsed.average_living_cost_vnd === "number") {
+        setCostInput(parsed.average_living_cost_vnd.toString());
+        setRegionBriefExplanation(parsed.brief_explanation || "");
+        if (parsed.legal_min_wage_hourly_vnd) {
+          setDynamicMinWage(parsed.legal_min_wage_hourly_vnd);
+        }
+      } else {
+        throw new Error("Dữ liệu tra cứu vùng không đúng cấu trúc.");
+      }
+    } catch (err) {
+      console.warn("AI Region lookup failed, using local region configs:", err);
+      const inferredRegion = targetLocation ? (
+        loc.includes("Hà Nội") || loc.includes("TP.HCM") ? "vung1" : 
+        loc.includes("Đà Nẵng") ? "vung2" : "vung3"
+      ) : region;
+      const config = REGION_CONFIGS[inferredRegion];
+      setCostInput(config.defaultCostOfLiving.toString());
+      setDynamicMinWage(config.minWageHourly);
+      setRegionBriefExplanation(`*Lỗi tra AI. Tự động áp dụng đề xuất Vùng: ${config.name}`);
+    } finally {
+      setIsLoadingRegionData(false);
+    }
+  };
+
+  const handleRegionChange = async (newReg: "vung1" | "vung2" | "vung3" | "vung4") => {
+    setRegion(newReg);
+    let defaultLoc = "Hà Nội";
+    if (newReg === "vung2") defaultLoc = "Đà Nẵng";
+    else if (newReg === "vung3") defaultLoc = "Thành phố Bắc Giang";
+    else if (newReg === "vung4") defaultLoc = "Nông thôn Hà Tĩnh";
+    
+    setLocationInput(defaultLoc);
+    await fetchRegionEconomyData(defaultLoc);
+  };
+
   const applyPreset = (preset: JobPreset) => {
     setJobTitle(preset.title);
     setSalaryInput(preset.salary.toString());
@@ -153,6 +288,15 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     setCostInput(preset.costOfLiving.toString());
     setDaysInput(preset.workingDays.toString());
     setRegion(preset.region);
+
+    let defaultLoc = "Hà Nội";
+    if (preset.region === "vung2") defaultLoc = "Đà Nẵng";
+    else if (preset.region === "vung3") defaultLoc = "Thành phố Bắc Giang";
+    else if (preset.region === "vung4") defaultLoc = "Nông thôn Hà Tĩnh";
+    setLocationInput(defaultLoc);
+    setDynamicMinWage(REGION_CONFIGS[preset.region].minWageHourly);
+    setRegionBriefExplanation("Sử dụng thông số mẫu của công việc.");
+
     setAiResult(null);
     setAiError(null);
     setUsedFallback(false);
@@ -305,7 +449,6 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     const apiUrl = configuredApiUrl ? configuredApiUrl : (isRuntimeLocalHost ? localDefaultApiUrl : "/api/chat");
     const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
 
-    const activeRegionConfig = REGION_CONFIGS[region];
     const systemPrompt = `Bạn là một trợ lý AI thông thái chuyên phân tích kinh tế chính trị Mác - Lênin dưới góc nhìn của một Gen Z chính hiệu tại Việt Nam (hài hước, dí dỏm, dùng nhiều tiếng lóng Gen Z nhưng vẫn rất sâu sắc và lý luận chuẩn chỉ).
 Nhiệm vụ của bạn là nhận diện công việc và đánh giá mức lương của người dùng dựa trên thực trạng kinh tế từng vùng của Việt Nam (Vùng I: 22.500 đ/giờ, Vùng II: 20.000 đ/giờ, Vùng III: 17.500 đ/giờ, Vùng IV: 15.600 đ/giờ; mức sinh hoạt phí thực tế đô thị lớn Vùng I khoảng 4.5 - 6 triệu VND/tháng, còn các vùng khác thấp hơn khoảng 2 - 4 triệu VND/tháng).
 Nếu tên công việc người dùng nhập mang tính chất bình dân (ví dụ: "chạy grab", "bưng phở", "phục vụ"), hãy dịch/phân loại sang nhóm ngành chính thức tương ứng (ví dụ: "chạy grab" -> "Xe ôm công nghệ / Vận tải", "bưng phở" -> "Lao động dịch vụ ăn uống").
@@ -315,14 +458,14 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   "job_category": "Tên nhóm ngành chính thức sau dịch/chuẩn hóa (ví dụ: Xe ôm công nghệ / Vận tải, Lao động dịch vụ ăn uống, Công nghệ thông tin...)",
   "suggested_hourly_range": [min_hourly_vnd, max_hourly_vnd],
   "is_exploited_text": "Đánh giá độ bóc lột bằng từ ngữ Gen Z cực độc lạ (ví dụ: 'Bóc lột sập nguồn', 'Tư bản bào mòn', 'Tạm ổn áp', 'Flex lương đỉnh chóp')",
-  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của vùng làm việc đã chọn (${activeRegionConfig.name}) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
+  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của khu vực làm việc đã chọn (${locationInput} với lương tối thiểu vùng là ${dynamicMinWage.toLocaleString()} đ/h) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
   "advice": "Lời khuyên 'xịn sò' giúp nâng cấp bản thân, deal lương hoặc bảo vệ quyền lợi trước tư bản bào."
 }`;
 
     const userPrompt = `Hãy phân tích công việc sau:
 - Tên công việc: "${jobTitle}"
-- Khu vực làm việc: ${activeRegionConfig.name}
-- Lương tối thiểu vùng theo giờ (theo luật): ${activeRegionConfig.minWageHourly.toLocaleString()} VND/giờ
+- Khu vực làm việc: ${locationInput}
+- Lương tối thiểu vùng theo giờ (theo luật): ${dynamicMinWage.toLocaleString()} VND/giờ
 - Lương tháng: ${monthlySalary.toLocaleString()} VND
 - Số ngày làm việc mỗi tháng: ${workingDays} ngày
 - Số giờ làm việc mỗi ngày: ${hoursPerDay} giờ
@@ -403,8 +546,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   };
 
   // Determine warning levels
-  const activeRegionConfig = REGION_CONFIGS[region];
-  const isWageRidiculous = actualHourlyWage < activeRegionConfig.minWageHourly || (monthlySalary > 0 && monthlySalary < costOfLiving);
+  const isWageRidiculous = actualHourlyWage < dynamicMinWage || (monthlySalary > 0 && monthlySalary < costOfLiving);
   const isWageUnderSuggested = aiResult && actualHourlyWage < aiResult.suggested_hourly_range[0];
 
   const chartData = [
@@ -498,8 +640,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                 value={region}
                 onChange={e => {
                   const newReg = e.target.value as "vung1" | "vung2" | "vung3" | "vung4";
-                  setRegion(newReg);
-                  setCostInput(REGION_CONFIGS[newReg].defaultCostOfLiving.toString());
+                  handleRegionChange(newReg);
                 }}
                 className="w-full bg-[#051c2c] border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all cursor-pointer font-sans"
               >
@@ -509,6 +650,32 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-white/80 uppercase tracking-wide font-sans">Địa điểm làm việc cụ thể</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Ví dụ: Hà Nội, Đà Nẵng, Quảng Nam..."
+                  value={locationInput}
+                  onChange={e => setLocationInput(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => fetchRegionEconomyData()}
+                  disabled={isLoadingRegionData || !locationInput.trim()}
+                  className="px-4 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-neutral-800 text-black font-bold text-sm transition-all whitespace-nowrap cursor-pointer"
+                >
+                  {isLoadingRegionData ? "Đang tra..." : "Tra AI 🔍"}
+                </button>
+              </div>
+              {regionBriefExplanation && (
+                <p className="text-[11px] text-emerald-300 font-sans mt-1 leading-normal italic">
+                  Gợi ý thực tế: {regionBriefExplanation}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -636,7 +803,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     Ét ô ét: Bạn đang bị bóc lột sập nguồn!
                   </strong>
                   <p className="text-sm mt-2 text-red-100/95 leading-relaxed font-sans font-medium">
-                    Lương giờ thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực ${activeRegionConfig.name} là ${activeRegionConfig.minWageHourly.toLocaleString()} đ/h) hoặc
+                    Lương giờ thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực {locationInput} là {dynamicMinWage.toLocaleString()} đ/h) hoặc
                     tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sinh hoạt tối
                     thiểu tại đây ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
                     lao động dưới giá trị thực tế của nó. Sếp đang bào cạn kiệt cả sức lực lẫn tinh thần
