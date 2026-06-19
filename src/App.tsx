@@ -6,15 +6,11 @@ import {
   BookOpen,
   ShieldAlert,
   Award,
-  ArrowUpRight,
   User,
   Bot,
   Send,
   CheckCircle2,
   AlertTriangle,
-  Coffee,
-  Film,
-  Headphones,
   Menu,
   X,
   HelpCircle,
@@ -44,6 +40,7 @@ import FloatingParticles from "./components/FloatingParticles";
 import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
+import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
 
@@ -374,10 +371,7 @@ export default function App() {
   const [showQuizSummary, setShowQuizSummary] = useState(false);
   const [selectedChapterDetails, setSelectedChapterDetails] = useState<number>(1);
 
-  // Job offer page states
-  const [selectedJobId, setSelectedJobId] = useState("student-tutor");
-  const [workMonths, setWorkMonths] = useState(1);
-  const [isAiApplied, setIsAiApplied] = useState(false);
+  // Job offer page states (handled in child component)
 
   // AI Coach states
   const [aiMode, setAiMode] = useState<'academic' | 'practical'>('practical');
@@ -526,25 +520,7 @@ export default function App() {
       });
   }, []);
 
-  // Job calculations
-  const currentJob = economyData.job_offers.find(j => j.id === selectedJobId) || economyData.job_offers[0];
-
-  const necessaryHours = isAiApplied
-    ? currentJob.necessary_hours * (1 - economyData.tech_scenarios[0].labor_reduction_pct / 100)
-    : currentJob.necessary_hours;
-  const surplusHours = isAiApplied
-    ? (currentJob.hours_per_day) - necessaryHours
-    : currentJob.surplus_hours;
-
-  const surplusRatio = (surplusHours / necessaryHours) * 100;
-  const monthlySurplusValue = currentJob.salary * (surplusHours / necessaryHours);
-  const accumulatedSurplus = Math.round(monthlySurplusValue * workMonths);
-
-  const itemsEquivalent = {
-    milktea: Math.round(accumulatedSurplus / 50000),
-    movie: Math.round(accumulatedSurplus / 100000),
-    headphone: Math.round(accumulatedSurplus / 500000)
-  };
+  // Job calculations (handled in child component)
 
   const handleDilemmaChoice = (choice: Choice, index: number) => {
     setSelectedChoiceIndex(index);
@@ -1201,261 +1177,13 @@ export default function App() {
               </button>
             </div>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
-            <div>
-              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Công cụ thực nghiệm</span>
-              <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                <Briefcase className="text-white w-8 h-8" /> Sự Thật Về Tiền Lương & Thặng Dư
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn vị trí:</label>
-              <select
-                value={selectedJobId}
-                onChange={e => setSelectedJobId(e.target.value)}
-                className="liquid-glass rounded-xl text-xs md:text-sm font-medium py-2.5 px-4 pr-10 border border-white/10 text-white outline-none appearance-none"
-              >
-                {economyData.job_offers.map(job => (
-                  <option key={job.id} value={job.id} className="bg-background text-white">{job.title}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* 💡 Layperson Simple Explanation Box */}
-          <div className="liquid-glass border border-amber-500/20 bg-amber-500/5 text-amber-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-            <span className="text-xl">💡</span>
-            <div>
-              <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
-              <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Sếp trả lương cho bạn dựa trên chi phí sinh hoạt tối thiểu để bạn có thể đi làm hằng ngày (giá trị sức lao động). Nhưng trong ngày làm việc 8 tiếng, bạn chỉ mất một phần thời gian (ví dụ 6 tiếng) để làm ra giá trị bằng lương của mình. Thời gian còn lại (2 tiếng) là thời gian bạn làm không công tạo ra <strong>giá trị thặng dư</strong> để sếp bỏ túi.
-              </p>
-            </div>
-          </div>
-
-          {/* Alert if below cost of living */}
-          {currentJob.salary < currentJob.cost_of_living && (
-            <div className="liquid-glass border border-red-500/20 bg-red-950/10 text-red-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-              <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
-              <div>
-                <strong className="font-semibold text-sm block">Cảnh báo: Bán sức lao động dưới giá trị!</strong>
-                <p className="text-xs mt-1 text-red-300/80 leading-relaxed">
-                  Mức lương tháng này ({currentJob.salary.toLocaleString()} VND) không đủ bù đắp chi phí sinh hoạt tối thiểu cần có ({currentJob.cost_of_living.toLocaleString()} VND) để tái tạo đầy đủ hao phí lao động. Bạn đang bị khai thác ở mức đáng báo động!
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* Input & Config Column */}
-            <div className="liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between gap-6">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-white text-base">Cấu hình thời gian làm việc</h3>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-white/60 uppercase tracking-wide font-mono">
-                    <span>Nhập số tháng cống hiến:</span>
-                    <span className="text-white font-bold">{workMonths} tháng</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="36"
-                    value={workMonths}
-                    onChange={e => setWorkMonths(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
-                  />
-                </div>
-              </div>
-
-              {/* AI Relative Surplus Value toggle */}
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col gap-3">
-                <div className="flex items-start gap-2.5">
-                  <div className="p-2 bg-white/10 rounded-lg text-white"><ArrowUpRight className="w-5 h-5" /></div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Cách mạng công nghệ & Giá trị thặng dư tương đối</h4>
-                    <p className="text-[10px] text-white/50 mt-0.5">Năng suất lao động cá biệt tăng làm rút ngắn ngày lao động tất yếu.</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsAiApplied(!isAiApplied)}
-                  className={`w-full py-2.5 rounded-full font-bold text-xs transition-all cursor-pointer border ${isAiApplied
-                    ? "bg-white text-black border-white"
-                    : "bg-transparent text-white border-white/20 hover:bg-white/5"
-                    }`}
-                >
-                  {isAiApplied ? "Hủy áp dụng AI" : "Thử áp dụng AI (Relative Surplus)"}
-                </button>
-              </div>
-            </div>
-
-            {/* Calculations Visual Card */}
-            <div className="lg:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-8 flex flex-col justify-between">
-
-              <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/5 pb-4">
-                  <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Phân tách ngày làm việc tiêu chuẩn {currentJob.hours_per_day} giờ</h3>
-                  <div className="flex items-center gap-4 text-[10px] uppercase font-mono tracking-wider text-white/50">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-white rounded-full"></span> Tất yếu (v)</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-neutral-600 rounded-full"></span> Thặng dư (m)</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="w-full h-8 bg-neutral-950 rounded-full overflow-hidden flex p-1 border border-white/5">
-                    <div
-                      style={{ width: `${(necessaryHours / currentJob.hours_per_day) * 100}%` }}
-                      className="bg-white h-full rounded-full flex items-center justify-center text-[10px] font-bold text-black transition-all duration-300"
-                    >
-                      {necessaryHours.toFixed(1)} giờ
-                    </div>
-                    <div
-                      style={{ width: `${(surplusHours / currentJob.hours_per_day) * 100}%` }}
-                      className="bg-neutral-600 h-full rounded-full flex items-center justify-center text-[10px] font-bold text-white transition-all duration-300 ml-1"
-                    >
-                      {surplusHours.toFixed(1)} giờ
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest font-mono">
-                    <span>Bắt đầu ca làm</span>
-                    <span className="text-white font-semibold">
-                      Đạt đủ giá trị sức lao động tại {necessaryHours.toFixed(1)}h
-                    </span>
-                    <span>Kết thúc ca</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Detailed Academic Definitions Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/5 pt-6">
-                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tư bản khả biến (v)</div>
-                  <div className="text-xs font-semibold text-white mt-1">{(currentJob.salary).toLocaleString()} đ</div>
-                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Tiền công/lương hàng tháng của bạn</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tư bản bất biến (c)</div>
-                  <div className="text-xs font-semibold text-white mt-1">
-                    {selectedJobId === "delivery-rider" ? "Xe máy, xăng xe" : selectedJobId === "freelance-coder" ? "Laptop, điện nước" : "Chủ quán trang bị"}
-                  </div>
-                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Công cụ tư liệu lao động tự túc</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Tất yếu (t)</div>
-                  <div className="text-xs font-semibold text-white mt-1">{necessaryHours.toFixed(1)} giờ</div>
-                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Thời gian làm bù đắp sức lao động</div>
-                </div>
-                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">Thặng dư (t')</div>
-                  <div className="text-xs font-semibold text-white mt-1">{surplusHours.toFixed(1)} giờ</div>
-                  <div className="text-[9px] text-white/30 mt-0.5 leading-tight">Thời gian làm lợi không công cho sếp</div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/5 pt-6">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">Tỷ suất giá trị thặng dư (m')</span>
-                  <div className="text-3xl font-serif text-white">{surplusRatio.toFixed(1)}%</div>
-                  <p className="text-xs text-white/50 leading-relaxed mt-1">
-                    Trình độ bóc lột sức lao động của giới chủ là {surplusRatio.toFixed(0)}%. Bạn đang làm lợi thêm {surplusRatio.toFixed(0)}% giá trị bên ngoài tiền lương.
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">Mác luận giải thực tế</span>
-                  <p className="text-xs text-white/50 leading-relaxed mt-1">{currentJob.description}</p>
-                </div>
-              </div>
-
-            </div>
+            <SalaryCalculatorPanel onAskTeacher={() => scrollToSection("marxist-ai")} />
 
           </div>
-
-          {/* Equivalent items display */}
-          <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6">
-            <div>
-              <span className="text-white/40 text-[10px] tracking-widest uppercase font-mono block mb-1">Mảng quy đổi</span>
-              <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                <Coffee className="w-5 h-5 text-white" /> Quy Đổi Thặng Dư Đời Sống
-              </h3>
-              <div className="flex flex-col md:flex-row items-baseline gap-2 mt-4 bg-white/5 p-4 rounded-xl border border-white/5">
-                <span className="text-xs text-white/50 uppercase font-semibold">Tổng giá trị thặng dư tích luỹ từ bạn:</span>
-                <span className="text-3xl font-serif text-white">{accumulatedSurplus.toLocaleString()} VND</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-
-              <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-white/5 text-white rounded-xl"><Coffee className="w-5 h-5" /></div>
-                  <div>
-                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-mono">Trà sữa trân châu</div>
-                    <div className="text-lg font-bold text-white">{itemsEquivalent.milktea} ly</div>
-                  </div>
-                </div>
-                <p className="text-xs text-white/40 leading-relaxed italic">
-                  Chủ lao động được hưởng thêm {itemsEquivalent.milktea} ly trà sữa từ thời gian làm việc chưa trả công của bạn.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-white/5 text-white rounded-xl"><Film className="w-5 h-5" /></div>
-                  <div>
-                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-mono">Vé xem phim IMAX</div>
-                    <div className="text-lg font-bold text-white">{itemsEquivalent.movie} vé</div>
-                  </div>
-                </div>
-                <p className="text-xs text-white/40 leading-relaxed italic">
-                  Cống hiến {itemsEquivalent.movie} chiếc vé IMAX để giới chủ sở hữu hưởng thụ nghỉ ngơi.
-                </p>
-              </div>
-
-              <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-white/5 text-white rounded-xl"><Headphones className="w-5 h-5" /></div>
-                  <div>
-                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-mono">Tai nghe Bluetooth</div>
-                    <div className="text-lg font-bold text-white">{itemsEquivalent.headphone} chiếc</div>
-                  </div>
-                </div>
-                <p className="text-xs text-white/40 leading-relaxed italic">
-                  Chuyển hóa thặng dư tương đương tích lũy thành {itemsEquivalent.headphone} chiếc tai nghe.
-                </p>
-              </div>
-
-            </div>
-
-            {/* Positive Bulletin: Knowledge is Power */}
-            <div className="border-t border-white/5 pt-6 mt-4">
-              <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Bản tin tích cực: Sức mạnh tri thức lao động
-                  </span>
-                  <h4 className="text-white font-bold text-sm">Nâng cao Giá Trị Sức Lao Động của Bản Thân!</h4>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    Theo lý thuyết của Các Mác, tiền lương đại diện cho giá trị sức lao động để duy trì cuộc sống. Để giảm bớt sự bóc lột thặng dư và nâng tầm vị thế bản thân, con đường bền vững nhất là <strong>tập trung học tập tích lũy tri thức chuyên môn sâu sắc</strong>. Khi chất lượng sức lao động của bạn tăng lên (CHẤT), giá trị trao đổi của nó trên thị trường lao động sẽ tăng vọt, biến bạn thành lực lượng lao động chất lượng cao tự chủ!
-                  </p>
-                </div>
-                <button
-                  onClick={() => scrollToSection("marxist-ai")}
-                  className="px-5 py-3 rounded-xl bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 whitespace-nowrap cursor-pointer flex items-center gap-2"
-                >
-                  Tham khảo Thầy Nam AI <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+        </section>
       )}
 
-      {/* 6.5. SELF-STUDY & PRACTICE SECTION */}
+            {/* 6.5. SELF-STUDY & PRACTICE SECTION */}
       {activeView === "self-study" && (
         <section id="self-study" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
