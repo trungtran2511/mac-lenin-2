@@ -136,6 +136,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const [regionBriefExplanation, setRegionBriefExplanation] = useState(
     "Chi phí sinh hoạt tối thiểu tại Hà Nội/TP.HCM khoảng 5M VND/tháng bao gồm thuê trọ cơ bản (2M - 2.5M), ăn uống (2M) và đi lại."
   );
+  const [familySupportInput, setFamilySupportInput] = useState("");
 
   // Output states
   const [workMonths, setWorkMonths] = useState(1);
@@ -296,6 +297,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
     setLocationInput(defaultLoc);
     setDynamicMinWage(REGION_CONFIGS[preset.region].minWageHourly);
     setRegionBriefExplanation("Sử dụng thông số mẫu của công việc.");
+    setFamilySupportInput("");
 
     setAiResult(null);
     setAiError(null);
@@ -307,6 +309,8 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   const hoursPerDay = parseFloat(hoursInput) || 0;
   const costOfLiving = parseFloat(costInput) || 0;
   const workingDays = parseFloat(daysInput) || 0;
+  const familySupport = parseFloat(familySupportInput) || 0;
+  const totalIncome = monthlySalary + familySupport;
 
   // Basic wage calculations
   const totalHoursMonth = workingDays * hoursPerDay;
@@ -458,7 +462,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   "job_category": "Tên nhóm ngành chính thức sau dịch/chuẩn hóa (ví dụ: Xe ôm công nghệ / Vận tải, Lao động dịch vụ ăn uống, Công nghệ thông tin...)",
   "suggested_hourly_range": [min_hourly_vnd, max_hourly_vnd],
   "is_exploited_text": "Đánh giá độ bóc lột bằng từ ngữ Gen Z cực độc lạ (ví dụ: 'Bóc lột sập nguồn', 'Tư bản bào mòn', 'Tạm ổn áp', 'Flex lương đỉnh chóp')",
-  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của khu vực làm việc đã chọn (${locationInput} với lương tối thiểu vùng là ${dynamicMinWage.toLocaleString()} đ/h) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
+  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của khu vực làm việc đã chọn (${locationInput} với lương tối thiểu vùng là ${dynamicMinWage.toLocaleString()} đ/h) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - đặc biệt nếu người dùng nhận thêm tiền trợ cấp của gia đình để bù đắp chi phí sống, hãy phân tích dí dỏm rằng gia đình họ đang gián tiếp 'tài trợ' cho nhà tư bản để họ có thể trả lương rẻ mạt cho bạn mà bạn vẫn không bị 'sập nguồn'; giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
   "advice": "Lời khuyên 'xịn sò' giúp nâng cấp bản thân, deal lương hoặc bảo vệ quyền lợi trước tư bản bào."
 }`;
 
@@ -466,7 +470,8 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
 - Tên công việc: "${jobTitle}"
 - Khu vực làm việc: ${locationInput}
 - Lương tối thiểu vùng theo giờ (theo luật): ${dynamicMinWage.toLocaleString()} VND/giờ
-- Lương tháng: ${monthlySalary.toLocaleString()} VND
+- Lương tháng từ việc làm: ${monthlySalary.toLocaleString()} VND
+- Tiền trợ cấp từ gia đình/bố mẹ mỗi tháng: ${familySupport.toLocaleString()} VND
 - Số ngày làm việc mỗi tháng: ${workingDays} ngày
 - Số giờ làm việc mỗi ngày: ${hoursPerDay} giờ
 - Chi phí sinh hoạt tối thiểu mỗi tháng của người dùng tại vùng này: ${costOfLiving.toLocaleString()} VND
@@ -546,7 +551,9 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   };
 
   // Determine warning levels
-  const isWageRidiculous = actualHourlyWage < dynamicMinWage || (monthlySalary > 0 && monthlySalary < costOfLiving);
+  const isWageUnderMinWage = actualHourlyWage < dynamicMinWage;
+  const isWageBelowSurvival = monthlySalary > 0 && monthlySalary < costOfLiving;
+  const isWageRidiculous = isWageUnderMinWage || isWageBelowSurvival;
   const isWageUnderSuggested = aiResult && actualHourlyWage < aiResult.suggested_hourly_range[0];
 
   const chartData = [
@@ -678,7 +685,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Lương tháng (VND)</label>
                 <input
@@ -709,6 +716,17 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     ⚠️ Tại Vùng II đô thị, chi phí sống tối thiểu thường cần khoảng 3.2M - 4.5M đ.
                   </p>
                 )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Bố mẹ trợ cấp/tháng</label>
+                <input
+                  type="number"
+                  placeholder="Ví dụ: 3000000"
+                  value={familySupportInput}
+                  onChange={e => setFamilySupportInput(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
+                />
               </div>
             </div>
 
@@ -803,11 +821,24 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     Ét ô ét: Bạn đang bị bóc lột sập nguồn!
                   </strong>
                   <p className="text-sm mt-2 text-red-100/95 leading-relaxed font-sans font-medium">
-                    Lương giờ thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực {locationInput} là {dynamicMinWage.toLocaleString()} đ/h) hoặc
-                    tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sinh hoạt tối
-                    thiểu tại đây ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
-                    lao động dưới giá trị thực tế của nó. Sếp đang bào cạn kiệt cả sức lực lẫn tinh thần
-                    của bạn mà không trả đủ tiền để bạn sinh tồn. Đúng nghĩa làm công hiến dâng toàn bộ thời gian thặng dư (m) mà phần tất yếu (v) vẫn âm!
+                    {isWageUnderMinWage && (
+                      <span className="block mb-2">
+                        ⚠️ <strong>Lương giờ cực thấp:</strong> Lương giờ thực tế của bạn (<span className="text-red-400 font-extrabold">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) đang <strong>dưới mức lương tối thiểu vùng</strong> quy định cho khu vực {locationInput} là <span className="text-emerald-400 font-extrabold">{dynamicMinWage.toLocaleString()} đ</span>/h.
+                      </span>
+                    )}
+                    {isWageBelowSurvival && (
+                      <span className="block">
+                        {totalIncome < costOfLiving ? (
+                          <>
+                            ⚠️ <strong>Không đủ sống:</strong> Tổng thu nhập tháng của bạn (<span className="text-red-400 font-extrabold">{totalIncome.toLocaleString()} đ</span>{familySupport > 0 ? ` bao gồm cả ${familySupport.toLocaleString()} đ bố mẹ trợ cấp` : ""}) <strong>không đủ để bù đắp chi phí sinh hoạt tối thiểu</strong> tại {locationInput} ({costOfLiving.toLocaleString()} đ). Đây là hiện tượng bán sức lao động dưới giá trị tái sản xuất, khiến bạn bị thâm hụt tài chính nghiêm trọng!
+                          </>
+                        ) : (
+                          <>
+                            💡 <strong>Cú lừa kinh điển:</strong> Lương từ chủ trả ({monthlySalary.toLocaleString()} đ) thấp hơn chi phí sống tối thiểu ({costOfLiving.toLocaleString()} đ). Bạn sống sót được ở {locationInput} là nhờ <strong>{familySupport.toLocaleString()} đ bố mẹ gửi trợ cấp</strong>. Dưới góc nhìn Mác-Lênin, <strong>gia đình bạn đang gián tiếp tài trợ cho chủ tư bản</strong> để họ có thể trả lương rẻ mạt cho bạn mà bạn vẫn không bị "sập nguồn"!
+                          </>
+                        )}
+                      </span>
+                    )}
                   </p>
                 </div>
               </motion.div>
