@@ -170,49 +170,53 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       .replace(/đ/g, "d");
 
     let category = "Lao động phổ thông / Khác";
-    let range: [number, number] = [18000, 30000];
-    let isExploited = "Bình thường";
-    let summary = "Mức lương này tương đối ổn định so với mặt bằng chung các công việc phổ thông.";
+    let range: [number, number] = [22500, 35000]; // Mức tối thiểu vùng I làm chuẩn sàn
+    let isExploited = "Tư bản bào mòn";
+    let summary = "";
+    let advice = "";
 
     if (
       /code|dev|lap trinh|design|do hoa|cntt|it|phan mem|developer/i.test(normTitle)
     ) {
-      category = "Công nghệ / Kỹ thuật cao";
-      range = [50000, 150000];
-      summary = "Công việc công nghệ đòi hỏi hàm lượng tri thức và chất xám lớn (lao động phức tạp).";
+      category = "Công nghệ thông tin / Kỹ thuật cao";
+      range = [60000, 180000];
     } else if (/gia su|day hoc|day kem|tro giang|tutor/i.test(normTitle)) {
-      category = "Giáo dục / Gia sư";
-      range = [30000, 60000];
-      summary = "Dạy học yêu cầu kỹ năng sư phạm và truyền đạt kiến thức tốt, lương theo giờ thường nhỉnh hơn phục vụ.";
+      category = "Giáo dục / Dạy kèm";
+      range = [35000, 70000];
     } else if (
-      /cafe|ca phe|phuc vu|tra sua|tuan hang|ban hang|thu ngan|tiep tan|phu bep|runner|waiter|cashier/i.test(
+      /cafe|ca phe|phuc vu|tra sua|tuan hang|ban hang|thu ngan|tiep tan|phu bep|runner|waiter|cashier|bung pho|bung be/i.test(
         normTitle
       )
     ) {
-      category = "Dịch vụ / Bán lẻ";
+      category = "Lao động dịch vụ ăn uống / Bán lẻ";
       range = [18000, 25000];
-      summary = "Lao động dịch vụ có rào cản gia nhập thấp nhưng cường độ làm việc cao, đứng chân liên tục và chịu áp lực từ khách.";
     } else if (/ship|grab|xe om|giao hang|shopee|be|gojek|rider/i.test(normTitle)) {
-      category = "Giao hàng / Vận tải";
-      range = [20000, 30000];
-      summary = "Shipper chịu chi phí hao mòn xe cộ và rủi ro thời tiết, giao thông cực kỳ lớn để duy trì thu nhập.";
+      category = "Xe ôm công nghệ / Vận tải";
+      range = [22500, 35000];
     }
 
-    // Evaluate exploitation based on hourly wage and cost of living
-    if (hourlyWage < 15000 || (monthlySalary > 0 && monthlySalary < costOfLiving)) {
-      isExploited = "Bóc lột hoàn toàn (Cực kỳ vô lý)";
-      summary += " Ôi bạn ơi, mức lương này cực kỳ vô lý luôn! Bạn đang bị bóc lột sức lao động hoàn toàn, sếp trả lương không đủ để bạn trang trải chi phí sống tối thiểu để tái sản xuất sức lao động.";
+    const minWageVungI = 22500; // Lương tối thiểu Vùng I theo giờ năm 2024/2026 tại VN
+
+    if (hourlyWage < 15600 || (monthlySalary > 0 && monthlySalary < costOfLiving)) {
+      isExploited = "Bóc lột sập nguồn (Cực kỳ vô lý)";
+      summary = `Ét ô ét! Lương giờ của bạn (${Math.round(hourlyWage).toLocaleString()} đ/h) đang dưới cả mức sàn sinh hoạt tối thiểu, hoặc tổng lương tháng (${monthlySalary.toLocaleString()} đ) không đủ gồng gánh chi phí sống (${costOfLiving.toLocaleString()} đ). Đây là hiện tượng tư bản bào sạch cả giá trị sức lao động (v), bắt bạn làm việc không công 100% ca mà vẫn đói. Cứu cái lưng gấp bạn ơi!`;
+      advice = "Đồng chí ơi, chạy ngay đi trước khi cái lưng 'sập nguồn' hoàn toàn! Hãy thương lượng tăng lương lên ít nhất ngang mức tối thiểu vùng I (22.500 đ/h) hoặc tìm công việc khác xứng đáng hơn.";
+    } else if (hourlyWage < minWageVungI) {
+      isExploited = "Bào mòn sức trẻ";
+      summary = `Lương giờ ${Math.round(hourlyWage).toLocaleString()} đ/h đang thấp hơn mức lương tối thiểu Vùng I của Việt Nam (${minWageVungI.toLocaleString()} đ/h). Bạn đang cống hiến giá trị thặng dư (m) cực nhiều cho giới chủ trong khi phần lương nhận về (v) không đủ để tái sản xuất sức lao động khỏe mạnh. Đúng kiểu cày kiếp làm công, sếp flex xe sang còn mình nằm im thở khò khò.`;
+      advice = "Nâng cấp tay nghề để chuyển dịch từ lao động giản đơn sang lao động phức tạp tạo nhiều giá trị hơn, hoặc chủ động tìm job khác trả tối thiểu trên 22.500 đ/h nhé!";
     } else if (hourlyWage < range[0]) {
-      isExploited = "Bóc lột cao";
-      summary += ` Mức lương theo giờ của bạn (${Math.round(
-        hourlyWage
-      ).toLocaleString()} đ) đang thấp hơn đáng kể so với mức trung bình của ngành (${range[0].toLocaleString()} - ${range[1].toLocaleString()} đ).`;
+      isExploited = "Hơi bị bào";
+      summary = `Mức lương ${Math.round(hourlyWage).toLocaleString()} đ/h tuy đạt chuẩn tối thiểu vùng nhưng đang thấp hơn mức sàn đề xuất của ngành ${category} (${range[0].toLocaleString()} đ/h). Tỷ suất thặng dư (m') của bạn khá cao, sếp đang bỏ túi kha khá giá trị do bạn làm ra dưới dạng tiền thừa bóc lột sức lao động.`;
+      advice = "Hãy tận dụng cơ hội flex nhẹ năng lực bản thân để deal lương cao hơn chút. Khi làm việc nhớ thi thoảng 'nằm im thở khò khò' một chút để bảo toàn năng lượng nhé!";
     } else if (hourlyWage >= range[0] && hourlyWage <= range[1]) {
-      isExploited = "Bình thường (Đúng giá trị thị trường)";
-      summary += ` Thu nhập của bạn đang nằm trong khoảng trung bình ngành (${range[0].toLocaleString()} - ${range[1].toLocaleString()} đ). Bạn đang nhận được đúng giá trị thị trường của sức lao động.`;
+      isExploited = "Tạm ổn áp";
+      summary = `Lương của bạn (${Math.round(hourlyWage).toLocaleString()} đ/h) đang nằm trong khoảng trung bình của ngành ${category} (${range[0].toLocaleString()} - ${range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi tương đối ngang giá trên thị trường, phần lương nhận về (v) đủ bù đắp chi phí sinh hoạt.`;
+      advice = "Phong độ rất ổn áp đồng chí ơi! Hãy duy trì công việc và tiếp tục tích lũy tri thức để sếp sau này phải 'bào' ít hơn và trả nhiều tiền hơn nữa.";
     } else {
-      isExploited = "Lương cao so với mặt bằng";
-      summary += ` Chúc mừng đồng chí! Mức lương của bạn cao hơn mặt bằng chung (${range[0].toLocaleString()} - ${range[1].toLocaleString()} đ). Hãy tiếp tục duy trì và nâng cấp sức lao động nhé!`;
+      isExploited = "Flex lương đỉnh chóp";
+      summary = `U là trời! ${Math.round(hourlyWage).toLocaleString()} đ/h vượt mong đợi so với mặt bằng ${category} (${range[1].toLocaleString()} đ/h). Tỷ suất thặng dư m' ở mức có lợi cho bạn, bạn là chúa tể deal lương, chiến thần cày cuốc thực thụ rồi đó!`;
+      advice = "Đỉnh chóp luôn chiến thần ơi! Hãy tiếp tục phát huy và đầu tư nâng cấp bản thân để sếp luôn phải nể phục.";
     }
 
     return {
@@ -220,10 +224,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       suggested_hourly_range: range,
       is_exploited_text: isExploited,
       analysis_summary: summary,
-      advice:
-        hourlyWage < range[0] || monthlySalary < costOfLiving
-          ? "Đồng chí nên chủ động thương lượng lại lương hoặc cân nhắc tìm kiếm cơ hội mới xứng đáng hơn. Không nên để giới chủ vắt kiệt sức lao động dưới mức sinh tồn!"
-          : "Hãy tiếp tục trau dồi tri thức chuyên môn để chuyển từ lao động giản đơn sang lao động phức tạp, tạo ra nhiều giá trị hơn nữa cho bản thân!"
+      advice: advice
     };
   };
 
@@ -258,15 +259,17 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     const apiUrl = configuredApiUrl ? configuredApiUrl : (isRuntimeLocalHost ? localDefaultApiUrl : "/api/chat");
     const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
 
-    const systemPrompt = `Bạn là một trợ lý AI thông thái chuyên phân tích kinh tế chính trị Mác - Lênin.
-Nhiệm vụ của bạn là phân tích công việc và mức lương của người dùng tại Việt Nam.
+    const systemPrompt = `Bạn là một trợ lý AI thông thái chuyên phân tích kinh tế chính trị Mác - Lênin dưới góc nhìn của một Gen Z chính hiệu tại Việt Nam (hài hước, dí dỏm, dùng nhiều tiếng lóng Gen Z nhưng vẫn rất sâu sắc và lý luận chuẩn chỉ).
+Nhiệm vụ của bạn là nhận diện công việc và đánh giá mức lương của người dùng dựa trên thực trạng nền kinh tế Việt Nam hiện nay (lương tối thiểu Vùng I: 22.500 đ/giờ, Vùng II: 20.000 đ/giờ...; mức sinh hoạt phí thực tế đô thị lớn tầm 3.5 - 5 triệu VND/tháng).
+Nếu tên công việc người dùng nhập mang tính chất bình dân (ví dụ: "chạy grab", "bưng phở", "phục vụ"), hãy dịch/phân loại sang nhóm ngành chính thức tương ứng (ví dụ: "chạy grab" -> "Xe ôm công nghệ / Vận tải", "bưng phở" -> "Lao động dịch vụ ăn uống").
+
 Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không có markdown code block \`\`\`json ... \`\`\`, chỉ có chuỗi JSON thuần túy để parse được) chứa các trường sau:
 {
-  "job_category": "Tên nhóm ngành phân loại (ví dụ: Lao động dịch vụ part-time, Lao động chuyên môn kỹ thuật cao, Lao động tự do, ...)",
+  "job_category": "Tên nhóm ngành chính thức sau dịch/chuẩn hóa (ví dụ: Xe ôm công nghệ / Vận tải, Lao động dịch vụ ăn uống, Công nghệ thông tin...)",
   "suggested_hourly_range": [min_hourly_vnd, max_hourly_vnd],
-  "is_exploited_text": "Đánh giá mức độ bóc lột (ví dụ: Bóc lột hoàn toàn, Bóc lột cao, Bình thường, Lương tốt)",
-  "analysis_summary": "Nhận xét ngắn gọn, thực tế, sử dụng giọng điệu cố vấn Gen Z gần gũi, hài hước nhưng lý luận sâu sắc, phân tích xem mức lương của họ có bị bóc lột hay vô lý không dựa trên lương tháng và chi phí sinh hoạt.",
-  "advice": "Lời khuyên thực tế giúp nâng cấp bản thân hoặc thương lượng để bảo vệ quyền lợi."
+  "is_exploited_text": "Đánh giá độ bóc lột bằng từ ngữ Gen Z cực độc lạ (ví dụ: 'Bóc lột sập nguồn', 'Tư bản bào mòn', 'Tạm ổn áp', 'Flex lương đỉnh chóp')",
+  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu vùng Việt Nam và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí tái sản xuất sức lao động (v).",
+  "advice": "Lời khuyên 'xịn sò' giúp nâng cấp bản thân, deal lương hoặc bảo vệ quyền lợi trước tư bản bào."
 }`;
 
     const userPrompt = `Hãy phân tích công việc sau:
@@ -351,7 +354,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   };
 
   // Determine warning levels
-  const isWageRidiculous = actualHourlyWage < 15000 || (monthlySalary > 0 && monthlySalary < costOfLiving);
+  const isWageRidiculous = actualHourlyWage < 15600 || (monthlySalary > 0 && monthlySalary < costOfLiving);
   const isWageUnderSuggested = aiResult && actualHourlyWage < aiResult.suggested_hourly_range[0];
 
   const chartData = [
@@ -551,15 +554,14 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                 <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5 text-red-400 animate-bounce" />
                 <div>
                   <strong className="font-bold text-sm block text-red-300 uppercase tracking-wide font-mono">
-                    Cảnh báo đỏ: Bạn đang bị bóc lột hoàn toàn!
+                    Ét ô ét: Bạn đang bị bóc lột sập nguồn!
                   </strong>
                   <p className="text-xs mt-1 text-red-200/80 leading-relaxed font-sans">
-                    Lương giờ thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) quá thấp hoặc
-                    tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ bù đắp chi phí sinh hoạt tối
-                    thiểu cần thiết ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
-                    lao động dưới giá trị thực tế của nó. Giới chủ đang khai thác cạn kiệt thể xác và tinh thần
-                    của bạn mà không bồi hoàn đủ lượng hao phí tối thiểu để duy trì sự sống. Bạn đang cống hiến
-                    không công 100% thời gian lao động mà không thể tái sản xuất sức lao động lành mạnh.
+                    Lương giờ thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) quá thấp (dưới cả mức tối thiểu vùng IV Việt Nam 15.600 đ/h) hoặc
+                    tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sống tối
+                    thiểu để tái tạo sức lao động ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
+                    lao động dưới giá trị thực tế của nó. Sếp đang bào cạn kiệt cả sức lực lẫn tinh thần
+                    của bạn mà không trả đủ tiền để bạn sinh tồn. Đúng nghĩa làm công hiến dâng toàn bộ thời gian thặng dư (m) mà phần tất yếu (v) vẫn âm!
                   </p>
                 </div>
               </motion.div>
@@ -578,8 +580,8 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                   <p className="text-xs mt-1 text-amber-200/80 leading-relaxed font-sans">
                     Mức lương theo giờ thực tế ({Math.round(actualHourlyWage).toLocaleString()} đ/h) của bạn đang
                     thấp hơn so với ngưỡng đề xuất tối thiểu cho ngành {aiResult?.job_category} (từ{" "}
-                    {aiResult?.suggested_hourly_range[0].toLocaleString()} đ/h). Bạn cần đấu tranh đòi hỏi một mức
-                    đãi ngộ công bằng hơn để tương xứng với giá trị sức lao động đã bỏ ra!
+                    {aiResult?.suggested_hourly_range[0].toLocaleString()} đ/h). Đồng chí đang bị bào thặng dư hơi nhiều rồi đấy,
+                    mau nâng cấp bản thân hoặc đấu tranh đòi deal lương công bằng hơn đi nào!
                   </p>
                 </div>
               </motion.div>
@@ -599,8 +601,8 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     Mức lương thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) nằm trong khoảng
                     phù hợp hoặc tốt so với đề xuất của ngành {aiResult.job_category} (khoảng{" "}
                     {aiResult.suggested_hourly_range[0].toLocaleString()} -{" "}
-                    {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi ở
-                    mức cân bằng.
+                    {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi khá ngang giá,
+                    đủ để tái tạo năng lượng chiến đấu tiếp.
                   </p>
                 </div>
               </motion.div>
