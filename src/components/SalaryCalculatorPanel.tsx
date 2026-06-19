@@ -457,7 +457,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
 
       {/* Quick presets row */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-white/50 uppercase tracking-wider font-mono">
+        <label className="text-sm font-bold text-white/60 uppercase tracking-wider font-mono">
           Tải nhanh ví dụ mẫu:
         </label>
         <div className="flex flex-wrap gap-2">
@@ -465,7 +465,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
             <button
               key={preset.id}
               onClick={() => applyPreset(preset)}
-              className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-full text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white transition-all cursor-pointer"
             >
               {preset.title.split(" (")[0]}
             </button>
@@ -476,24 +476,24 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left Column: Form Inputs */}
         <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-6">
-          <h3 className="font-bold text-white text-base flex items-center gap-2 font-mono uppercase tracking-wider">
+          <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-mono uppercase tracking-wider">
             <Coins className="w-4 h-4 text-emerald-400" /> Cấu hình công việc
           </h3>
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs text-white/60 font-medium">Tên công việc</label>
+              <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Tên công việc</label>
               <input
                 type="text"
                 placeholder="Nhập tên việc làm thêm..."
                 value={jobTitle}
                 onChange={e => setJobTitle(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs text-white/60 font-medium font-sans">Khu vực làm việc</label>
+              <label className="text-sm font-bold text-white/80 uppercase tracking-wide font-sans">Khu vực làm việc</label>
               <select
                 value={region}
                 onChange={e => {
@@ -501,7 +501,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                   setRegion(newReg);
                   setCostInput(REGION_CONFIGS[newReg].defaultCostOfLiving.toString());
                 }}
-                className="w-full bg-[#051c2c] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all cursor-pointer font-sans"
+                className="w-full bg-[#051c2c] border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all cursor-pointer font-sans"
               >
                 {Object.values(REGION_CONFIGS).map(cfg => (
                   <option key={cfg.id} value={cfg.id} className="bg-[#051c2c] text-white">
@@ -513,24 +513,24 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs text-white/60 font-medium">Lương tháng (VND)</label>
+                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Lương tháng (VND)</label>
                 <input
                   type="number"
                   placeholder="Ví dụ: 2000000"
                   value={salaryInput}
                   onChange={e => setSalaryInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-white/60 font-medium">Chi phí sống/tháng</label>
+                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Chi phí sống/tháng</label>
                 <input
                   type="number"
                   placeholder="Ví dụ: 2500000"
                   value={costInput}
                   onChange={e => setCostInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
                 />
                 {region === "vung1" && costOfLiving < 4500000 && costOfLiving > 0 && (
                   <p className="text-[10px] text-amber-400 font-sans mt-1 leading-normal">
@@ -547,24 +547,24 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs text-white/60 font-medium">Giờ làm / ngày</label>
+                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Giờ làm / ngày</label>
                 <input
                   type="number"
                   placeholder="Ví dụ: 8"
                   value={hoursInput}
                   onChange={e => setHoursInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs text-white/60 font-medium">Số ngày làm / tháng</label>
+                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Số ngày làm / tháng</label>
                 <input
                   type="number"
                   placeholder="Ví dụ: 26"
                   value={daysInput}
                   onChange={e => setDaysInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
                 />
               </div>
             </div>
@@ -574,7 +574,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
             <button
               onClick={handleAiClassify}
               disabled={isLoadingAi || !jobTitle.trim()}
-              className="w-full py-3 rounded-xl bg-white hover:bg-neutral-200 disabled:bg-neutral-800 disabled:text-neutral-500 font-bold text-xs text-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-white/5"
+              className="w-full py-4 rounded-2xl bg-white hover:bg-neutral-200 disabled:bg-neutral-800 disabled:text-neutral-500 font-extrabold text-sm text-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-white/5"
             >
               {isLoadingAi ? (
                 <>
@@ -608,7 +608,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
             </div>
             <button
               onClick={() => setIsAiApplied(!isAiApplied)}
-              className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer border ${
+              className={`w-full py-3.5 rounded-2xl font-extrabold text-sm transition-all cursor-pointer border ${
                 isAiApplied
                   ? "bg-emerald-500 text-black border-emerald-500"
                   : "bg-transparent text-white border-white/20 hover:bg-white/5"
@@ -632,11 +632,11 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
               >
                 <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5 text-red-400 animate-bounce" />
                 <div>
-                  <strong className="font-bold text-sm block text-red-300 uppercase tracking-wide font-mono">
+                  <strong className="font-extrabold text-base block text-red-300 uppercase tracking-wider font-mono">
                     Ét ô ét: Bạn đang bị bóc lột sập nguồn!
                   </strong>
-                  <p className="text-xs mt-1 text-red-200/80 leading-relaxed font-sans">
-                    Lương giờ thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực ${activeRegionConfig.name} là ${activeRegionConfig.minWageHourly.toLocaleString()} đ/h) hoặc
+                  <p className="text-sm mt-2 text-red-100/95 leading-relaxed font-sans font-medium">
+                    Lương giờ thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực ${activeRegionConfig.name} là ${activeRegionConfig.minWageHourly.toLocaleString()} đ/h) hoặc
                     tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sinh hoạt tối
                     thiểu tại đây ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
                     lao động dưới giá trị thực tế của nó. Sếp đang bào cạn kiệt cả sức lực lẫn tinh thần
@@ -653,11 +653,11 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
               >
                 <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5 text-amber-400" />
                 <div>
-                  <strong className="font-bold text-sm block text-amber-300 uppercase tracking-wide font-mono">
+                  <strong className="font-extrabold text-base block text-amber-300 uppercase tracking-wider font-mono">
                     Cảnh báo: Lương dưới mức trung bình của ngành!
                   </strong>
-                  <p className="text-xs mt-1 text-amber-200/80 leading-relaxed font-sans">
-                    Mức lương theo giờ thực tế ({Math.round(actualHourlyWage).toLocaleString()} đ/h) của bạn đang
+                  <p className="text-sm mt-2 text-amber-100/95 leading-relaxed font-sans font-medium">
+                    Mức lương theo giờ thực tế (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) của bạn đang
                     thấp hơn so với ngưỡng đề xuất tối thiểu cho ngành {aiResult?.job_category} (từ{" "}
                     {aiResult?.suggested_hourly_range[0].toLocaleString()} đ/h). Đồng chí đang bị bào thặng dư hơi nhiều rồi đấy,
                     mau nâng cấp bản thân hoặc đấu tranh đòi deal lương công bằng hơn đi nào!
@@ -673,11 +673,11 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
               >
                 <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5 text-emerald-400" />
                 <div>
-                  <strong className="font-bold text-sm block text-emerald-300 uppercase tracking-wide font-mono">
+                  <strong className="font-extrabold text-base block text-emerald-300 uppercase tracking-wider font-mono">
                     Đánh giá: {aiResult.is_exploited_text}
                   </strong>
-                  <p className="text-xs mt-1 text-emerald-200/80 leading-relaxed font-sans">
-                    Mức lương thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) nằm trong khoảng
+                  <p className="text-sm mt-2 text-emerald-100/95 leading-relaxed font-sans font-medium">
+                    Mức lương thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) nằm trong khoảng
                     phù hợp hoặc tốt so với đề xuất của ngành {aiResult.job_category} (khoảng{" "}
                     {aiResult.suggested_hourly_range[0].toLocaleString()} -{" "}
                     {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi khá ngang giá,
@@ -697,18 +697,18 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
             >
               <div className="flex justify-between items-start border-b border-white/5 pb-3">
                 <div>
-                  <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider block">
+                  <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
                     Phân tích AI từ Thầy Nam
                   </span>
-                  <h4 className="text-sm font-bold text-white mt-0.5">
+                  <h4 className="text-base font-extrabold text-white mt-0.5">
                     Nhóm việc: <span className="text-emerald-400">{aiResult.job_category}</span>
                   </h4>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider block">
+                  <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
                     Khoảng đề xuất ngành
                   </span>
-                  <span className="text-xs font-mono font-bold text-white">
+                  <span className="text-sm font-mono font-bold text-white">
                     {aiResult.suggested_hourly_range[0].toLocaleString()} -{" "}
                     {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h
                   </span>
@@ -716,13 +716,13 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs text-white/80 leading-relaxed italic bg-white/5 p-3.5 rounded-xl border border-white/5 font-sans">
+                <p className="text-sm text-white/95 leading-relaxed italic bg-white/5 p-5 rounded-2xl border border-white/10 font-sans font-semibold">
                   &ldquo;{aiResult.analysis_summary}&rdquo;
                 </p>
-                <div className="text-[11px] text-emerald-300 leading-relaxed flex items-start gap-2">
+                <div className="text-xs text-emerald-300 leading-relaxed flex items-start gap-2.5">
                   <span className="text-base leading-none">💡</span>
                   <div>
-                    <strong className="font-semibold block text-emerald-200">Khuyên đồng chí:</strong>
+                    <strong className="font-bold block text-emerald-200 text-sm">Khuyên đồng chí:</strong>
                     {aiResult.advice}
                   </div>
                 </div>
@@ -739,10 +739,10 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
           <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-8">
             <div className="space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/5 pb-4">
-                <h3 className="font-bold text-white text-xs uppercase tracking-wider font-mono">
+                <h3 className="font-extrabold text-white text-sm uppercase tracking-wider font-mono">
                   Phân tách ngày làm việc tiêu chuẩn {hoursPerDay} giờ
                 </h3>
-                <div className="flex items-center gap-4 text-[10px] uppercase font-mono tracking-wider text-white/50">
+                <div className="flex items-center gap-4 text-xs uppercase font-mono tracking-wider text-white/50">
                   <span className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full"></span> Tất yếu (v)
                   </span>
@@ -757,20 +757,20 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                 <div className="w-full h-8 bg-neutral-950 rounded-full overflow-hidden flex p-1 border border-white/5">
                   <div
                     style={{ width: `${(effectiveNecessaryHours / hoursPerDay) * 100}%` }}
-                    className="bg-emerald-400 h-full rounded-full flex items-center justify-center text-[10px] font-bold text-black transition-all duration-300"
+                    className="bg-emerald-400 h-full rounded-full flex items-center justify-center text-xs font-black text-black transition-all duration-300"
                   >
                     {effectiveNecessaryHours.toFixed(1)} giờ
                   </div>
                   {surplusHours > 0 ? (
                     <div
                       style={{ width: `${(surplusHours / hoursPerDay) * 100}%` }}
-                      className="bg-neutral-600 h-full rounded-full flex items-center justify-center text-[10px] font-bold text-white transition-all duration-300 ml-1"
+                      className="bg-neutral-600 h-full rounded-full flex items-center justify-center text-xs font-black text-white transition-all duration-300 ml-1"
                     >
                       {surplusHours.toFixed(1)} giờ
                     </div>
                   ) : null}
                 </div>
-                <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest font-mono">
+                <div className="flex justify-between text-xs text-white/40 uppercase tracking-widest font-mono font-bold">
                   <span>Bắt đầu ca làm</span>
                   <span className="text-white font-semibold">
                     Giá trị sức lao động hòa vốn tại {effectiveNecessaryHours.toFixed(1)}h
@@ -784,42 +784,42 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-white/5 pt-6">
               <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
                 <div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">
+                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
                     Lương theo giờ thực tế
                   </div>
-                  <div className="text-lg font-bold text-white mt-1 font-mono">
-                    {Math.round(actualHourlyWage).toLocaleString()} đ
+                  <div className="text-2xl font-black text-white mt-1 font-mono">
+                    <span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>
                   </div>
                 </div>
-                <p className="text-[9px] text-white/30 mt-2 leading-relaxed">
+                <p className="text-xs text-white/50 mt-2 leading-relaxed">
                   Lương tháng chia cho tổng số giờ làm việc thực tế trong một tháng.
                 </p>
               </div>
 
               <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
                 <div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">
+                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
                     Tỷ suất thặng dư (m')
                   </div>
-                  <div className="text-lg font-bold text-white mt-1 font-mono">
-                    {Math.round(surplusRatio)}%
+                  <div className="text-2xl font-black text-white mt-1 font-mono">
+                    <span className="text-amber-400">{Math.round(surplusRatio)}%</span>
                   </div>
                 </div>
-                <p className="text-[9px] text-white/30 mt-2 leading-relaxed">
+                <p className="text-xs text-white/50 mt-2 leading-relaxed">
                   Tỷ lệ thời gian bạn làm không công cho chủ so với thời gian làm cho bản thân.
                 </p>
               </div>
 
               <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
                 <div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase font-mono">
+                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
                     Thặng dư hàng tháng
                   </div>
-                  <div className="text-lg font-bold text-white mt-1 font-mono">
-                    {Math.round(monthlySurplusValue).toLocaleString()} đ
+                  <div className="text-2xl font-black text-white mt-1 font-mono">
+                    <span className="text-red-400">{Math.round(monthlySurplusValue).toLocaleString()} đ</span>
                   </div>
                 </div>
-                <p className="text-[9px] text-white/30 mt-2 leading-relaxed">
+                <p className="text-xs text-white/50 mt-2 leading-relaxed">
                   Phần giá trị gia tăng mới mà bạn tạo thêm ngoài lương và bị sếp giữ lại.
                 </p>
               </div>
@@ -882,7 +882,7 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     />
                     <span className="text-white/60">Chủ nhận được (m):</span>
                     <strong className="text-white font-mono font-semibold">
-                      {Math.round(monthlySurplusValue).toLocaleString()} đ ({((monthlySurplusValue / (monthlySalary + monthlySurplusValue || 1)) * 100).toFixed(0)}%)
+                      <span className="text-red-400">{Math.round(monthlySurplusValue).toLocaleString()} đ</span> ({((monthlySurplusValue / (monthlySalary + monthlySurplusValue || 1)) * 100).toFixed(0)}%)
                     </strong>
                   </li>
                 </ul>

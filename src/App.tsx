@@ -1164,8 +1164,8 @@ export default function App() {
 
       {/* 6. SURPLUS VALUE CALCULATOR SECTION */}
       {activeView === "calculator" && (
-        <section id="surplus-value" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
-          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+        <section id="surplus-value" className="subpage-shell relative bg-background px-4 md:px-8 py-20 border-t border-white/10 flex flex-col items-center min-h-[75vh] w-full">
+          <div className="max-w-[96%] w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
             <div className="pb-4">
