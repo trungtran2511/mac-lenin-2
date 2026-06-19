@@ -15,6 +15,45 @@ import {
 } from "lucide-react";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as ChartTooltip } from "recharts";
 
+interface RegionConfig {
+  id: "vung1" | "vung2" | "vung3" | "vung4";
+  name: string;
+  areas: string;
+  minWageHourly: number;
+  defaultCostOfLiving: number;
+}
+
+const REGION_CONFIGS: Record<string, RegionConfig> = {
+  vung1: {
+    id: "vung1",
+    name: "Vùng I (Hà Nội, TP.HCM, Bình Dương...)",
+    areas: "Hà Nội, TP.HCM, Hải Phòng, Cần Thơ, Bình Dương...",
+    minWageHourly: 22500,
+    defaultCostOfLiving: 5000000
+  },
+  vung2: {
+    id: "vung2",
+    name: "Vùng II (Đà Nẵng, Nha Trang, Cần Thơ nông thôn...)",
+    areas: "Đô thị loại II, III",
+    minWageHourly: 20000,
+    defaultCostOfLiving: 3800000
+  },
+  vung3: {
+    id: "vung3",
+    name: "Vùng III (Thị xã, thành phố thuộc tỉnh lẻ...)",
+    areas: "Đô thị loại IV, huyện lẻ",
+    minWageHourly: 17500,
+    defaultCostOfLiving: 2800000
+  },
+  vung4: {
+    id: "vung4",
+    name: "Vùng IV (Nông thôn, vùng sâu vùng xa)",
+    areas: "Các xã, huyện nghèo, miền núi",
+    minWageHourly: 15600,
+    defaultCostOfLiving: 2000000
+  }
+};
+
 // TypeScript Interfaces
 interface SalaryCalculatorPanelProps {
   onAskTeacher: () => void;
@@ -36,6 +75,7 @@ interface JobPreset {
   hoursPerDay: number;
   workingDays: number;
   costOfLiving: number;
+  region: "vung1" | "vung2" | "vung3" | "vung4";
   description: string;
 }
 
@@ -47,6 +87,7 @@ const JOB_PRESETS: JobPreset[] = [
     hoursPerDay: 4,
     workingDays: 12,
     costOfLiving: 2000000,
+    region: "vung1",
     description: "Lương theo giờ của gia sư khá cao so với mặt bằng làm thêm của sinh viên. Tuy nhiên, bạn thường chịu chiết khấu 30-40% tháng lương đầu tiên cho trung tâm gia sư - một phần giá trị thặng dư bị chiếm đoạt trực tiếp bởi giới trung gian môi giới sức lao động."
   },
   {
@@ -56,6 +97,7 @@ const JOB_PRESETS: JobPreset[] = [
     hoursPerDay: 4,
     workingDays: 26,
     costOfLiving: 2200000,
+    region: "vung1",
     description: "Mức lương theo giờ rất thấp (15k-18k/h), không đủ trang trải chi phí sinh hoạt tối thiểu để tái tạo sức lao động khỏe mạnh. Quán thu lợi nhuận lớn từ các cốc nước bạn pha chế và bưng bê, nhưng tiền lương của bạn chỉ tương xứng với một phần rất nhỏ của lượng giá trị mới mà bạn tạo ra."
   },
   {
@@ -65,6 +107,7 @@ const JOB_PRESETS: JobPreset[] = [
     hoursPerDay: 6,
     workingDays: 26,
     costOfLiving: 4000000,
+    region: "vung1",
     description: "Bạn phải tự túc phương tiện làm việc (Tư bản bất biến - c) và chịu toàn bộ rủi ro hao mòn xe cộ, tai nạn đường phố. Ứng dụng công nghệ chiết khấu trực tiếp 20-30% doanh thu mỗi cuốc xe của bạn dưới dạng phí nền tảng."
   },
   {
@@ -74,6 +117,7 @@ const JOB_PRESETS: JobPreset[] = [
     hoursPerDay: 6,
     workingDays: 20,
     costOfLiving: 3500000,
+    region: "vung1",
     description: "Bạn tự đầu tư máy tính cấu hình cao (c) và chịu chi phí điện nước tại nhà. Sản phẩm phần mềm bạn viết ra mang lại giá trị sử dụng lớn cho khách hàng, nhưng qua tay các đầu mối thầu dự án trung gian, phần lớn giá trị thặng dư đã bị cắt xén."
   }
 ];
@@ -85,6 +129,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const [hoursInput, setHoursInput] = useState("8");
   const [costInput, setCostInput] = useState("");
   const [daysInput, setDaysInput] = useState("26");
+  const [region, setRegion] = useState<"vung1" | "vung2" | "vung3" | "vung4">("vung1");
 
   // Output states
   const [workMonths, setWorkMonths] = useState(1);
@@ -107,6 +152,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     setHoursInput(preset.hoursPerDay.toString());
     setCostInput(preset.costOfLiving.toString());
     setDaysInput(preset.workingDays.toString());
+    setRegion(preset.region);
     setAiResult(null);
     setAiError(null);
     setUsedFallback(false);
@@ -259,8 +305,9 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     const apiUrl = configuredApiUrl ? configuredApiUrl : (isRuntimeLocalHost ? localDefaultApiUrl : "/api/chat");
     const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
 
+    const activeRegionConfig = REGION_CONFIGS[region];
     const systemPrompt = `Bạn là một trợ lý AI thông thái chuyên phân tích kinh tế chính trị Mác - Lênin dưới góc nhìn của một Gen Z chính hiệu tại Việt Nam (hài hước, dí dỏm, dùng nhiều tiếng lóng Gen Z nhưng vẫn rất sâu sắc và lý luận chuẩn chỉ).
-Nhiệm vụ của bạn là nhận diện công việc và đánh giá mức lương của người dùng dựa trên thực trạng nền kinh tế Việt Nam hiện nay (lương tối thiểu Vùng I: 22.500 đ/giờ, Vùng II: 20.000 đ/giờ...; mức sinh hoạt phí thực tế đô thị lớn tầm 3.5 - 5 triệu VND/tháng).
+Nhiệm vụ của bạn là nhận diện công việc và đánh giá mức lương của người dùng dựa trên thực trạng kinh tế từng vùng của Việt Nam (Vùng I: 22.500 đ/giờ, Vùng II: 20.000 đ/giờ, Vùng III: 17.500 đ/giờ, Vùng IV: 15.600 đ/giờ; mức sinh hoạt phí thực tế đô thị lớn Vùng I khoảng 4.5 - 6 triệu VND/tháng, còn các vùng khác thấp hơn khoảng 2 - 4 triệu VND/tháng).
 Nếu tên công việc người dùng nhập mang tính chất bình dân (ví dụ: "chạy grab", "bưng phở", "phục vụ"), hãy dịch/phân loại sang nhóm ngành chính thức tương ứng (ví dụ: "chạy grab" -> "Xe ôm công nghệ / Vận tải", "bưng phở" -> "Lao động dịch vụ ăn uống").
 
 Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không có markdown code block \`\`\`json ... \`\`\`, chỉ có chuỗi JSON thuần túy để parse được) chứa các trường sau:
@@ -268,16 +315,18 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   "job_category": "Tên nhóm ngành chính thức sau dịch/chuẩn hóa (ví dụ: Xe ôm công nghệ / Vận tải, Lao động dịch vụ ăn uống, Công nghệ thông tin...)",
   "suggested_hourly_range": [min_hourly_vnd, max_hourly_vnd],
   "is_exploited_text": "Đánh giá độ bóc lột bằng từ ngữ Gen Z cực độc lạ (ví dụ: 'Bóc lột sập nguồn', 'Tư bản bào mòn', 'Tạm ổn áp', 'Flex lương đỉnh chóp')",
-  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu vùng Việt Nam và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí tái sản xuất sức lao động (v).",
+  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của vùng làm việc đã chọn (${activeRegionConfig.name}) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
   "advice": "Lời khuyên 'xịn sò' giúp nâng cấp bản thân, deal lương hoặc bảo vệ quyền lợi trước tư bản bào."
 }`;
 
     const userPrompt = `Hãy phân tích công việc sau:
 - Tên công việc: "${jobTitle}"
+- Khu vực làm việc: ${activeRegionConfig.name}
+- Lương tối thiểu vùng theo giờ (theo luật): ${activeRegionConfig.minWageHourly.toLocaleString()} VND/giờ
 - Lương tháng: ${monthlySalary.toLocaleString()} VND
 - Số ngày làm việc mỗi tháng: ${workingDays} ngày
 - Số giờ làm việc mỗi ngày: ${hoursPerDay} giờ
-- Chi phí sinh hoạt tối thiểu mỗi tháng: ${costOfLiving.toLocaleString()} VND
+- Chi phí sinh hoạt tối thiểu mỗi tháng của người dùng tại vùng này: ${costOfLiving.toLocaleString()} VND
 - Lương theo giờ thực tế tính toán được: ${Math.round(actualHourlyWage).toLocaleString()} VND/giờ`;
 
     try {
@@ -354,7 +403,8 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
   };
 
   // Determine warning levels
-  const isWageRidiculous = actualHourlyWage < 15600 || (monthlySalary > 0 && monthlySalary < costOfLiving);
+  const activeRegionConfig = REGION_CONFIGS[region];
+  const isWageRidiculous = actualHourlyWage < activeRegionConfig.minWageHourly || (monthlySalary > 0 && monthlySalary < costOfLiving);
   const isWageUnderSuggested = aiResult && actualHourlyWage < aiResult.suggested_hourly_range[0];
 
   const chartData = [
@@ -440,6 +490,25 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                 onChange={e => setJobTitle(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/60 font-medium font-sans">Khu vực làm việc</label>
+              <select
+                value={region}
+                onChange={e => {
+                  const newReg = e.target.value as "vung1" | "vung2" | "vung3" | "vung4";
+                  setRegion(newReg);
+                  setCostInput(REGION_CONFIGS[newReg].defaultCostOfLiving.toString());
+                }}
+                className="w-full bg-[#051c2c] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all cursor-pointer font-sans"
+              >
+                {Object.values(REGION_CONFIGS).map(cfg => (
+                  <option key={cfg.id} value={cfg.id} className="bg-[#051c2c] text-white">
+                    {cfg.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -557,9 +626,9 @@ Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không c
                     Ét ô ét: Bạn đang bị bóc lột sập nguồn!
                   </strong>
                   <p className="text-xs mt-1 text-red-200/80 leading-relaxed font-sans">
-                    Lương giờ thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) quá thấp (dưới cả mức tối thiểu vùng IV Việt Nam 15.600 đ/h) hoặc
-                    tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sống tối
-                    thiểu để tái tạo sức lao động ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
+                    Lương giờ thực tế của bạn ({Math.round(actualHourlyWage).toLocaleString()} đ/h) quá thấp (dưới mức tối thiểu vùng quy định cho khu vực ${activeRegionConfig.name} là ${activeRegionConfig.minWageHourly.toLocaleString()} đ/h) hoặc
+                    tổng lương tháng ({monthlySalary.toLocaleString()} đ) không đủ để bù đắp chi phí sinh hoạt tối
+                    thiểu tại đây ({costOfLiving.toLocaleString()} đ). Đây là biểu hiện rõ nét của việc bán sức
                     lao động dưới giá trị thực tế của nó. Sếp đang bào cạn kiệt cả sức lực lẫn tinh thần
                     của bạn mà không trả đủ tiền để bạn sinh tồn. Đúng nghĩa làm công hiến dâng toàn bộ thời gian thặng dư (m) mà phần tất yếu (v) vẫn âm!
                   </p>
