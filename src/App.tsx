@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
@@ -41,6 +41,8 @@ import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
 import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
+import { CurriculumReadingPanel, CurriculumReadingDetail } from "./components/CurriculumReadingPanel";
+import { loadCurriculumLessons, type ChapterLessons } from "./lib/curriculum";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
 
@@ -361,6 +363,8 @@ export default function App() {
   }
 
   const [curriculumData, setCurriculumData] = useState<CurriculumData | null>(null);
+  const [lessons, setLessons] = useState<ChapterLessons[]>([]);
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState<number | null>(null);
 
   // Self-study & practice quiz states
   const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice'>('syllabus');
@@ -370,6 +374,11 @@ export default function App() {
   const [quizScore, setQuizScore] = useState(0);
   const [showQuizSummary, setShowQuizSummary] = useState(false);
   const [selectedChapterDetails, setSelectedChapterDetails] = useState<number>(1);
+  
+  // Reset reading detail section when switching chapters
+  useEffect(() => {
+    setSelectedSectionIndex(null);
+  }, [selectedChapterDetails]);
 
   // Job offer page states (handled in child component)
 
@@ -518,6 +527,10 @@ export default function App() {
       .catch(err => {
         console.error("Error loading curriculum knowledge:", err);
       });
+      
+    loadCurriculumLessons()
+      .then(setLessons)
+      .catch(err => console.error("Failed to load detailed lessons", err));
   }, []);
 
   // Job calculations (handled in child component)
@@ -1269,43 +1282,80 @@ export default function App() {
                 </div>
 
                 {/* Chapter details content panel */}
-                <div className="md:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between">
+                <div className="md:col-span-2 space-y-6 flex flex-col justify-between">
                   {(() => {
                     const activeCh = curriculumData?.chapters.find(c => c.id === selectedChapterDetails);
                     if (!activeCh) return null;
+                    const activeLesson = lessons.find(l => l.chapterId === selectedChapterDetails);
+                    
+                    if (selectedSectionIndex !== null && activeLesson && activeLesson.keyPoints[selectedSectionIndex]) {
+                      return (
+                        <CurriculumReadingDetail
+                          chapterLabel={activeCh.title}
+                          section={activeLesson.keyPoints[selectedSectionIndex]}
+                          onClose={() => setSelectedSectionIndex(null)}
+                          onPractice={() => {
+                            setActiveChapterId(activeCh.id);
+                            setQuizSubTab("practice");
+                            handleResetQuiz();
+                          }}
+                        />
+                      );
+                    }
+                    
                     return (
-                      <>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2 border-b border-white/5 pb-4">
-                            <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
-                              Hệ thống tri thức
-                            </span>
-                            <span className="text-white/40 text-[10px] font-mono">Chương {activeCh.id}</span>
+                      <div className="space-y-6">
+                        <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6">
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                              <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
+                                Hệ thống tri thức chi tiết
+                              </span>
+                              <span className="text-white/40 text-[10px] font-mono">Chương {activeCh.id}</span>
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
+                            
+                            {activeLesson && (
+                              <div className="space-y-4">
+                                <p className="text-sm leading-7 text-white/80">{activeLesson.intro}</p>
+                                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                                  <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono mb-3">Hướng dẫn ôn tập</h4>
+                                  <ul className="list-disc pl-5 space-y-1.5 text-xs text-white/70 leading-relaxed">
+                                    {activeLesson.studyGuide.map((g, i) => (
+                                      <li key={i}>{g}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          
-                          <h3 className="text-xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
-                          
-                          <div className="text-xs text-white/70 leading-relaxed space-y-4 whitespace-pre-line font-light">
-                            {activeCh.summary}
+
+                          <div className="border-t border-white/5 pt-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <span className="text-[10px] text-white/30 font-mono italic">
+                              *Bài học chi tiết được bóc tách từ giáo trình chuẩn.
+                            </span>
+                            <button
+                              onClick={() => {
+                                setActiveChapterId(activeCh.id);
+                                setQuizSubTab("practice");
+                                handleResetQuiz();
+                              }}
+                              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+                            >
+                              Luyện trắc nghiệm Chương {activeCh.id} <ArrowRight className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
 
-                        <div className="border-t border-white/5 pt-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                          <span className="text-[10px] text-white/30 font-mono italic">
-                            *Tóm tắt cô đọng theo giáo trình của Bộ Giáo dục & Đào tạo.
-                          </span>
-                          <button
-                            onClick={() => {
-                              setActiveChapterId(activeCh.id);
-                              setQuizSubTab("practice");
-                              handleResetQuiz();
-                            }}
-                            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
-                          >
-                            Luyện trắc nghiệm Chương {activeCh.id} <ArrowRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </>
+                        {activeLesson && (
+                          <CurriculumReadingPanel
+                            label={activeCh.title}
+                            readingSections={activeLesson.keyPoints}
+                            onSelectSection={(index) => setSelectedSectionIndex(index)}
+                          />
+                        )}
+                      </div>
                     );
                   })()}
                 </div>
