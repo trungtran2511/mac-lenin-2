@@ -1,147 +1,197 @@
-# Đặc tả tính năng: Kinh Tế Chính Trị Easy (KTCT-Easy)
+# Đặc Tả Tính Năng: KTCT-Easy 6 Công Cụ Theo 6 Chương
 
-**Nhánh tính năng**: `010-ktct-easy`
+**Nhánh tính năng**: `010-ktct-easy`  
+**Ngày cập nhật**: 2026-06-19  
+**Trạng thái**: Mục tiêu sản phẩm; triển khai mới một phần  
+**Nguồn nội dung chính**: `GIÁO TRÌNH FULL (1).docx` đã được bóc tách vào dữ liệu giáo trình của ứng dụng.
 
-**Ngày tạo**: 2026-06-16
+> **Trạng thái mã nguồn:** xem [implementation-status.md](implementation-status.md) trước khi triển khai tiếp. Đặc tả này mô tả mục tiêu; không phải mọi tiêu chí bên dưới đã có trong UI chính.
 
-**Trạng thái**: Bản thảo (Draft)
+## Mục Tiêu
 
-**Yêu cầu đầu vào**: Xây dựng cấu trúc mã nguồn và code hoàn chỉnh cho một ứng dụng Web Single Page Application (SPA) học tập thực chiến mang tên "Kinh Tế Chính Trị Easy (KTCT-Easy)"...
+KTCT-Easy là ứng dụng học Kinh tế chính trị Mác - Lênin theo hướng dễ hiểu, thực hành được, không nhồi chữ. Ứng dụng cần có 6 công cụ học tương ứng 6 chương, một hệ thống quiz linh hoạt, và Thầy Nam AI chạy ngay trong ngữ cảnh người học đang cần giải thích.
 
-## Kịch bản Người dùng & Kiểm thử *(bắt buộc)*
+Nguyên tắc quan trọng nhất: **dữ liệu nào không có nguồn thì không được trình bày như dữ liệu thật**. Với Chương 3, không được tự bịa mức sống theo tỉnh/thành. Nếu chưa import dataset gốc, ứng dụng phải bắt người dùng nhập chi phí sống và chỉ dùng số đó để phân tích.
 
-### Kịch bản 1 - Bảng điều khiển tổng quan (Độ ưu tiên: P1)
-Là một sinh viên hoặc người học, tôi muốn xem bảng điều khiển tổng quan với các số liệu kinh tế số của Việt Nam và dễ dàng điều hướng sang 5 trang tính năng chuyên sâu.
+## Người Dùng Chính
 
-**Lý do ưu tiên**: Đây là trung tâm của ứng dụng SPA, cung cấp số liệu khái quát và dẫn dắt người dùng tới các tính năng.
+- Sinh viên ôn thi Kinh tế chính trị Mác - Lênin.
+- Người học muốn hiểu lý thuyết bằng ví dụ đời sống.
+- Người dùng muốn tự nhập công việc/lương để hiểu giá trị sức lao động và giá trị thặng dư.
 
-**Kiểm thử độc lập**: Người dùng có thể nhìn thấy hệ số Gini, lương trung bình ngành công nghệ và nhấp vào các thẻ điều hướng để chuyển trang tức thì thông qua React State.
+## User Stories & Acceptance Criteria
 
-**Kịch bản chấp nhận**:
-1. **Cho** người dùng truy cập trang chủ, **Khi** họ quan sát Stats Cards, **Thì** hệ thống hiển thị chính xác 3 số liệu tổng quan kinh tế Việt Nam.
-2. **Cho** người dùng nhấp vào nút "Truy cập ngay" trên thẻ Job Offer Analyzer, **Khi** state thay đổi, **Thì** giao diện chuyển đổi mượt mà sang tính năng Phân tích tiền lương.
+### US1 - Học theo 6 chương bằng công cụ riêng
 
----
-### Kịch bản 2 - Sự thật về tiền lương & Phân tích thặng dư thông minh (Độ ưu tiên: P2)
-Là một người lao động, tôi muốn tự nhập tên công việc tự chọn (ví dụ: "chạy grab", "code dạo"), tiền lương, số giờ làm/ngày, chi phí sống để hệ thống dùng AI nhận diện nhóm ngành chuẩn (ví dụ: "chạy grab" -> "xe ôm công nghệ"), so sánh với thực trạng nền kinh tế Việt Nam hiện tại (mức lương cơ sở, chi phí sống trung bình đô thị), tính toán phân chia thời gian lao động tất yếu và thặng dư, đồng thời in ra bài phân tích giá trị thặng dư bằng ngôn ngữ Gen Z hài hước, dễ hiểu.
+Là người học, tôi muốn mỗi chương có một công cụ thực hành riêng để hiểu khái niệm chính mà không phải đọc một khối lý thuyết dài.
 
-**Lý do ưu tiên**: Giúp người dùng dễ dàng đối chiếu trực tiếp công việc thực tế của mình với lý thuyết Giá trị thặng dư ($m$) và Tỷ suất thặng dư ($m'$).
+**Acceptance**
 
-**Kiểm thử độc lập**: Người dùng nhập "chạy grab", lương "4.500.000", chi phí sống "4.000.000", làm "6 tiếng/ngày". Nhấn phân tích, hệ thống hiển thị nhóm ngành đã nhận diện là "Xe ôm công nghệ", đưa ra phân tích dựa trên thị trường Việt Nam hiện tại, vẽ biểu đồ phân chia giờ làm tất yếu và thặng dư, và in ra bài nhận xét Gen Z dí dỏm kèm quy đổi hiện vật vui nhộn.
+1. Ứng dụng hiển thị đủ 6 công cụ tương ứng Chương 1 đến Chương 6.
+2. Mỗi công cụ có một mục tiêu rõ, 1-3 thao tác chính, kết luận ngắn và phần giải thích chi tiết mở rộng.
+3. Mỗi công cụ lấy nội dung lý luận từ dữ liệu giáo trình, không tự thêm kiến thức ngoài giáo trình nếu không ghi rõ là ví dụ học tập.
 
-**Kịch bản chấp nhận**:
-1. **Cho** người dùng nhập công việc tùy chỉnh, **Khi** hệ thống gọi AI phân tích, **Thì** hệ thống nhận diện đúng nhóm ngành chuẩn và đưa ra so sánh với thực tế mức sống Việt Nam.
-2. **Cho** kết quả phân tích thặng dư được hiển thị, **Khi** đọc nhận xét, **Thì** nội dung sử dụng slang Gen Z trẻ trung, dễ hiểu để giải thích sự bóc lột thặng dư.
+### US2 - Chương 1: Bản đồ đối tượng, phương pháp, chức năng
 
----
+Là người học Chương 1, tôi muốn bấm vào từng khái niệm để hiểu đối tượng nghiên cứu, phương pháp nghiên cứu và chức năng của môn học.
 
-### Kịch bản 3 - Trợ lý AI: Giải mã nỗi đau đi làm (Độ ưu tiên: P3)
-Là một thực tập sinh hoặc nhân viên bị bóc lột, tôi muốn gửi những tâm sự ức chế tại chỗ làm (ép KPI, quỵt lương, OT không trả tiền) để Trợ lý AI của Các Mác phân tích và "bóc phốt" sếp bằng ngôn ngữ hài hước, bắt trend sinh viên.
+**Acceptance**
 
-**Lý do ưu tiên**: Tăng cường tính tương tác thực tế nhờ AI (Gemini API).
+1. Có các nút khái niệm: đối tượng nghiên cứu, phương pháp trừu tượng hóa khoa học, chức năng nhận thức, chức năng thực tiễn, chức năng phương pháp luận, chức năng giáo dục.
+2. Khi chọn một khái niệm, app hiển thị: giải thích ngắn, ví dụ dễ hiểu, câu hỏi ôn nhanh.
+3. Không hiển thị một đoạn giáo trình quá dài ngay từ đầu; chi tiết được đặt sau nút mở rộng.
 
-**Kiểm thử độc lập**: Nhập văn bản chia sẻ nỗi đau đi làm và gửi lên, hệ thống sẽ trả về phản hồi phân tích đúng lý thuyết kinh tế chính trị bằng slang của Gen Z.
+### US3 - Chương 2: Lab hàng hóa, tiền tệ, thị trường
 
-**Kịch bản chấp nhận**:
-1. **Cho** ứng dụng đã nạp API Key của Gemini, **Khi** người dùng nhập "bị ép OT cuối tuần không lương" và gửi, **Thì** AI trả về phản hồi bóc trần phương pháp sản xuất giá trị thặng dư tuyệt đối của sếp bằng giọng điệu hài hước.
+Là người học Chương 2, tôi muốn điều chỉnh một tình huống mô phỏng để thấy giá cả thị trường có thể dao động quanh giá trị.
 
----
+**Acceptance**
 
-### Kịch bản 4 - Giải mã biến động thị trường (Độ ưu tiên: P4)
-Là một người học, tôi muốn chọn các sự kiện kinh tế thực tế tại Việt Nam để xem biểu đồ minh họa sự chênh lệch giữa giá trị thực tế và giá cả thị trường dựa trên Quy luật giá trị.
+1. Người dùng chọn hoặc chỉnh một scenario học tập.
+2. App hiển thị quan hệ giữa giá trị, cung - cầu, giá cả thị trường và tiền tệ.
+3. Nếu dùng số liệu mô phỏng, UI phải ghi rõ "ví dụ học tập", không nói đó là dữ liệu thị trường hiện tại.
+4. Nếu dùng số liệu thật, dữ liệu phải có `sourceName`, `sourceUrl` hoặc `sourceDate`.
 
-**Lý do ưu tiên**: Giúp hiểu rõ cơ chế vận hành của cung cầu và giá trị hàng hóa.
+### US4 - Chương 3: Công cụ lương, sức lao động, giá trị thặng dư
 
-**Kiểm thử độc lập**: Chọn một sự kiện (ví dụ: Giá chung cư Hà Nội) sẽ vẽ biểu đồ Recharts Line Chart hiển thị hai đường "Giá trị gốc" và "Giá cả thực tế" dao động xung quanh.
+Là người dùng, tôi muốn nhập công việc thật, lương thật, số giờ làm và chi phí sống thật để app phân tích lương có đủ tái tạo sức lao động không và giải thích giá trị thặng dư dễ hiểu.
 
-**Kịch bản chấp nhận**:
-1. **Cho** danh sách sự kiện thị trường, **Khi** chọn "Giá chung cư Hà Nội tăng phi mã", **Thì** biểu đồ Line Chart vẽ thành công hai đường chênh lệch rõ rệt thể hiện cung cầu mất cân bằng.
+**Acceptance**
 
----
+1. Người dùng tự nhập tên công việc; app không được ép chọn 4 công việc cố định.
+2. Người dùng chọn tỉnh/thành để suy ra vùng lương tối thiểu nếu có dữ liệu nguồn.
+3. Tỉnh/thành không được tự động sinh chi phí sống nếu chưa có dataset gốc.
+4. Nếu chi phí sống trống, app không được kết luận "đủ sống" hoặc "không đủ sống"; app phải yêu cầu nhập thêm.
+5. Nếu người dùng nhập Hà Nội/TP.HCM hoặc đô thị lớn với chi phí sống quá thấp, ví dụ 3.000.000đ/tháng, app phải cảnh báo số này có thể vô lý nếu nhà ở, ăn uống, đi lại chưa được hỗ trợ.
+6. Nếu giờ/ngày > 24 hoặc ngày/tháng > 31, app chặn phân tích.
+7. Nếu giờ/ngày > 16, app cảnh báo cường độ lao động bất thường.
+8. Kết quả đầu tiên phải dễ hiểu: "Chủ trả bao nhiêu", "Bạn cần bao nhiêu để sống", "Kết luận", "Điểm cần kiểm tra lại".
+9. Công thức `m`, `m'`, lao động tất yếu, lao động thặng dư chỉ hiển thị ở phần chi tiết phía sau.
+10. AI chỉ được hỗ trợ phân loại nghề và giải thích; phép tính chính phải chạy local, deterministic.
 
-### Kịch bản 5 - Thử thách làm sếp (Độ ưu tiên: P5)
-Là một sếp doanh nghiệp, tôi muốn trả lời các tình huống đạo đức kinh doanh để quan sát sự giằng co giữa lợi nhuận ($m$), sức cạnh tranh và trách nhiệm xã hội.
+### US5 - Chương 4: Lab cạnh tranh và độc quyền
 
-**Lý do ưu tiên**: Minh họa sâu sắc áp lực của quy luật cạnh tranh tư bản chủ nghĩa và sự cần thiết của sự điều tiết vĩ mô.
+Là người học Chương 4, tôi muốn thay đổi số doanh nghiệp, rào cản gia nhập và quyền lực định giá để hiểu cạnh tranh dẫn tới tập trung sản xuất và độc quyền như thế nào.
 
-**Kiểm thử độc lập**: Người dùng chọn phương án cho một tình huống, hệ thống cập nhật tức thì 3 thanh trạng thái Profit, Competitiveness và Social Responsibility.
+**Acceptance**
 
-**Kịch bản chấp nhận**:
-1. **Cho** câu hỏi về xả rác thải, **Khi** chọn "xả trộm để tiết kiệm chi phí", **Thì** thanh Lợi nhuận và Sức cạnh tranh tăng mạnh, nhưng Trách nhiệm xã hội tụt về mức tối thiểu kèm lời cảnh báo từ Nhà nước.
+1. Có lựa chọn cấu trúc thị trường: nhiều người bán, vài doanh nghiệp lớn, doanh nghiệp thống lĩnh, độc quyền tự nhiên.
+2. Người dùng chỉnh được số doanh nghiệp, rào cản gia nhập, quyền lực định giá.
+3. App kết luận mức cạnh tranh, nguy cơ độc quyền, tác động tới giá, người tiêu dùng và người lao động.
+4. Số điểm 0-100 nếu dùng chỉ là chỉ số mô phỏng, phải ghi rõ.
 
----
+### US6 - Chương 5: Bản đồ quan hệ lợi ích kinh tế ở Việt Nam
 
-### Kịch bản 6 - Bản đồ thành phần kinh tế Việt Nam (Độ ưu tiên: P6)
-Là một học sinh ôn thi môn Kinh tế chính trị, tôi muốn xem biểu đồ tròn thể hiện tỷ trọng và vai trò của các khối kinh tế (Nhà nước, Tư nhân, FDI) tại Việt Nam.
+Là người học Chương 5, tôi muốn chọn một chính sách/tình huống để xem các chủ thể kinh tế hưởng lợi, chịu chi phí và Nhà nước điều tiết ra sao.
 
-**Lý do ưu tiên**: Trực quan hóa mô hình kinh tế thị trường định hướng XHCN một cách sinh động, chuẩn hiến pháp.
+**Acceptance**
 
-**Kiểm thử độc lập**: Nhấp chọn khối kinh tế trên biểu đồ tròn Recharts Pie Chart sẽ cập nhật chi tiết phân tích vai trò cốt lõi.
+1. Có các chủ thể: Nhà nước, doanh nghiệp tư nhân, FDI, người lao động, người tiêu dùng, hợp tác xã/cộng đồng.
+2. Khi chọn một case, app hiển thị: ai hưởng lợi, ai chịu chi phí, vai trò điều tiết của Nhà nước, liên hệ giáo trình.
+3. Nếu có số liệu vĩ mô như GDP/tỷ trọng khu vực, bắt buộc có nguồn/date. Nếu không có nguồn, dùng mô tả định tính.
 
-**Kịch bản chấp nhận**:
-1. **Cho** trang cấu trúc kinh tế, **Khi** nhấp vào khối "Kinh tế Nhà nước", **Thì** văn bản giải thích vai trò "chủ đạo" được hiển thị rõ ràng.
+### US7 - Chương 6: Planner công nghiệp hóa, hiện đại hóa, hội nhập
 
-### Kịch bản 7 - Mascot Chibi Tương Tác & Lời Thoại (Độ ưu tiên: P1)
-Là một người học, tôi muốn di chuột vào Mascot Chibi để Mascot to ra và hiển thị bong bóng thoại chứa các lời bình dí dỏm, gợi nhắc học tập theo giáo trình.
+Là người học Chương 6, tôi muốn nhập ngành/nghề quan tâm để app liên hệ với công nghiệp hóa, hiện đại hóa, công nghệ và hội nhập quốc tế.
 
-**Kiểm thử độc lập**: Di chuột vào Mascot Chibi sẽ kích hoạt phóng to nhẹ, đồng thời một bong bóng thoại (Speech Bubble) dạng glassmorphism hiện lên góc trên hiển thị ngẫu nhiên các câu nói như "Hôm nay học Triết nè! 📚". Khi di chuột ra ngoài, bong bóng thoại ẩn đi.
+**Acceptance**
 
----
+1. Người dùng nhập hoặc chọn ngành/nghề quan tâm.
+2. App trả về: liên hệ với công nghiệp hóa, kỹ năng/công nghệ cần học, cơ hội hội nhập, rủi ro phụ thuộc bên ngoài.
+3. Nếu AI hỗ trợ viết gợi ý, UI phải ghi là gợi ý học tập, không phải dự báo chắc chắn.
 
-### Kịch bản 8 - Tự Học & Trắc Nghiệm Chuẩn Giáo Trình (Độ ưu tiên: P1)
-Là một sinh viên đang ôn thi, tôi muốn chuyển sang tab "Tự Học" để làm bài trắc nghiệm chuẩn theo từng chương giáo trình, nhận đáp án đúng/sai tức thì kèm theo phần giải thích chuẩn học thuật và có thể bấm nút hỏi thêm Thầy Nam AI.
+### US8 - Quiz lẻ chọn chương và số câu
 
-**Kiểm thử độc lập**: Click vào tab "Tự Học & Trắc Nghiệm", chọn làm trắc nghiệm Chương 2, chọn 1 đáp án. Giao diện đổi màu đáp án (Xanh/Đỏ), hiển thị lý thuyết giải thích chi tiết. Bấm "Hỏi Thầy Nam AI câu này" sẽ tự động chuyển sang tab Chat AI và chèn câu hỏi.
+Là người ôn thi, tôi muốn chọn chương và số câu để luyện tập theo nhu cầu.
 
----
+**Acceptance**
 
-### Kịch bản 9 - Tải Giáo Trình Học Tập (Độ ưu tiên: P2)
-Là một người dùng, tôi muốn bấm nút để tải trực tiếp file PDF Giáo trình Kinh tế chính trị Mác - Lênin về máy.
+1. Người dùng chọn 1 chương, nhiều chương hoặc tất cả chương.
+2. Người dùng chọn số câu: 5, 10, 20, 40 hoặc nhập số custom trong giới hạn.
+3. App lọc câu theo chương đã chọn và random không trùng trong một lượt.
+4. Nếu số câu yêu cầu lớn hơn số câu có sẵn, app tự giảm về số có sẵn và báo rõ.
+5. Mỗi chương mục tiêu có khoảng 40 câu hỏi khi dữ liệu hoàn thiện.
+6. Sau khi trả lời, app hiển thị đúng/sai, đáp án đúng, giải thích và khung hỏi Thầy Nam AI inline.
 
-**Kiểm thử độc lập**: Click vào nút "Tải Giáo Trình" trên giao diện, trình duyệt sẽ tự động kích hoạt tải file `GIÁO TRÌNH FULL.pdf`.
+### US9 - Thầy Nam AI inline theo ngữ cảnh
 
----
+Là người học, tôi muốn hỏi Thầy Nam AI ngay bên dưới câu quiz hoặc kết quả phân tích, không bị chuyển trang.
 
-### Các trường hợp đặc biệt (Edge Cases)
-- **Thiếu hoặc sai Gemini API Key**: Ứng dụng phải hiển thị hướng dẫn người dùng thiết lập `VITE_GEMINI_API_KEY` trong file `.env` một cách thân thiện thay vì bị crash.
-- **Biểu đồ hiển thị trên màn hình nhỏ**: Các biểu đồ Recharts phải tự co giãn theo chiều rộng container (responsive) để tránh vỡ giao diện trên điện thoại.
-- **Tải tệp lớn**: Nút tải giáo trình phải được cấu hình chính xác đường dẫn tĩnh để tránh lỗi 404 khi tải tệp PDF 32.6MB.
+**Acceptance**
 
-## Yêu cầu chức năng *(bắt buộc)*
+1. Khung hỏi AI xuất hiện ngay dưới kết quả quiz, kết quả Chương 3 hoặc công cụ chương.
+2. Prompt gửi cho AI có đủ: chương, câu hỏi/kết quả hiện tại, câu trả lời người dùng, đáp án đúng nếu có, giải thích, trích đoạn giáo trình liên quan.
+3. AI không nhận toàn bộ giáo trình một cách bừa bãi; chỉ nhận đoạn liên quan.
+4. AI dùng `VITE_GEMINI_API_KEY` trước, nếu lỗi phù hợp thì thử `VITE_GEMINI_API_KEY1`, rồi `VITE_GEMINI_API_KEY2`.
+5. Không bao giờ hiển thị hoặc log API key.
+6. Nếu cả ba key lỗi, giữ nguyên kết quả local và báo lỗi thân thiện.
 
-### Các yêu cầu chi tiết
-- **FR-001**: Hệ thống PHẢI tải và đọc dữ liệu tĩnh từ `economy_data.json` khi khởi chạy.
-- **FR-002**: Hệ thống PHẢI chạy hoàn toàn ở Client-side dưới dạng Single Page Application (SPA) với thanh điều hướng dạng Top Navigation Pill lơ lửng được quản lý bằng React State để cuộn mượt mà giữa các phân đoạn học tập.
-- **FR-003**: Hệ thống PHẢI cung cấp công cụ so sánh thời gian lao động tất yếu và thặng dư dựa trên dữ liệu công việc tùy chỉnh do người dùng nhập (tên công việc, lương, số giờ làm, chi phí sống) được AI tự động phân loại thông minh và so sánh với bối cảnh kinh tế Việt Nam.
-- **FR-004**: Hệ thống PHẢI hỗ trợ quy đổi tích lũy thặng dư theo số tháng ra trà sữa, vé xem phim, tai nghe kèm chú thích hài hước.
-- **FR-005**: Hệ thống PHẢI gọi trực tiếp API Gemini bằng API Key lấy từ môi trường để phân tích nỗi đau đi làm dưới góc nhìn Marxist.
-- **FR-006**: Hệ thống PHẢI vẽ biểu đồ Line Chart (Recharts) hiển thị đường Giá trị gốc và Giá cả thực tế cho các sự kiện thị trường.
-- **FR-007**: Hệ thống PHẢI hiển thị trắc nghiệm mini-quiz cập nhật động 3 thanh chỉ số của Sếp (Lợi nhuận, Sức cạnh tranh, Trách nhiệm xã hội).
-- **FR-008**: Hệ thống PHẢI hiển thị biểu đồ Pie Chart (Recharts) thể hiện các thành phần kinh tế Việt Nam.
-- **FR-009**: Hệ thống PHẢI phóng to Mascot Chibi gấp 1.5 lần kích thước cũ (lên `w-40 h-52 md:w-48 md:h-60`) và hiển thị lời thoại bong bóng ngẫu nhiên khi di chuột vào.
-- **FR-010**: Hệ thống PHẢI tải tóm tắt kiến thức giáo trình và bộ câu hỏi trắc nghiệm từ `curriculum_knowledge.json`.
-- **FR-011**: Hệ thống PHẢI tích hợp dữ liệu giáo trình tóm tắt vào Prompt cho Thầy Nam AI ở chế độ Academic để trả lời chính xác, tránh lệch chuẩn.
-- **FR-012**: Hệ thống PHẢI cung cấp giao diện tự học trắc nghiệm hỗ trợ chấm điểm, giải thích chi tiết và chuyển tiếp câu hỏi sang Thầy Nam AI.
-- **FR-013**: Hệ thống PHẢI hỗ trợ tải trực tiếp tệp `GIÁO TRÌNH FULL.pdf` từ thư mục public.
+## Functional Requirements
 
-### Thực thể dữ liệu chính
-- **JobOffer (Công việc)**: Lương, chi phí sống tối thiểu, số giờ làm, tỷ lệ phân chia thời gian.
-- **MarketEvent (Biến động thị trường)**: Tên sự kiện, biểu đồ dữ liệu chu kỳ.
-- **EthicalDilemma (Tình huống đạo đức)**: Câu hỏi, các phương án lựa chọn và tác động chỉ số tương ứng.
-- **EconomicSector (Khối kinh tế)**: Tỷ lệ GDP, vai trò theo Hiến pháp.
-- **CurriculumChapter (Chương giáo trình)**: Tên chương, tóm tắt lý thuyết trọng tâm.
-- **QuizQuestion (Câu hỏi trắc nghiệm)**: Chương, câu hỏi, 4 lựa chọn, đáp án đúng, giải thích chi tiết.
+- **FR-001**: App phải cung cấp 6 công cụ chính tương ứng 6 chương.
+- **FR-002**: Mỗi công cụ phải có mục tiêu học tập, input, output, dữ liệu dùng và trạng thái lỗi rõ ràng.
+- **FR-003**: App phải đọc dữ liệu giáo trình từ các file static trong `public/`.
+- **FR-004**: App phải hỗ trợ quiz lẻ chọn chương và số câu.
+- **FR-005**: Dữ liệu quiz phải có `chapterId`, `prompt`, 4 lựa chọn, đáp án đúng, giải thích và `contextExcerpt`.
+- **FR-006**: Mỗi chương phải có mục tiêu khoảng 40 câu hỏi khi bộ câu hỏi hoàn thiện.
+- **FR-007**: Thầy Nam AI phải chạy inline trong ngữ cảnh hiện tại, không ép chuyển sang trang chat riêng.
+- **FR-008**: AI helper phải hỗ trợ key chính `VITE_GEMINI_API_KEY`, hai key dự phòng `VITE_GEMINI_API_KEY1`, `VITE_GEMINI_API_KEY2` và cooldown khi nhận 429.
+- **FR-009**: AI không được tạo hoặc xác nhận số liệu kinh tế thật nếu không có nguồn.
+- **FR-010**: Chương 3 phải cho người dùng tự nhập tên công việc, lương, giờ/ngày, ngày/tháng, chi phí sống và trợ cấp.
+- **FR-011**: Chương 3 không được hard-code mức sống theo tỉnh/thành.
+- **FR-012**: Tỉnh/thành trong Chương 3 chỉ được dùng để suy ra vùng lương hoặc metadata có nguồn.
+- **FR-013**: Nếu import dataset mức sống, mỗi bản ghi phải có nguồn, năm và ghi chú.
+- **FR-014**: Nếu không có dataset mức sống, app phải bắt người dùng nhập chi phí sống.
+- **FR-015**: UI phải ưu tiên kết luận dễ hiểu trước, công thức và phân tích học thuật phía sau.
+- **FR-016**: Các scenario mô phỏng phải được gắn nhãn "ví dụ học tập".
+- **FR-017**: Các số liệu thật phải có nguồn/date hoặc không được hiển thị như sự thật.
+- **FR-018**: Build phải chạy được trên Vercel static frontend; AI không được phụ thuộc backend riêng ngoài serverless nếu có.
 
-## Tiêu chí thành công *(bắt buộc)*
+## Data Requirements
 
-### Chỉ số Đo lường
-- **SC-001**: Thời gian chuyển đổi trang qua state dưới 100ms.
-- **SC-002**: Các tính toán toán học và cập nhật thanh trạng thái diễn ra tức thì sau khi người dùng tương tác.
-- **SC-003**: Biểu đồ tự co giãn mượt mà khi thay đổi kích thước cửa sổ trình duyệt.
-- **SC-004**: Bong bóng thoại hiển thị tức thì khi hover vào mascot.
-- **SC-005**: Chatbot Thầy Nam AI phản hồi lý thuyết dựa trên tóm tắt giáo trình chính xác, không trả lời lệch hoặc bịa đặt kiến thức.
+### Dữ liệu được phép dùng
 
+- Nội dung bóc tách từ giáo trình.
+- Câu hỏi trắc nghiệm tạo từ giáo trình.
+- Số liệu người dùng tự nhập.
+- Lương tối thiểu vùng nếu có nguồn/date.
+- Scenario mô phỏng có nhãn "ví dụ học tập".
+- Dataset chính thức import vào `public/` có metadata nguồn.
 
-## Giả định
-- Ứng dụng chạy offline hoàn toàn ngoại trừ chức năng Trợ lý AI cần kết nối Internet để gọi API Gemini.
-- Toàn bộ giao diện và dữ liệu đầu vào sử dụng tiếng Việt.
+### Dữ liệu không được phép dùng
+
+- Mức sống theo tỉnh/thành tự bịa.
+- Số liệu "mới nhất" không có nguồn/date.
+- Số do AI sinh ra rồi hiển thị như dữ liệu thật.
+- Prompt hoặc response chứa API key.
+
+## Main Entities
+
+- **CurriculumChapter**: chương học, tiêu đề, tóm tắt, sections, câu hỏi liên quan.
+- **ChapterTool**: công cụ tương tác của từng chương.
+- **QuizQuestion**: câu hỏi trắc nghiệm có giải thích và ngữ cảnh giáo trình.
+- **QuizSession**: lượt làm bài theo chương và số câu.
+- **SalaryInput**: dữ liệu người dùng nhập cho Chương 3.
+- **SalaryAnalysisResult**: kết quả tính lương/giá trị thặng dư deterministic.
+- **DataSourceMeta**: metadata nguồn cho mọi dữ liệu thật.
+- **AiContextRequest**: request AI đã giới hạn ngữ cảnh.
+
+## Success Criteria
+
+- **SC-001**: Người dùng hiểu kết luận chính của mỗi công cụ trong 10 giây đầu mà không cần đọc công thức.
+- **SC-002**: Chương 3 không đưa ra kết luận mức sống nếu thiếu chi phí sống.
+- **SC-003**: Hà Nội/TP.HCM + chi phí sống 3.000.000đ/tháng phải có cảnh báo bất thường.
+- **SC-004**: Quiz cho phép chọn chương và số câu, random không trùng trong một lượt.
+- **SC-005**: Mỗi câu quiz sau khi trả lời có giải thích và có khung hỏi Thầy Nam AI inline.
+- **SC-006**: Nếu key Gemini chính lỗi nhưng key dự phòng đúng, AI vẫn trả lời.
+- **SC-007**: Nếu cả ba key Gemini lỗi, UI vẫn giữ kết quả local và không crash.
+- **SC-008**: Không có dữ liệu kinh tế thật nào xuất hiện trên UI mà thiếu nguồn/date hoặc nhãn user-entered/mock.
+- **SC-009**: Giao diện desktop và mobile không tràn chữ, không chồng card, không có control thừa không tác dụng.
+
+## Out Of Scope For This Plan
+
+- Không xây backend database.
+- Không làm đăng nhập, tài khoản, thanh toán.
+- Không tự crawl dữ liệu kinh tế mới nhất.
+- Không dùng AI để thay thế phép tính deterministic.
+- Không hard-code dataset mức sống nếu chưa có nguồn gốc rõ ràng.

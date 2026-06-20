@@ -1,89 +1,306 @@
-# Kế hoạch triển khai: Kinh Tế Chính Trị Easy (KTCT-Easy) - Bản nâng cấp Phân tích Lương AI
+# Implementation Plan: KTCT-Easy 6 Chapter Tools
 
-**Nhánh tính năng**: `011-redesign-features-spst` | **Ngày tạo**: 2026-06-19 | **Đặc tả**: [spec.md](file:///D:/DemoCodeTriet/my-mln-learning-2/specs/010-ktct-easy/spec.md)
+**Branch**: `010-ktct-easy`  
+**Date**: 2026-06-19  
+**Spec**: [spec.md](spec.md)
 
-## Tóm tắt kế hoạch
-Nâng cấp bảng tính lương trong ứng dụng "Kinh Tế Chính Trị Easy" sang mô hình động thông minh:
-- Cho phép người dùng tự do nhập tên công việc, tiền lương, số giờ làm/ngày, và chi phí sinh hoạt.
-- Sử dụng trực tiếp API Gemini để nhận dạng nhóm ngành (ví dụ: "chạy grab" -> "Xe ôm công nghệ") và tham chiếu mức lương theo giờ thực tế của người dùng với **thực trạng nền kinh tế Việt Nam** (mức lương tối thiểu vùng, thu nhập trung bình ngành, lạm phát và chi phí sinh hoạt thực tế).
-- AI phân tích cơ cấu giá trị thặng dư ($m$) và mức độ bóc lột thặng dư tuyệt đối/tương đối ($m'$), viết nhận xét bằng giọng văn Gen Z hài hước, dí dỏm, dễ hình dung và đưa ra lời khuyên thiết thực.
-- Xây dựng bộ quy tắc dự phòng cục bộ (Local Fallback Rules) để phân loại và cảnh báo ngay lập tức nếu API gặp lỗi hoặc không có mạng.
+## Summary
 
----
+Refactor KTCT-Easy into a clear learning app with 6 chapter-aligned tools, flexible quiz practice, and inline Thay Nam AI. The plan prioritizes simple UI, deterministic calculations, textbook-grounded explanations, and strict data-source discipline.
+
+> **Current implementation:** this is a forward plan. For the scanned code state, integrated flows, data files, AI key rotation, and known gaps, read [implementation-status.md](implementation-status.md).
+
+The most important implementation rule is: **do not fabricate economic data**. Chapter 3 must not invent province/city living costs. Province/city may infer legal wage region only when a sourced mapping exists. Living-cost conclusions require user input or an imported official dataset with metadata.
 
 ## Technical Context
 
-**Ngôn ngữ/Phiên bản**: React 19 + TypeScript 6.0
-**Thư viện chính**: Framer Motion, Lucide React, Recharts (vẽ biểu đồ tròn/phân chia)
-**AI Model**: `gemini-2.5-flash` gọi trực tiếp hoặc qua proxy serverless
-**Môi trường**: `.env` chứa `VITE_GEMINI_API_KEY` và `VITE_GEMINI_API_URL`
-**Ràng buộc**: Thời gian phản hồi tính toán tức thì, tải AI dưới 3 giây, hỗ trợ hiển thị tốt trên thiết bị di động (Responsive).
+**Language/Version**: React 19 + TypeScript + Vite  
+**Primary Dependencies**: React, Vite, TypeScript, lucide-react, existing CSS utilities. Keep chart libraries only where they genuinely improve understanding.  
+**Storage**: Static JSON files in `public/`; no database.  
+**Testing**: TypeScript check, Vite build, manual browser checks.  
+**Target Platform**: Vercel static frontend. Gemini may be called directly with Vite env keys or through Vercel serverless only if already present.  
+**Project Type**: Client-side educational SPA.  
+**Performance Goals**: Local interactions feel instant; AI loading/failure states are explicit.  
+**Constraints**:
 
----
+- UI must be readable by non-technical students.
+- Formulas stay behind detail sections.
+- AI output cannot override local calculations.
+- No fake province-level living-cost data.
+- Any real number must have a source/date or be clearly labeled as user-entered/mock.
+- Gemini key fallback order: `VITE_GEMINI_API_KEY`, then `VITE_GEMINI_API_KEY1`, then `VITE_GEMINI_API_KEY2`; 429 responses create a per-session cooldown.
 
 ## Constitution Check
 
-*GATE: Hoàn toàn phù hợp với hiến pháp của dự án.*
-- Sử dụng AI làm tầng đưa ra quyết định lý luận và hướng dẫn (AI-native).
-- Định nghĩa rõ ràng hợp đồng dữ liệu AI đầu vào/đầu ra và các giá trị fallback cục bộ an toàn khi ngoại tuyến.
-- Không vi phạm các chính sách thanh toán hay tài khoản bảo mật vì ứng dụng chạy hoàn toàn client-side.
+Applicable safeguards for this frontend educational app:
 
----
+- AI behavior is explicit, bounded, and reviewable through a shared helper.
+- Prompt context is limited to the current question/result plus relevant curriculum excerpt.
+- Deterministic calculations remain local and inspectable.
+- AI failure has fallback behavior and never clears user work.
+- No auth, payment, subscription, or destructive account actions are in scope.
 
-## Đề xuất thay đổi tệp tin
+Known mismatch: the repository constitution references a different backend-heavy V-FIT architecture. This plan follows the applicable AI/data safety controls and avoids backend/payment/auth assumptions.
 
-### 🧑💻 1. Bảng tính Lương mới: [SalaryCalculatorPanel.tsx](file:///d:/DemoCodeTriet/my-mln-learning-2/src/components/SalaryCalculatorPanel.tsx)
-Cập nhật/xây dựng lại file component với các tính năng sau:
+## Project Structure
 
-#### A. Trạng thái nhập liệu (Dynamic Inputs):
-- `jobTitle`: Tên công việc tự chọn (ví dụ: "chạy grab", "bưng bê cafe", "code dạo").
-- `salaryInput` / `monthlySalary`: Lương nhận được hàng tháng.
-- `hoursInput` / `hoursPerDay`: Số giờ làm việc thực tế trong một ca/ngày.
-- `costInput` / `costOfLiving`: Chi phí sinh hoạt tối thiểu mỗi tháng để sinh tồn.
-- `daysInput` / `workingDays`: Số ngày làm việc mỗi tháng (mặc định 26 ngày).
+```text
+specs/010-ktct-easy/
+|-- spec.md
+|-- plan.md
+|-- chapter-functions-implementation-plan.md
+|-- data-model.md
+|-- quickstart.md
+|-- contracts/
+|   `-- ui-contracts.md
+`-- tasks.md
+```
 
-#### B. Phân loại AI & Bối cảnh Kinh tế Việt Nam (AI Prompt Design):
-- Truyền prompt gửi cho Gemini bao gồm: tên công việc, lương giờ thực tế, chi phí sống và yêu cầu AI đối chiếu với thực trạng Việt Nam:
-  - Mức lương tối thiểu vùng theo giờ tại Việt Nam hiện tại (Khoảng 20.000đ - 22.500đ/giờ đối với Vùng I). Nếu lương giờ thực tế thấp hơn 15.000đ/giờ là mức vô lý, gần như bóc lột hoàn toàn.
-  - So sánh chi phí sống tự nhập với mức sống thực tế đô thị lớn tại Việt Nam (thường dao động 3.500.000đ - 5.000.000đ/tháng cho sinh viên và người lao động trẻ).
-  - Biên dịch tên công việc không chuẩn sang nhóm ngành lớn (ví dụ: "chạy grab" -> "Xe ôm công nghệ/Giao hàng", "code dạo" -> "Lập trình viên tự do", "bưng bê" -> "Lao động dịch vụ part-time").
-- Yêu cầu AI trả về định dạng JSON thuần để xử lý:
-  ```json
-  {
-    "job_category": "Nhóm ngành chuẩn",
-    "suggested_hourly_range": [mức_thấp, mức_cao],
-    "is_exploited_text": "Đánh giá mức độ bóc lột (Ví dụ: Bóc lột hoàn toàn, Bóc lột cao, Bình thường...)",
-    "analysis_summary": "Giải thích thặng dư theo giọng Gen Z siêu lầy lội, hài hước, phân tích bản chất bóc lột thặng dư tuyệt đối/tương đối.",
-    "advice": "Lời khuyên thực tế để nâng cao chất lượng sức lao động hoặc đòi quyền lợi."
-  }
-  ```
+```text
+src/
+|-- App.tsx
+|-- components/
+|   |-- CurriculumReadingPanel.tsx
+|   |-- SalaryCalculatorPanel.tsx
+|   |-- InlineThayNamAI.tsx                 # planned
+|   |-- FlexibleQuizBuilder.tsx             # planned
+|   `-- chapter-tools/
+|       |-- Chapter1MethodMap.tsx           # planned
+|       |-- Chapter2CommodityMarketLab.tsx  # planned
+|       |-- Chapter3SalarySurplusTool.tsx   # planned/refactor
+|       |-- Chapter4CompetitionMonopolyLab.tsx
+|       |-- Chapter5VietnamEconomyRelations.tsx
+|       `-- Chapter6ModernizationPlanner.tsx
+|-- lib/
+|   |-- ai.ts
+|   |-- curriculum.ts
+|   |-- quiz.ts
+|   |-- salaryValidation.ts
+|   |-- dataSourcePolicy.ts
+|   `-- chapterToolTypes.ts
+public/
+|-- curriculum_chapter_lessons.json
+|-- curriculum_knowledge.json
+|-- curriculum_search_index.json
+|-- quiz_questions.json
+|-- chapter_tool_scenarios.json
+|-- wage_regions.json
+`-- official_living_cost_data.json          # only if real sourced dataset is imported
+```
 
-#### C. Bộ quy tắc dự phòng cục bộ (Local Fallback):
-- Khi không có API key hoặc API lỗi, sử dụng thuật toán quét từ khóa (keywords) để phân loại nhanh và tự tính mức lương gợi ý:
-  - Từ khóa "code", "dev", "it" -> Công nghệ / Kỹ thuật cao (Gợi ý: 50k - 150k/h).
-  - Từ khóa "gia su", "day hoc" -> Giáo dục / Gia sư (Gợi ý: 30k - 60k/h).
-  - Từ khóa "cafe", "phuc vu", "ban hang" -> Dịch vụ / Bán lẻ (Gợi ý: 18k - 25k/h).
-  - Từ khóa "ship", "grab", "gojek" -> Giao hàng / Vận tải (Gợi ý: 20k - 30k/h).
-- Nếu lương theo giờ thực tế nhỏ hơn 15.000đ/giờ hoặc lương tháng nhỏ hơn chi phí sống tối thiểu: Báo thẳng cảnh báo đỏ không vòng vo: **"Bạn đang bị bóc lột hoàn toàn! Mức lương này không đủ để tái tạo sức lao động tối thiểu."**
+## Implementation Phases
 
-#### D. Trực quan hóa giá trị thặng dư biện chứng:
-- Biểu diễn ngày làm việc bằng thanh phân chia 2 màu:
-  - Giờ lao động tất yếu ($v$): Thời gian làm việc để tạo ra giá trị bù đắp tiền lương (hoặc chi phí sống).
-  - Giờ lao động thặng dư ($m$): Thời gian làm không công còn lại tạo ra lợi nhuận cho chủ.
-- Tính toán tỷ suất giá trị thặng dư: $m' = (m / v) \times 100\%$.
-- Sử dụng Recharts Pie Chart thể hiện tỷ lệ phân chia tổng giá trị mới tạo ra ($v + m$) giữa Bạn và Chủ doanh nghiệp.
-- Quy đổi thặng dư tích lũy theo số tháng ra trà sữa, vé phim, tai nghe để người học dễ hình dung lượng giá trị mình đã cống hiến không công.
+### Phase 1: Shared Foundations
 
----
+Goal: stop duplicating AI, curriculum, quiz and validation logic.
 
-## Kế hoạch kiểm thử & Xác minh
+Implement:
 
-### Kiểm thử tự động
-- Chạy lệnh kiểm tra kiểu TypeScript: `npx tsc -p tsconfig.app.json --noEmit`
-- Chạy lệnh build kiểm tra đóng gói: `npm run build`
+- `src/lib/ai.ts`
+  - reads `VITE_GEMINI_API_KEY`
+  - retries with `VITE_GEMINI_API_KEY1` then `VITE_GEMINI_API_KEY2` only for auth/quota/rate-limit/server-style failures
+  - never logs keys
+  - returns typed success/error result
+- `src/lib/curriculum.ts`
+  - find chapter
+  - find section by keyword
+  - return short relevant excerpts for AI
+- `src/lib/quiz.ts`
+  - filter by chapter
+  - random sample without duplicates
+  - cap requested count to available count
+- `src/lib/dataSourcePolicy.ts`
+  - label data as `official`, `user_entered`, `teaching_example`, or `missing`
+- `src/lib/salaryValidation.ts`
+  - validate salary, hours, days, living cost, urban low-cost warnings
 
-### Kiểm thử thủ công
-1. **Kiểm tra đầu vào động**: Nhập thử các tên công việc tự do (ví dụ: "phục vụ quán lẩu", "làm mẫu ảnh", "dạy kèm tiếng anh") để kiểm tra phản hồi.
-2. **Kiểm tra nhận diện AI**: Nhập "chạy grab" với lương 3.000.000đ/tháng, làm 8h/ngày, chi phí sống 3.500.000đ. Nhấn phân tích và kiểm tra xem AI có nhận dạng đúng "Xe ôm công nghệ/Vận tải" và so sánh với mức tối thiểu vùng của kinh tế Việt Nam không.
-3. **Kiểm tra giọng văn Gen Z**: Đọc văn bản phản hồi xem có đúng phong cách trẻ trung, hài hước và dễ hiểu hay không.
-4. **Kiểm tra Fallback**: Đổi API key sai hoặc tắt mạng, nhập thông số để kiểm tra xem hệ thống có nhảy sang bộ quy tắc dự phòng khớp từ khóa để tính toán và đưa cảnh báo bóc lột hoàn toàn hay không.
+Acceptance:
+
+- Local app can run without AI key.
+- If primary key fails and backup key works, AI answers.
+- If both keys fail, UI shows friendly error and keeps local results.
+
+### Phase 2: Chapter 3 Salary/Surplus Analyzer Stabilization
+
+Goal: make the salary feature understandable and trustworthy.
+
+Implement:
+
+- Keep province/city selector for wage-region inference only.
+- Remove hard-coded living-cost defaults.
+- Require user-entered living cost unless a sourced dataset exists.
+- Add warnings for:
+  - missing living cost
+  - urban living cost too low
+  - likely unit error
+  - day/month > 31
+  - hour/day > 24
+  - hour/day > 16
+  - hourly wage extremely low
+- Simplify result UI:
+  - "Chủ trả"
+  - "Bạn cần để sống"
+  - "Kết luận"
+  - "Cần kiểm tra lại"
+  - "So với sàn vùng"
+  - "Giải thích thặng dư"
+- Remove decorative controls such as irrelevant AI/technology toggle in surplus simulation.
+- Put formulas `v`, `m`, `m'` behind details.
+
+Acceptance:
+
+- Hà Nội + 3.000.000đ living cost warns as suspiciously low unless support is declared.
+- Empty living cost blocks enough-to-live conclusion.
+- 25 hours/day is invalid.
+- AI classification failure does not block calculations.
+
+### Phase 3: Flexible Quiz + Inline AI
+
+Goal: make practice usable before adding more chapter tools.
+
+Implement:
+
+- `FlexibleQuizBuilder`
+  - choose chapters 1-6
+  - choose question count 5/10/20/40/custom
+  - show available question count
+  - randomize without duplicates
+- Answer feedback:
+  - correct/incorrect
+  - correct answer
+  - explanation
+  - curriculum context
+- `InlineThayNamAI`
+  - appears under the answered question
+  - preloads context from the current question/result
+  - accepts follow-up user input without page navigation
+
+Acceptance:
+
+- Chapter 2 + 10 questions returns only Chapter 2 questions.
+- Requesting 40 when only 25 exist shows "chỉ có 25 câu khả dụng".
+- AI receives question, selected answer, correct answer, explanation and excerpt.
+
+### Phase 4: Chapter 1 Method Map
+
+Goal: explain object, method and functions of the discipline.
+
+Implement:
+
+- Interactive nodes for core concepts.
+- Right-side detail panel.
+- Short example and exam wording for each node.
+- One mini quiz/reflection per node.
+
+Acceptance:
+
+- Student can understand "đối tượng nghiên cứu", "trừu tượng hóa khoa học" and "chức năng" without reading a long wall of text.
+
+### Phase 5: Chapter 2 Commodity/Market Lab
+
+Goal: explain commodity, money, market, law of value and price fluctuation.
+
+Implement:
+
+- Teaching scenarios labeled as examples.
+- Controls for supply/demand pressure.
+- Output table or compact visual showing value vs market price.
+- Concept explanation tied to Chapter 2.
+
+Acceptance:
+
+- UI clearly says scenario numbers are teaching examples, not real market data.
+
+### Phase 6: Chapter 4 Competition/Monopoly Lab
+
+Goal: show competition, concentration, monopoly tendency and market power.
+
+Implement:
+
+- Market structure selector.
+- Controls for number of firms, entry barrier, price power.
+- Output: competition level, monopoly risk, consumer/worker impact.
+
+Acceptance:
+
+- Fewer firms + higher barriers increases market power in the explanation.
+
+### Phase 7: Chapter 5 Vietnam Economy Relations
+
+Goal: teach socialist-oriented market economy and benefit relations.
+
+Implement:
+
+- Actor map: State, private sector, FDI, workers, consumers, cooperatives/community.
+- Scenario selector.
+- Output: who benefits, who bears cost, state regulation role, curriculum link.
+
+Acceptance:
+
+- Case "tăng lương tối thiểu" explains effects across actors without unsupported macro numbers.
+
+### Phase 8: Chapter 6 Modernization/Integration Planner
+
+Goal: connect industrialization, modernization and integration to a career/industry.
+
+Implement:
+
+- User enters/selects industry/career.
+- App maps it to technology, skills, global value chain, opportunities and risks.
+- Optional AI can draft a short study reflection, labeled as suggestion.
+
+Acceptance:
+
+- "Lập trình viên" links to digital transformation and global value chains.
+- "Nông nghiệp" links to mechanization, logistics, export standards and integration risks.
+
+### Phase 9: Polish and Verification
+
+Goal: make the app feel simple, not academic-overloaded.
+
+Implement:
+
+- Remove unused controls and decorative explanatory blocks.
+- Collapse formulas behind details.
+- Ensure cards do not overlap on desktop/mobile.
+- Add loading, empty, invalid, success and AI failure states.
+
+Acceptance:
+
+- A first-time user can understand what to do on each screen without reading a paragraph of instructions.
+
+## Data Source Policy
+
+Allowed:
+
+- Textbook/curriculum extraction.
+- User-entered data.
+- Official/source-labeled datasets.
+- Wage-region mapping with source/date.
+- Teaching examples clearly labeled.
+
+Not allowed:
+
+- Hard-coded living cost by province/city without source.
+- "Current" market numbers without source/date.
+- AI-generated numbers presented as factual.
+
+## Quality Gates
+
+Run before handoff:
+
+```powershell
+npx tsc -p tsconfig.app.json --noEmit
+npx vite build --outDir verify_ktct_easy
+```
+
+Manual checks:
+
+- Desktop layout.
+- Mobile layout.
+- Chapter 3 missing/invalid input.
+- Hà Nội + 3.000.000đ living cost warning.
+- Quiz chapter/count filtering.
+- Inline AI context.
+- AI primary key failure -> backup key.
+- Both AI keys failure -> friendly error.

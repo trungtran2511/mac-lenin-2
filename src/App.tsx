@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
@@ -10,15 +10,12 @@ import {
   Bot,
   Send,
   CheckCircle2,
-  AlertTriangle,
   Menu,
   X,
-  HelpCircle,
   TrendingUp,
   Building,
   Briefcase,
-  Download,
-  RotateCcw
+  Download
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -41,6 +38,13 @@ import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
 import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
+import { FlexibleQuizBuilder } from "./components/FlexibleQuizBuilder";
+import { Chapter1MethodMap } from "./components/chapter-tools/Chapter1MethodMap";
+import { Chapter2CommodityMarketLab } from "./components/chapter-tools/Chapter2CommodityMarketLab";
+import { Chapter3SalarySurplusTool } from "./components/chapter-tools/Chapter3SalarySurplusTool";
+import { Chapter4CompetitionMonopolyLab } from "./components/chapter-tools/Chapter4CompetitionMonopolyLab";
+import { Chapter5VietnamEconomyRelations } from "./components/chapter-tools/Chapter5VietnamEconomyRelations";
+import { Chapter6ModernizationPlanner } from "./components/chapter-tools/Chapter6ModernizationPlanner";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
 
@@ -363,12 +367,9 @@ export default function App() {
   const [curriculumData, setCurriculumData] = useState<CurriculumData | null>(null);
 
   // Self-study & practice quiz states
-  const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice'>('syllabus');
+  const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice' | 'tools'>('syllabus');
+  const [activeToolChapterId, setActiveToolChapterId] = useState<number>(1);
   const [activeChapterId, setActiveChapterId] = useState<number | null>(1); // null means All Chapters
-  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
-  const [userSelectedOption, setUserSelectedOption] = useState<number | null>(null);
-  const [quizScore, setQuizScore] = useState(0);
-  const [showQuizSummary, setShowQuizSummary] = useState(false);
   const [selectedChapterDetails, setSelectedChapterDetails] = useState<number>(1);
 
   // Job offer page states (handled in child component)
@@ -450,12 +451,7 @@ export default function App() {
     });
   };
 
-  const handleResetQuiz = () => {
-    setCurrentQuizIndex(0);
-    setUserSelectedOption(null);
-    setQuizScore(0);
-    setShowQuizSummary(false);
-  };
+
 
   // Update welcome message when AI Mode changes
   useEffect(() => {
@@ -1223,6 +1219,12 @@ export default function App() {
                 >
                   Trắc Nghiệm Ôn Luyện
                 </button>
+                <button
+                  onClick={() => setQuizSubTab("tools")}
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "tools" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                >
+                  Công Cụ Thực Hành
+                </button>
               </div>
             </div>
 
@@ -1298,7 +1300,6 @@ export default function App() {
                             onClick={() => {
                               setActiveChapterId(activeCh.id);
                               setQuizSubTab("practice");
-                              handleResetQuiz();
                             }}
                             className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
                           >
@@ -1312,203 +1313,43 @@ export default function App() {
               </div>
             )}
 
-            {/* Sub-tab 2: Practice Quiz */}
             {quizSubTab === "practice" && (
-              <div className="space-y-8">
-                {/* Chapter selector filter */}
+              <FlexibleQuizBuilder
+                initialChapterIds={activeChapterId !== null ? [activeChapterId] : [1]}
+                onBackToSyllabus={() => setQuizSubTab("syllabus")}
+              />
+            )}
+
+            {quizSubTab === "tools" && (
+              <div className="space-y-8 animate-fade-rise">
+                {/* Chapter Tool selector */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900/60 p-4 rounded-2xl border border-white/5">
                   <div className="flex w-full min-w-0 flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn chương luyện tập:</label>
+                    <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn chương để trải nghiệm công cụ:</label>
                     <select
-                      value={activeChapterId === null ? "all" : activeChapterId}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setActiveChapterId(val === "all" ? null : parseInt(val));
-                        handleResetQuiz();
-                      }}
+                      value={activeToolChapterId}
+                      onChange={e => setActiveToolChapterId(parseInt(e.target.value))}
                       className="w-full sm:w-auto min-w-0 bg-neutral-950 rounded-xl text-xs md:text-sm font-semibold py-2 px-3 border border-white/10 text-white outline-none"
                     >
-                      <option value="all">Tất cả các chương</option>
-                      {curriculumData?.chapters.map(ch => (
-                        <option key={ch.id} value={ch.id}>Chương {ch.id}: {ch.title.substring(0, 40)}...</option>
-                      ))}
+                      <option value={1}>Chương 1: Phương pháp luận & Chức năng</option>
+                      <option value={2}>Chương 2: Lab Thị trường & Giá cả</option>
+                      <option value={3}>Chương 3: Lương & Thặng dư</option>
+                      <option value={4}>Chương 4: Độc quyền & Cạnh tranh</option>
+                      <option value={5}>Chương 5: Lợi ích kinh tế Việt Nam</option>
+                      <option value={6}>Chương 6: Planner Công nghiệp hóa & Hội nhập</option>
                     </select>
-                  </div>
-                  
-                  <div className="text-xs font-semibold text-white/50 font-mono whitespace-nowrap">
-                    Tổng số câu: {curriculumData ? (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length) : 0} câu
                   </div>
                 </div>
 
-                {/* Show quiz questions or results */}
-                {!curriculumData ? (
-                  <div className="liquid-glass rounded-3xl p-12 text-center text-white/50 text-sm border border-white/10">
-                    Đang tải danh sách câu hỏi học tập...
-                  </div>
-                ) : (activeChapterId === null ? curriculumData.quiz_questions : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId)).length === 0 ? (
-                  <div className="liquid-glass rounded-3xl p-12 text-center text-white/50 text-sm border border-white/10">
-                    Không tìm thấy câu hỏi luyện tập cho phần này.
-                  </div>
-                ) : showQuizSummary ? (
-                  /* Quiz Score Summary View */
-                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 text-center space-y-6 max-w-xl mx-auto shadow-2xl animate-fade-rise">
-                    <div className="w-20 h-20 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
-                      <Award className="w-10 h-10 text-amber-400" />
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-serif text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                        Kết Quả Luyện Tập
-                      </h3>
-                      <p className="text-xs text-white/50 font-mono">
-                        Chương: {activeChapterId === null ? "Tất cả các chương" : `Chương ${activeChapterId}`}
-                      </p>
-                    </div>
-
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/5 max-w-xs mx-auto">
-                      <div className="text-3xl font-serif text-white">
-                        {quizScore} / {activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length}
-                      </div>
-                      <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono mt-1">Câu trả lời đúng</div>
-                      <div className="w-full bg-white/10 h-1.5 rounded-full mt-4 overflow-hidden">
-                        <div
-                          style={{ width: `${(quizScore / (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length)) * 100}%` }}
-                          className="bg-white h-full transition-all duration-500"
-                        />
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-white/70 italic leading-relaxed max-w-md mx-auto">
-                      {quizScore === (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length)
-                        ? "“Đồng chí đạt điểm tuyệt đối! Tích lũy về Lượng cực kỳ xuất sắc, sẵn sàng cho Bước nhảy về Chất ở bài thi chính thức rồi!” 🎓"
-                        : quizScore >= (activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length) / 2
-                        ? "“Lượng tri thức tích lũy khá tốt. Hãy tiếp tục ôn tập kỹ các lý luận cốt lõi để bài thi đạt kết quả xuất sắc nhất!” 🛠️"
-                        : "“Lượng tích lũy chưa đủ để thực hiện bước nhảy chất lượng. Hãy đọc lại tóm tắt chương học hoặc hỏi Thầy Nam AI nhé đồng chí!” 📚"}
-                    </p>
-
-                    <div className="flex gap-4 justify-center pt-2">
-                      <button
-                        onClick={handleResetQuiz}
-                        className="px-5 py-3 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center gap-2 cursor-pointer border-none"
-                      >
-                        <RotateCcw className="w-4 h-4" /> Luyện tập lại
-                      </button>
-                      <button
-                        onClick={() => setQuizSubTab("syllabus")}
-                        className="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all cursor-pointer"
-                      >
-                        Đọc lại giáo trình
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  /* Question Display Card */
-                  <div className="liquid-glass rounded-3xl p-5 md:p-8 border border-white/10 space-y-6 shadow-xl animate-fade-rise">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-4">
-                      <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
-                        Câu hỏi {currentQuizIndex + 1} / {activeChapterId === null ? curriculumData.quiz_questions.length : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId).length}
-                      </span>
-                      <span className="text-[10px] text-white/40 font-mono">
-                        Đang đạt: {quizScore} câu đúng
-                      </span>
-                    </div>
-
-                    {(() => {
-                      const questionsList = activeChapterId === null ? curriculumData.quiz_questions : curriculumData.quiz_questions.filter(q => q.chapter === activeChapterId);
-                      const qObj = questionsList[currentQuizIndex];
-                      if (!qObj) return null;
-
-                      return (
-                        <div className="space-y-4">
-                          <h3 className="text-base font-semibold text-white leading-relaxed select-text">
-                            {qObj.question}
-                          </h3>
-                          
-                          {/* Options Grid */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {qObj.options.map((option, idx) => {
-                              const isSelected = userSelectedOption === idx;
-                              const isCorrectOption = idx === qObj.correctAnswer;
-                              const hasAnswered = userSelectedOption !== null;
-
-                              let btnStyle = "bg-white/5 border-white/10 text-white/80 hover:bg-white/10";
-                              if (hasAnswered) {
-                                if (isCorrectOption) {
-                                  btnStyle = "bg-emerald-500/10 border-emerald-500 text-emerald-300 font-medium";
-                                } else if (isSelected) {
-                                  btnStyle = "bg-red-500/10 border-red-500 text-red-300 font-medium";
-                                } else {
-                                  btnStyle = "bg-white/[0.02] border-white/5 text-white/30 cursor-not-allowed";
-                                }
-                              }
-
-                              return (
-                                <button
-                                  key={idx}
-                                  onClick={() => {
-                                    if (userSelectedOption !== null) return;
-                                    setUserSelectedOption(idx);
-                                    if (idx === qObj.correctAnswer) {
-                                      setQuizScore(prev => prev + 1);
-                                    }
-                                  }}
-                                  disabled={hasAnswered}
-                                  className={`text-left p-4 rounded-2xl border text-xs md:text-sm leading-relaxed transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
-                                >
-                                  <div className="flex min-w-0 gap-2.5">
-                                    <span className="font-mono opacity-50">{String.fromCharCode(65 + idx)}.</span>
-                                    <span className="min-w-0 overflow-wrap-anywhere">{option}</span>
-                                  </div>
-                                  {hasAnswered && isCorrectOption && (
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                                  )}
-                                  {hasAnswered && isSelected && !isCorrectOption && (
-                                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          {/* Feedback Explanation Panel */}
-                          {userSelectedOption !== null && (
-                            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-xs md:text-sm text-white/90 leading-relaxed animate-fade-rise space-y-2 mt-4">
-                              <div className="flex items-center gap-2 text-[10px] font-bold font-mono tracking-wider text-white/50 uppercase">
-                                <HelpCircle className="w-4 h-4" /> Luận giải học thuật của Thầy Nam:
-                              </div>
-                              <p className="font-light">{qObj.explanation}</p>
-                              <div className="pt-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-white/5 mt-4">
-                                <button
-                                  onClick={() => {
-                                    setAiMode("academic");
-                                    setActiveView("ai-consultant");
-                                    handleSendChat(`Tôi đang học câu trắc nghiệm này: "${qObj.question}". Các đáp án là: A. ${qObj.options[0]}, B. ${qObj.options[1]}, C. ${qObj.options[2]}, D. ${qObj.options[3]}. Bạn giải thích kỹ hơn giùm tôi lý thuyết liên quan đến câu này được không?`);
-                                  }}
-                                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                                >
-                                  <Bot className="w-4 h-4" /> Hỏi Thầy Nam AI câu này
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setUserSelectedOption(null);
-                                    if (currentQuizIndex < questionsList.length - 1) {
-                                      setCurrentQuizIndex(prev => prev + 1);
-                                    } else {
-                                      setShowQuizSummary(true);
-                                    }
-                                  }}
-                                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
-                                >
-                                  {currentQuizIndex < questionsList.length - 1 ? "Câu tiếp theo" : "Hoàn thành ôn luyện"} <ArrowRight className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
+                {/* Render chapter tool component */}
+                <div className="w-full">
+                  {activeToolChapterId === 1 && <Chapter1MethodMap />}
+                  {activeToolChapterId === 2 && <Chapter2CommodityMarketLab />}
+                  {activeToolChapterId === 3 && <Chapter3SalarySurplusTool />}
+                  {activeToolChapterId === 4 && <Chapter4CompetitionMonopolyLab />}
+                  {activeToolChapterId === 5 && <Chapter5VietnamEconomyRelations />}
+                  {activeToolChapterId === 6 && <Chapter6ModernizationPlanner />}
+                </div>
               </div>
             )}
 

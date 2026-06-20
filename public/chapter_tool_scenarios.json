@@ -1,0 +1,112 @@
+{
+  "chapter2": [
+    {
+      "id": "rice-market",
+      "title": "Thị trường Lúa gạo miền Tây",
+      "description": "Mô phỏng chuỗi giá trị lúa gạo truyền thống. Hao phí lao động xã hội cần thiết là thước đo giá trị thực tế của gạo.",
+      "laborCost": 15000,
+      "baseSupply": 100,
+      "baseDemand": 100,
+      "unit": "kg",
+      "source": "Ví dụ minh họa giảng đường"
+    },
+    {
+      "id": "handicraft",
+      "title": "Đồ thủ công Mỹ nghệ xuất khẩu",
+      "description": "Mô phỏng hàng thủ công chất lượng cao. Hao phí lao động cá biệt của thợ lành nghề thường cao hơn mức trung bình của xã hội.",
+      "laborCost": 120000,
+      "baseSupply": 50,
+      "baseDemand": 60,
+      "unit": "sản phẩm",
+      "source": "Ví dụ minh họa giảng đường"
+    },
+    {
+      "id": "tech-gadget",
+      "title": "Thiết bị điện tử nội địa",
+      "description": "Lắp ráp linh kiện nhập khẩu. Năng suất lao động xã hội tăng giúp liên tục hạ thấp giá trị của sản phẩm.",
+      "laborCost": 450000,
+      "baseSupply": 200,
+      "baseDemand": 180,
+      "unit": "chiếc",
+      "source": "Ví dụ minh họa giảng đường"
+    }
+  ],
+  "chapter5": [
+    {
+      "id": "min-wage-increase",
+      "title": "Chính sách Tăng lương tối thiểu vùng",
+      "description": "Nhà nước tăng lương tối thiểu vùng lên thêm 6% để hỗ trợ người lao động tái tạo sức lao động trước lạm phát.",
+      "actors": {
+        "state": {
+          "role": "Điều tiết vĩ mô, đảm bảo an sinh xã hội",
+          "benefit": "Tăng thuế thu nhập gián tiếp, ổn định trật tự xã hội",
+          "cost": "Áp lực kiểm soát lạm phát và chi tiêu công tăng nhẹ"
+        },
+        "private": {
+          "role": "Chủ sử dụng lao động tư nhân",
+          "benefit": "Nâng cao năng suất nhờ công nhân gắn bó hơn",
+          "cost": "Chi phí biến đổi (v - quỹ lương) tăng, tỷ suất thặng dư tuyệt đối giảm ngắn hạn"
+        },
+        "fdi": {
+          "role": "Doanh nghiệp đầu tư nước ngoài",
+          "benefit": "Thu hút được nhân lực chất lượng cao hơn",
+          "cost": "Chi phí vận hành tăng, có thể chuyển dịch tự động hóa nhanh hơn"
+        },
+        "worker": {
+          "role": "Người lao động làm thuê",
+          "benefit": "Lương thực tế tăng, có thêm điều kiện tích lũy sức lao động",
+          "cost": "Nguy cơ bị tăng định mức lao động hoặc cắt giảm giờ làm thêm"
+        },
+        "consumer": {
+          "role": "Người tiêu dùng xã hội",
+          "benefit": "Sức mua chung của thị trường tăng",
+          "cost": "Giá cả hàng hóa dịch vụ có thể tăng nhẹ do doanh nghiệp chuyển chi phí vào giá bán"
+        },
+        "cooperative": {
+          "role": "Khu vực kinh tế tập thể",
+          "benefit": "Thu hút thêm thành viên liên kết lao động sản xuất",
+          "cost": "Khó khăn ban đầu về dòng tiền chi trả công cho người làm công"
+        }
+      },
+      "conclusion": "Tăng lương tối thiểu vùng là sự can thiệp cần thiết của Nhà nước để cân bằng lợi ích giữa tư bản (giới chủ) và lao động (người làm thuê), hướng tới phát triển bền vững."
+    },
+    {
+      "id": "tech-tax-incentive",
+      "title": "Miễn giảm thuế cho Doanh nghiệp Khoa học Công nghệ",
+      "description": "Nhà nước áp dụng thuế suất ưu đãi 10% (so với 20% thông thường) cho các doanh nghiệp phần mềm và AI.",
+      "actors": {
+        "state": {
+          "role": "Dẫn dắt phát triển lực lượng sản xuất hiện đại",
+          "benefit": "Thúc đẩy chuyển đổi số quốc gia nhanh chóng, phát triển nền kinh tế số bền vững",
+          "cost": "Giảm nguồn thu ngân sách trực tiếp ngắn hạn từ sắc thuế thu nhập doanh nghiệp"
+        },
+        "private": {
+          "role": "Doanh nghiệp phần mềm/AI trong nước",
+          "benefit": "Gia tăng đáng kể thặng dư tích lũy để tái đầu tư vào R&D và thiết bị công nghệ",
+          "cost": "Áp lực phải liên tục đổi mới sáng tạo để duy trì điều kiện hưởng ưu đãi"
+        },
+        "fdi": {
+          "role": "Tập đoàn công nghệ nước ngoài tại Việt Nam",
+          "benefit": "Môi trường đầu tư hấp dẫn, dễ dàng đặt trung tâm R&D quy mô lớn",
+          "cost": "Cạnh tranh gay gắt hơn trong việc thu hút nhân tài lập trình với doanh nghiệp nội địa"
+        },
+        "worker": {
+          "role": "Lập trình viên, kỹ sư công nghệ",
+          "benefit": "Cơ hội việc làm thu nhập cao tăng mạnh, nâng cao chất lượng sức lao động cá nhân",
+          "cost": "Đòi hỏi tự học hỏi nâng cấp kỹ năng cực kỳ khắc nghiệt để tránh bị đào thải bởi AI"
+        },
+        "consumer": {
+          "role": "Người dùng dịch vụ công nghệ số",
+          "benefit": "Tiếp cận nhiều sản phẩm ứng dụng số tiện ích, giá thành rẻ hơn",
+          "cost": "Rủi ro về bảo mật thông tin cá nhân tăng khi mức độ số hóa quá nhanh"
+        },
+        "cooperative": {
+          "role": "Hợp tác xã ứng dụng công nghệ cao",
+          "benefit": "Được chuyển giao phần mềm quản lý, tối ưu hóa chuỗi cung ứng nông sản",
+          "cost": "Rào cản trình độ công nghệ của xã viên còn thấp, khó tiếp thu tức thì"
+        }
+      },
+      "conclusion": "Chính sách ưu đãi công nghệ giúp dịch chuyển cơ cấu kinh tế theo hướng hiện đại, tăng nhanh năng suất lao động xã hội, là biểu hiện cụ thể của định hướng xã hội chủ nghĩa trong phát triển lực lượng sản xuất."
+    }
+  ]
+}

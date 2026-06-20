@@ -1,1106 +1,717 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Briefcase,
-  AlertTriangle,
-  Sparkles,
-  Coins,
-  CheckCircle2,
-  Coffee,
-  Film,
-  Headphones,
-  TrendingUp,
-  RotateCcw,
-  ArrowUpRight
-} from "lucide-react";
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as ChartTooltip } from "recharts";
+import { useMemo, useState } from "react";
+import { ArrowRight, Bot, Briefcase, Loader2, RotateCcw } from "lucide-react";
+import { askThayNamAI } from "../lib/ai";
 
-interface RegionConfig {
-  id: "vung1" | "vung2" | "vung3" | "vung4";
-  name: string;
-  areas: string;
-  minWageHourly: number;
-  defaultCostOfLiving: number;
-}
+type RegionId = "vung1" | "vung2" | "vung3" | "vung4";
 
-const REGION_CONFIGS: Record<string, RegionConfig> = {
-  vung1: {
-    id: "vung1",
-    name: "Vùng I (Hà Nội, TP.HCM, Bình Dương...)",
-    areas: "Hà Nội, TP.HCM, Hải Phòng, Cần Thơ, Bình Dương...",
-    minWageHourly: 22500,
-    defaultCostOfLiving: 5000000
-  },
-  vung2: {
-    id: "vung2",
-    name: "Vùng II (Đà Nẵng, Nha Trang, Cần Thơ nông thôn...)",
-    areas: "Đô thị loại II, III",
-    minWageHourly: 20000,
-    defaultCostOfLiving: 3800000
-  },
-  vung3: {
-    id: "vung3",
-    name: "Vùng III (Thị xã, thành phố thuộc tỉnh lẻ...)",
-    areas: "Đô thị loại IV, huyện lẻ",
-    minWageHourly: 17500,
-    defaultCostOfLiving: 2800000
-  },
-  vung4: {
-    id: "vung4",
-    name: "Vùng IV (Nông thôn, vùng sâu vùng xa)",
-    areas: "Các xã, huyện nghèo, miền núi",
-    minWageHourly: 15600,
-    defaultCostOfLiving: 2000000
-  }
-};
-
-// TypeScript Interfaces
 interface SalaryCalculatorPanelProps {
   onAskTeacher: () => void;
 }
 
-interface AiClassificationResult {
-  job_category: string;
-  suggested_hourly_range: [number, number];
-  is_exploited_text: string;
-  analysis_summary: string;
-  advice: string;
+interface RegionConfig {
+  id: RegionId;
+  name: string;
+  shortName: string;
+  minHourlyWage: number;
 }
 
-// Preset Jobs for quick example
-interface JobPreset {
+interface ProvinceOption {
   id: string;
-  title: string;
-  salary: number;
-  hoursPerDay: number;
-  workingDays: number;
-  costOfLiving: number;
-  region: "vung1" | "vung2" | "vung3" | "vung4";
-  description: string;
+  name: string;
+  regionId: RegionId;
 }
 
-const JOB_PRESETS: JobPreset[] = [
-  {
-    id: "student-tutor",
-    title: "Gia sư (Dạy kèm học sinh)",
-    salary: 2500000,
-    hoursPerDay: 4,
-    workingDays: 12,
-    costOfLiving: 5000000,
-    region: "vung1",
-    description: "Lương theo giờ của gia sư khá cao so với mặt bằng làm thêm của sinh viên. Tuy nhiên, bạn thường chịu chiết khấu 30-40% tháng lương đầu tiên cho trung tâm gia sư - một phần giá trị thặng dư bị chiếm đoạt trực tiếp bởi giới trung gian môi giới sức lao động."
-  },
-  {
-    id: "cafe-staff",
-    title: "Nhân viên phục vụ quán Cafe",
-    salary: 1800000,
-    hoursPerDay: 4,
-    workingDays: 26,
-    costOfLiving: 5000000,
-    region: "vung1",
-    description: "Mức lương theo giờ rất thấp (15k-18k/h), không đủ trang trải chi phí sinh hoạt tối thiểu để tái tạo sức lao động khỏe mạnh. Quán thu lợi nhuận lớn từ các cốc nước bạn pha chế và bưng bê, nhưng tiền lương của bạn chỉ tương xứng với một phần rất nhỏ của lượng giá trị mới mà bạn tạo ra."
-  },
-  {
-    id: "delivery-rider",
-    title: "Shipper công nghệ (Grab/Food)",
-    salary: 4500000,
-    hoursPerDay: 6,
-    workingDays: 26,
-    costOfLiving: 5000000,
-    region: "vung1",
-    description: "Bạn phải tự túc phương tiện làm việc (Tư bản bất biến - c) và chịu toàn bộ rủi ro hao mòn xe cộ, tai nạn đường phố. Ứng dụng công nghệ chiết khấu trực tiếp 20-30% doanh thu mỗi cuốc xe của bạn dưới dạng phí nền tảng."
-  },
-  {
-    id: "freelance-coder",
-    title: "Freelance Coder (Viết code thuê)",
-    salary: 5000000,
-    hoursPerDay: 6,
-    workingDays: 20,
-    costOfLiving: 5000000,
-    region: "vung1",
-    description: "Bạn tự đầu tư máy tính cấu hình cao (c) và chịu chi phí điện nước tại nhà. Sản phẩm phần mềm bạn viết ra mang lại giá trị sử dụng lớn cho khách hàng, nhưng qua tay các đầu mối thầu dự án trung gian, phần lớn giá trị thặng dư đã bị cắt xén."
-  }
+interface AiClassificationResult {
+  jobCategory: string;
+  suggestedHourlyRange: [number, number];
+  verdict: string;
+  summary: string;
+  advice: string;
+  source: "ai" | "fallback";
+}
+
+const REGIONS: Record<RegionId, RegionConfig> = {
+  vung1: { id: "vung1", name: "Vùng I", shortName: "Vùng I", minHourlyWage: 23800 },
+  vung2: { id: "vung2", name: "Vùng II", shortName: "Vùng II", minHourlyWage: 21200 },
+  vung3: { id: "vung3", name: "Vùng III", shortName: "Vùng III", minHourlyWage: 18600 },
+  vung4: { id: "vung4", name: "Vùng IV", shortName: "Vùng IV", minHourlyWage: 16600 }
+};
+
+const LIVING_COST_DATA_NOTICE =
+  "Chưa có dataset gốc mức sống theo tỉnh trong app. Không tự điền số ước đoán.";
+
+const PROVINCES: ProvinceOption[] = [
+  { id: "ha-noi", name: "Hà Nội", regionId: "vung1" },
+  { id: "tp-hcm", name: "TP. Hồ Chí Minh", regionId: "vung1" },
+  { id: "da-nang", name: "Đà Nẵng", regionId: "vung1" },
+  { id: "hai-phong", name: "Hải Phòng", regionId: "vung1" },
+  { id: "can-tho", name: "Cần Thơ", regionId: "vung2" },
+  { id: "binh-duong", name: "Bình Dương", regionId: "vung1" },
+  { id: "dong-nai", name: "Đồng Nai", regionId: "vung1" },
+  { id: "ba-ria-vung-tau", name: "Bà Rịa - Vũng Tàu", regionId: "vung1" },
+  { id: "quang-ninh", name: "Quảng Ninh", regionId: "vung1" },
+  { id: "bac-ninh", name: "Bắc Ninh", regionId: "vung2" },
+  { id: "hung-yen", name: "Hưng Yên", regionId: "vung2" },
+  { id: "hai-duong", name: "Hải Dương", regionId: "vung2" },
+  { id: "vinh-phuc", name: "Vĩnh Phúc", regionId: "vung2" },
+  { id: "khanh-hoa", name: "Khánh Hòa", regionId: "vung2" },
+  { id: "lam-dong", name: "Lâm Đồng", regionId: "vung2" },
+  { id: "long-an", name: "Long An", regionId: "vung2" },
+  { id: "tien-giang", name: "Tiền Giang", regionId: "vung2" },
+  { id: "tay-ninh", name: "Tây Ninh", regionId: "vung2" },
+  { id: "thua-thien-hue", name: "Thừa Thiên Huế", regionId: "vung2" },
+  { id: "nghe-an", name: "Nghệ An", regionId: "vung3" },
+  { id: "thanh-hoa", name: "Thanh Hóa", regionId: "vung3" },
+  { id: "binh-dinh", name: "Bình Định", regionId: "vung3" },
+  { id: "dak-lak", name: "Đắk Lắk", regionId: "vung3" },
+  { id: "an-giang", name: "An Giang", regionId: "vung3" },
+  { id: "dong-thap", name: "Đồng Tháp", regionId: "vung3" },
+  { id: "soc-trang", name: "Sóc Trăng", regionId: "vung4" },
+  { id: "ca-mau", name: "Cà Mau", regionId: "vung4" },
+  { id: "dien-bien", name: "Điện Biên", regionId: "vung4" },
+  { id: "ha-giang", name: "Hà Giang", regionId: "vung4" },
+  { id: "khac", name: "Tỉnh/thành khác", regionId: "vung3" }
 ];
 
+const formatMoney = (value: number) => `${Math.round(value || 0).toLocaleString()} đ`;
+
+const normalizeVietnamese = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d");
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+const parseAiJson = (value: string): Partial<AiClassificationResult> | null => {
+  const cleaned = value.replace(/```json/gi, "").replace(/```/g, "").trim();
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace < 0 || lastBrace < firstBrace) return null;
+
+  try {
+    return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+  } catch {
+    return null;
+  }
+};
+
+const getAiText = async (prompt: string) => {
+  return askThayNamAI(
+    prompt,
+    "Bạn là trợ lý phân tích lương theo giáo trình Kinh tế chính trị Mác - Lênin. Trả về đúng JSON, ngắn gọn."
+  );
+
+  /* Legacy endpoint code is intentionally unreachable. The shared helper above
+     rotates all configured Gemini keys and applies cooldowns consistently. */
+  const model = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+  const apiKey = String(import.meta.env.VITE_GEMINI_API_KEY || "").trim();
+  const configuredApiUrl = String(import.meta.env.VITE_GEMINI_API_URL || "").trim();
+  const hostname = typeof window !== "undefined" ? window.location.hostname : "";
+  const isLocal = ["localhost", "127.0.0.1", "::1", "0.0.0.0"].includes(hostname);
+  const isDirectGeminiKey = apiKey.startsWith("AIza") || apiKey.startsWith("AQ.");
+  const apiUrl = configuredApiUrl || (isDirectGeminiKey
+    ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+    : "/api/chat");
+
+  if (isLocal && apiUrl === "/api/chat") {
+    throw new Error("Local chưa có server /api/chat. Thêm VITE_GEMINI_API_KEY để test trực tiếp.");
+  }
+
+  if (apiUrl.includes("generativelanguage.googleapis.com")) {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey
+      },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: "Bạn là trợ lý phân tích lương theo giáo trình Kinh tế chính trị Mác - Lênin. Trả lời đúng JSON, ngắn gọn." }]
+        },
+        contents: [{ role: "user", parts: [{ text: prompt }] }]
+      })
+    });
+
+    if (!response.ok) throw new Error(`Gemini lỗi ${response.status}`);
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("\n") || "";
+  }
+
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {})
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: "Bạn là trợ lý phân tích lương theo giáo trình Kinh tế chính trị Mác - Lênin. Trả lời đúng JSON, ngắn gọn." },
+        { role: "user", content: prompt }
+      ]
+    })
+  });
+
+  if (!response.ok) throw new Error(`AI endpoint lỗi ${response.status}`);
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+};
+
 export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelProps) {
-  // Input states
   const [jobTitle, setJobTitle] = useState("");
   const [salaryInput, setSalaryInput] = useState("");
-  const [hoursInput, setHoursInput] = useState("8");
-  const [costInput, setCostInput] = useState("");
+  const [hoursInput, setHoursInput] = useState("");
   const [daysInput, setDaysInput] = useState("26");
-  const [region, setRegion] = useState<"vung1" | "vung2" | "vung3" | "vung4">("vung1");
-  const [dynamicMinWage, setDynamicMinWage] = useState<number>(22500);
-  const [locationInput, setLocationInput] = useState("Hà Nội");
-  const [regionBriefExplanation, setRegionBriefExplanation] = useState(
-    "Chi phí sinh hoạt tối thiểu tại Hà Nội/TP.HCM khoảng 5M VND/tháng bao gồm thuê trọ cơ bản (2M - 2.5M), ăn uống (2M) và đi lại."
-  );
+  const [provinceId, setProvinceId] = useState("ha-noi");
+  const [livingCostInput, setLivingCostInput] = useState("");
   const [familySupportInput, setFamilySupportInput] = useState("");
-
-  // Output states
-  const [workMonths, setWorkMonths] = useState(1);
-  const [isAiApplied, setIsAiApplied] = useState(false);
-
-  // AI Classification states
   const [aiResult, setAiResult] = useState<AiClassificationResult | null>(null);
-  const [isLoadingAi, setIsLoadingAi] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const [usedFallback, setUsedFallback] = useState(false);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
-  // Set default values from Cafe preset on mount
-  useEffect(() => {
-    applyPreset(JOB_PRESETS[1]);
-  }, []);
-
-  const handleRegionChange = (newReg: "vung1" | "vung2" | "vung3" | "vung4") => {
-    setRegion(newReg);
-    let defaultLoc = "Hà Nội";
-    if (newReg === "vung2") defaultLoc = "Đà Nẵng";
-    else if (newReg === "vung3") defaultLoc = "Thành phố Bắc Giang";
-    else if (newReg === "vung4") defaultLoc = "Nông thôn Hà Tĩnh";
-    
-    setLocationInput(defaultLoc);
-    const config = REGION_CONFIGS[newReg];
-    setCostInput(config.defaultCostOfLiving.toString());
-    setDynamicMinWage(config.minWageHourly);
-    setRegionBriefExplanation(`Sử dụng thông số mẫu Vùng: ${config.name}`);
-  };
-
-  const applyPreset = (preset: JobPreset) => {
-    setJobTitle(preset.title);
-    setSalaryInput(preset.salary.toString());
-    setHoursInput(preset.hoursPerDay.toString());
-    setCostInput(preset.costOfLiving.toString());
-    setDaysInput(preset.workingDays.toString());
-    setRegion(preset.region);
-
-    let defaultLoc = "Hà Nội";
-    if (preset.region === "vung2") defaultLoc = "Đà Nẵng";
-    else if (preset.region === "vung3") defaultLoc = "Thành phố Bắc Giang";
-    else if (preset.region === "vung4") defaultLoc = "Nông thôn Hà Tĩnh";
-    setLocationInput(defaultLoc);
-    setDynamicMinWage(REGION_CONFIGS[preset.region].minWageHourly);
-    setRegionBriefExplanation("Sử dụng thông số mẫu của công việc.");
-    setFamilySupportInput("");
-
-    setAiResult(null);
-    setAiError(null);
-    setUsedFallback(false);
-  };
-
-  // Convert inputs to numbers
-  const monthlySalary = parseFloat(salaryInput) || 0;
-  const hoursPerDay = parseFloat(hoursInput) || 0;
-  const costOfLiving = parseFloat(costInput) || 0;
-  const workingDays = parseFloat(daysInput) || 0;
-  const familySupport = parseFloat(familySupportInput) || 0;
+  const province = PROVINCES.find(item => item.id === provinceId) ?? PROVINCES[0];
+  const region = REGIONS[province.regionId];
+  const monthlySalary = Number(salaryInput) || 0;
+  const hoursPerDay = Number(hoursInput) || 0;
+  const workingDays = Number(daysInput) || 0;
+  const livingCost = Number(livingCostInput) || 0;
+  const familySupport = Number(familySupportInput) || 0;
+  const hasLivingCost = livingCost > 0;
   const totalIncome = monthlySalary + familySupport;
+  const totalHoursMonth = hoursPerDay * workingDays;
+  const hourlyWage = totalHoursMonth > 0 ? monthlySalary / totalHoursMonth : 0;
+  const totalIncomeGap = hasLivingCost ? totalIncome - livingCost : 0;
+  const minimumMonthlyPay = region.minHourlyWage * totalHoursMonth;
+  const isLivingCostBelowMinimumWageReference = minimumMonthlyPay > 0
+    && livingCost > 0
+    && livingCost < minimumMonthlyPay;
+  const inputWarnings = [
+    livingCost <= 0 ? "Nhập chi phí sống thực tế của bạn. App chưa có dữ liệu gốc mức sống theo tỉnh để tự điền." : "",
+    isLivingCostBelowMinimumWageReference
+      ? `${formatMoney(livingCost)} ở ${province.name} thấp hơn mức lương tối thiểu vùng tính theo số giờ bạn nhập (${formatMoney(minimumMonthlyPay)}). App không kết luận đây là mức sống chính thức, chỉ nhắc bạn kiểm tra lại số liệu.`
+      : "",
+    hoursPerDay > 16 ? "Giờ làm/ngày trên 16h rất bất thường, kiểm tra lại số nhập." : "",
+    workingDays > 31 ? "Ngày làm/tháng không thể vượt quá 31 ngày." : "",
+    monthlySalary > 0 && totalHoursMonth > 0 && hourlyWage < 5000 ? "Lương/giờ dưới 5.000đ rất bất thường, kiểm tra lại lương hoặc giờ làm." : "",
+    livingCost > 0 && livingCost < 1000000 ? "Chi phí sống dưới 1.000.000đ/tháng rất thấp, có thể bạn nhập thiếu số 0 hoặc chỉ nhập một khoản nhỏ." : "",
+    livingCost > 0 && livingCost > 50000000 ? "Chi phí sống trên 50.000.000đ/tháng rất cao, kiểm tra lại đơn vị tiền." : "",
+    familySupport < 0 ? "Trợ cấp không nên là số âm." : ""
+  ].filter(Boolean);
+  const hasInvalidInput = workingDays > 31 || hoursPerDay > 24 || familySupport < 0 || livingCost <= 0;
+  const isIncomplete = !jobTitle.trim() || monthlySalary <= 0 || hoursPerDay <= 0 || workingDays <= 0 || livingCost <= 0;
 
-  // Basic wage calculations
-  const totalHoursMonth = workingDays * hoursPerDay;
-  const actualHourlyWage = totalHoursMonth > 0 ? monthlySalary / totalHoursMonth : 0;
+  const fallbackClassification = useMemo<AiClassificationResult>(() => {
+    const normalizedTitle = normalizeVietnamese(jobTitle);
+    let jobCategory = "Lao động phổ thông / Khác";
+    let suggestedHourlyRange: [number, number] = [region.minHourlyWage, Math.round(region.minHourlyWage * 1.6)];
 
-  // Marxist Surplus Value math
-  // Necessary hours (v): hours needed to earn the cost of living (or recreate labor power).
-  // Under capitalism, the wage is equal to the cost of living (value of labor power).
-  // If the salary is less than the cost of living, then 100% of working hours are "necessary" just to survive
-  // (and they still don't meet survival needs - deficit).
-  const necessaryHours = Math.max(
-    0.1,
-    Math.min(
-      hoursPerDay,
-      monthlySalary > 0 && costOfLiving > 0
-        ? (costOfLiving / monthlySalary) * hoursPerDay
-        : hoursPerDay
-    )
-  );
-
-  // Apply tech productivity reduction if AI Relative Surplus is enabled
-  const laborReductionPct = 50; // AI productivity reduction from technology scenario
-  const effectiveNecessaryHours = isAiApplied
-    ? necessaryHours * (1 - laborReductionPct / 100)
-    : necessaryHours;
-
-  const surplusHours = Math.max(0, hoursPerDay - effectiveNecessaryHours);
-
-  // Surplus value ratio (m') = (surplus / necessary) * 100%
-  const surplusRatio = effectiveNecessaryHours > 0 ? (surplusHours / effectiveNecessaryHours) * 100 : 0;
-
-  // Surplus value pocketed by owner monthly
-  const monthlySurplusValue = effectiveNecessaryHours > 0
-    ? monthlySalary * (surplusHours / effectiveNecessaryHours)
-    : 0;
-
-  const accumulatedSurplus = Math.round(monthlySurplusValue * workMonths);
-
-  const itemsEquivalent = {
-    milktea: Math.round(accumulatedSurplus / 50000),
-    movie: Math.round(accumulatedSurplus / 100000),
-    headphone: Math.round(accumulatedSurplus / 500000)
-  };
-
-  // Fallback local rule parser (when Gemini API fails or is offline)
-  const getFallbackClassification = (title: string, hourlyWage: number): AiClassificationResult => {
-    const normTitle = title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d");
-
-    let category = "Lao động phổ thông / Khác";
-    let range: [number, number] = [22500, 35000]; // Mức tối thiểu vùng I làm chuẩn sàn
-    let isExploited = "Tư bản bào mòn";
-    let summary = "";
-    let advice = "";
-
-    if (
-      /code|dev|lap trinh|design|do hoa|cntt|it|phan mem|developer/i.test(normTitle)
-    ) {
-      category = "Công nghệ thông tin / Kỹ thuật cao";
-      range = [60000, 180000];
-    } else if (/gia su|day hoc|day kem|tro giang|tutor/i.test(normTitle)) {
-      category = "Giáo dục / Dạy kèm";
-      range = [35000, 70000];
-    } else if (
-      /cafe|ca phe|phuc vu|tra sua|tuan hang|ban hang|thu ngan|tiep tan|phu bep|runner|waiter|cashier|bung pho|bung be/i.test(
-        normTitle
-      )
-    ) {
-      category = "Lao động dịch vụ ăn uống / Bán lẻ";
-      range = [18000, 25000];
-    } else if (/ship|grab|xe om|giao hang|shopee|be|gojek|rider/i.test(normTitle)) {
-      category = "Xe ôm công nghệ / Vận tải";
-      range = [22500, 35000];
+    if (/code|lap trinh|developer|it|cntt|phan mem|design|do hoa/.test(normalizedTitle)) {
+      jobCategory = "Công nghệ / kỹ thuật cao";
+      suggestedHourlyRange = [60000, 180000];
+    } else if (/gia su|day hoc|day kem|tro giang|tutor/.test(normalizedTitle)) {
+      jobCategory = "Giáo dục / dạy kèm";
+      suggestedHourlyRange = [35000, 90000];
+    } else if (/ship|grab|be|gojek|giao hang|xe om|rider/.test(normalizedTitle)) {
+      jobCategory = "Vận tải / xe ôm công nghệ";
+      suggestedHourlyRange = [region.minHourlyWage, 45000];
+    } else if (/cafe|ca phe|tra sua|phuc vu|ban hang|thu ngan|phu bep|nha hang|bung pho/.test(normalizedTitle)) {
+      jobCategory = "Dịch vụ ăn uống / bán lẻ";
+      suggestedHourlyRange = [region.minHourlyWage, 35000];
+    } else if (/van phong|nhap lieu|sale|sales|tu van|cham soc khach hang/.test(normalizedTitle)) {
+      jobCategory = "Văn phòng / bán hàng / CSKH";
+      suggestedHourlyRange = [30000, 70000];
     }
 
-    const minWageVungI = 22500; // Lương tối thiểu Vùng I theo giờ năm 2024/2026 tại VN
+    if (isIncomplete) {
+      return {
+        jobCategory,
+        suggestedHourlyRange,
+        verdict: "Chưa đủ dữ liệu",
+        summary: "Nhập công việc, lương, giờ làm và chi phí sống thực tế để phân tích.",
+        advice: "Chi phí sống phải do người dùng nhập hoặc import từ dataset gốc; app không tự bịa mức sống theo tỉnh.",
+        source: "fallback"
+      };
+    }
 
-    if (hourlyWage < 15600 || (monthlySalary > 0 && monthlySalary < costOfLiving)) {
-      isExploited = "Bóc lột sập nguồn (Cực kỳ vô lý)";
-      summary = `Ét ô ét! Lương giờ của bạn (${Math.round(hourlyWage).toLocaleString()} đ/h) đang dưới cả mức sàn sinh hoạt tối thiểu, hoặc tổng lương tháng (${monthlySalary.toLocaleString()} đ) không đủ gồng gánh chi phí sống (${costOfLiving.toLocaleString()} đ). Đây là hiện tượng tư bản bào sạch cả giá trị sức lao động (v), bắt bạn làm việc không công 100% ca mà vẫn đói. Cứu cái lưng gấp bạn ơi!`;
-      advice = "Đồng chí ơi, chạy ngay đi trước khi cái lưng 'sập nguồn' hoàn toàn! Hãy thương lượng tăng lương lên ít nhất ngang mức tối thiểu vùng I (22.500 đ/h) hoặc tìm công việc khác xứng đáng hơn.";
-    } else if (hourlyWage < minWageVungI) {
-      isExploited = "Bào mòn sức trẻ";
-      summary = `Lương giờ ${Math.round(hourlyWage).toLocaleString()} đ/h đang thấp hơn mức lương tối thiểu Vùng I của Việt Nam (${minWageVungI.toLocaleString()} đ/h). Bạn đang cống hiến giá trị thặng dư (m) cực nhiều cho giới chủ trong khi phần lương nhận về (v) không đủ để tái sản xuất sức lao động khỏe mạnh. Đúng kiểu cày kiếp làm công, sếp flex xe sang còn mình nằm im thở khò khò.`;
-      advice = "Nâng cấp tay nghề để chuyển dịch từ lao động giản đơn sang lao động phức tạp tạo nhiều giá trị hơn, hoặc chủ động tìm job khác trả tối thiểu trên 22.500 đ/h nhé!";
-    } else if (hourlyWage < range[0]) {
-      isExploited = "Hơi bị bào";
-      summary = `Mức lương ${Math.round(hourlyWage).toLocaleString()} đ/h tuy đạt chuẩn tối thiểu vùng nhưng đang thấp hơn mức sàn đề xuất của ngành ${category} (${range[0].toLocaleString()} đ/h). Tỷ suất thặng dư (m') của bạn khá cao, sếp đang bỏ túi kha khá giá trị do bạn làm ra dưới dạng tiền thừa bóc lột sức lao động.`;
-      advice = "Hãy tận dụng cơ hội flex nhẹ năng lực bản thân để deal lương cao hơn chút. Khi làm việc nhớ thi thoảng 'nằm im thở khò khò' một chút để bảo toàn năng lượng nhé!";
-    } else if (hourlyWage >= range[0] && hourlyWage <= range[1]) {
-      isExploited = "Tạm ổn áp";
-      summary = `Lương của bạn (${Math.round(hourlyWage).toLocaleString()} đ/h) đang nằm trong khoảng trung bình của ngành ${category} (${range[0].toLocaleString()} - ${range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi tương đối ngang giá trên thị trường, phần lương nhận về (v) đủ bù đắp chi phí sinh hoạt.`;
-      advice = "Phong độ rất ổn áp đồng chí ơi! Hãy duy trì công việc và tiếp tục tích lũy tri thức để sếp sau này phải 'bào' ít hơn và trả nhiều tiền hơn nữa.";
-    } else {
-      isExploited = "Flex lương đỉnh chóp";
-      summary = `U là trời! ${Math.round(hourlyWage).toLocaleString()} đ/h vượt mong đợi so với mặt bằng ${category} (${range[1].toLocaleString()} đ/h). Tỷ suất thặng dư m' ở mức có lợi cho bạn, bạn là chúa tể deal lương, chiến thần cày cuốc thực thụ rồi đó!`;
-      advice = "Đỉnh chóp luôn chiến thần ơi! Hãy tiếp tục phát huy và đầu tư nâng cấp bản thân để sếp luôn phải nể phục.";
+    if (hourlyWage < region.minHourlyWage * 0.5 || totalIncome < livingCost * 0.5) {
+      return {
+        jobCategory,
+        suggestedHourlyRange,
+        verdict: "Bóc lột gần như toàn phần",
+        summary: `Lương giờ ${formatMoney(hourlyWage)} quá thấp so với sàn ${region.shortName} (${formatMoney(region.minHourlyWage)}/giờ). Thu nhập cũng không chạm nổi mức sống tối thiểu.`,
+        advice: "Không nên coi đây là việc bền vững. Cần thương lượng lại hoặc đổi việc nếu có thể.",
+        source: "fallback"
+      };
+    }
+
+    if (hourlyWage < region.minHourlyWage || monthlySalary < livingCost) {
+      return {
+        jobCategory,
+        suggestedHourlyRange,
+        verdict: "Bị bóc lột nặng",
+        summary: `Lương giờ ${formatMoney(hourlyWage)} thấp hoặc lương tháng không đủ chi phí sống. Phần thiếu đang bị đẩy sang bản thân/gia đình.`,
+        advice: "Nên xem lại mức lương, chi phí đi lại và số giờ làm thực tế.",
+        source: "fallback"
+      };
+    }
+
+    if (hourlyWage < suggestedHourlyRange[0]) {
+      return {
+        jobCategory,
+        suggestedHourlyRange,
+        verdict: "Hơi bị bào",
+        summary: `Lương đạt sàn tối thiểu nhưng thấp hơn khoảng thường thấy của nhóm ${jobCategory}.`,
+        advice: "Có thể dùng lương giờ và mặt bằng ngành để deal lại.",
+        source: "fallback"
+      };
     }
 
     return {
-      job_category: category,
-      suggested_hourly_range: range,
-      is_exploited_text: isExploited,
-      analysis_summary: summary,
-      advice: advice
+      jobCategory,
+      suggestedHourlyRange,
+      verdict: hourlyWage > suggestedHourlyRange[1] ? "Lương khá tốt" : "Tạm ổn",
+      summary: `Lương giờ ${formatMoney(hourlyWage)} nằm trong hoặc vượt khoảng tham chiếu của nhóm ${jobCategory}.`,
+      advice: "Vẫn cần theo dõi phụ cấp, chi phí phát sinh và số giờ làm thật.",
+      source: "fallback"
     };
+  }, [hourlyWage, isIncomplete, jobTitle, livingCost, monthlySalary, region.minHourlyWage, region.shortName, totalIncome]);
+
+  const result = aiResult ?? fallbackClassification;
+  const safeHoursPerDay = Math.max(hoursPerDay, 0.1);
+  const survivalShare = monthlySalary > 0 ? livingCost / monthlySalary : 1;
+  const rawNecessaryHours = clamp(survivalShare * safeHoursPerDay, 0.1, safeHoursPerDay);
+  const effectiveNecessaryHours = rawNecessaryHours;
+  const surplusHours = Math.max(0, safeHoursPerDay - effectiveNecessaryHours);
+  const surplusRatio = effectiveNecessaryHours > 0 ? (surplusHours / effectiveNecessaryHours) * 100 : 0;
+  const monthlySurplusValue = effectiveNecessaryHours > 0 ? monthlySalary * (surplusHours / effectiveNecessaryHours) : 0;
+  const isWageBelowLivingCost = monthlySalary > 0 && monthlySalary < livingCost;
+  const minimumPayGap = monthlySalary - minimumMonthlyPay;
+  const marketLowGap = hourlyWage - result.suggestedHourlyRange[0];
+  const survivalPercent = livingCost > 0 ? (totalIncome / livingCost) * 100 : 0;
+  const paidValuePerHour = safeHoursPerDay > 0 ? monthlySalary / (safeHoursPerDay * workingDays || 1) : 0;
+  const surplusRealityNote = monthlySalary < livingCost
+    ? "Lương riêng của công việc chưa đủ chi phí sống, nên không thể đo thặng dư bằng cách chia lương cho thời gian sống tối thiểu. Điều này không có nghĩa chủ không thu thặng dư, mà nghĩa là mức lương đang quá thấp để tái tạo sức lao động."
+    : surplusHours > 0
+      ? `Sau khoảng ${effectiveNecessaryHours.toFixed(1)} giờ/ngày để bù chi phí sống, phần còn lại khoảng ${surplusHours.toFixed(1)} giờ/ngày là thời gian tạo giá trị ngoài phần lương.`
+      : "Toàn bộ ngày làm gần như chỉ để bù chi phí sống, gần như không còn dư địa tích lũy cho người lao động.";
+  const practicalWarnings = [
+    isLivingCostBelowMinimumWageReference
+      ? `Chi phí sống ${formatMoney(livingCost)} tại ${province.name} đang thấp hơn mốc lương tối thiểu vùng cho tổng giờ bạn nhập (${formatMoney(minimumMonthlyPay)}). Vì app chưa có dataset mức sống gốc, hãy kiểm tra lại chi phí nhà, ăn uống và đi lại trước khi tin kết quả.`
+      : "",
+    minimumPayGap < 0
+      ? `So với sàn ${region.shortName}, lương tháng đang thiếu khoảng ${formatMoney(Math.abs(minimumPayGap))} nếu tính theo tổng giờ bạn nhập.`
+      : `So với sàn ${region.shortName}, lương tháng đang cao hơn sàn khoảng ${formatMoney(minimumPayGap)}.`,
+    !hasLivingCost
+      ? "Chưa có chi phí sống nên chưa thể tính thiếu/dư so với mức sống."
+      : totalIncomeGap < 0
+      ? `Sau khi cộng trợ cấp, bạn vẫn thiếu ${formatMoney(Math.abs(totalIncomeGap))}/tháng so với chi phí sống đã nhập.`
+      : `Sau chi phí sống, bạn còn dư khoảng ${formatMoney(totalIncomeGap)}/tháng để đi lại, học thêm, tiết kiệm hoặc xử lý phát sinh.`,
+    marketLowGap < 0
+      ? `So với khoảng hợp lý của nhóm nghề, lương giờ thấp hơn đáy khoảng ${formatMoney(Math.abs(marketLowGap))}/giờ.`
+      : `Lương giờ đang đạt hoặc vượt đáy tham chiếu của nhóm nghề khoảng ${formatMoney(marketLowGap)}/giờ.`
+  ].filter(Boolean);
+
+  const setDirty = () => {
+    setAiResult(null);
+    setAiError("");
   };
 
-  // Run AI Classification call to Gemini API
-  const handleAiClassify = async () => {
-    if (!jobTitle.trim()) {
-      setAiError("Vui lòng nhập tên công việc trước khi phân tích!");
+  const resetForm = () => {
+    setJobTitle("");
+    setSalaryInput("");
+    setHoursInput("");
+    setDaysInput("26");
+    setProvinceId("ha-noi");
+    setLivingCostInput("");
+    setFamilySupportInput("");
+    setAiResult(null);
+    setAiError("");
+  };
+
+  const handleProvinceChange = (nextProvinceId: string) => {
+    const nextProvince = PROVINCES.find(item => item.id === nextProvinceId) ?? PROVINCES[0];
+    setProvinceId(nextProvince.id);
+    setLivingCostInput("");
+    setDirty();
+  };
+
+  const runAiClassification = async () => {
+    if (isIncomplete) {
+      setAiError("Nhập đủ công việc, lương, giờ làm/ngày, ngày làm/tháng và chi phí sống thực tế trước.");
       return;
     }
 
-    setIsLoadingAi(true);
-    setAiError(null);
-    setUsedFallback(false);
+    if (hasInvalidInput) {
+      setAiError("Có số liệu nhập chưa hợp lý. Sửa các cảnh báo màu vàng trước khi phân tích.");
+      return;
+    }
 
-    const apiKey = (import.meta.env.VITE_GEMINI_API_KEY || "").trim();
-    const requestedModel = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
-    const configuredApiUrl = (import.meta.env.VITE_GEMINI_API_URL || "").trim();
+    setIsAiLoading(true);
+    setAiError("");
 
-    const isLikelyGoogleApiKey = apiKey.startsWith("AIza");
-    const isLikelyGoogleAuthKey = apiKey.startsWith("AQ.");
-    const isLikelyGoogleAiStudioKey = isLikelyGoogleApiKey || isLikelyGoogleAuthKey;
-
-    const isRuntimeLocalHost = (() => {
-      if (typeof window === "undefined") return false;
-      return ["localhost", "127.0.0.1", "::1", "0.0.0.0"].includes(window.location.hostname);
-    })();
-
-    const localDefaultApiUrl = isLikelyGoogleAiStudioKey
-      ? `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent`
-      : "/api/chat";
-
-    const apiUrl = configuredApiUrl ? configuredApiUrl : (isRuntimeLocalHost ? localDefaultApiUrl : "/api/chat");
-    const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
-
-    const systemPrompt = `Bạn là một trợ lý AI thông thái chuyên phân tích kinh tế chính trị Mác - Lênin dưới góc nhìn của một Gen Z chính hiệu tại Việt Nam (hài hước, dí dỏm, dùng nhiều tiếng lóng Gen Z nhưng vẫn rất sâu sắc và lý luận chuẩn chỉ).
-Nhiệm vụ của bạn là nhận diện công việc, đánh giá mức lương của người dùng và đồng thời tra cứu mức sống trung bình tối thiểu cùng lương tối thiểu vùng thực tế theo quy định pháp luật mới nhất tại địa điểm cụ thể ở Việt Nam mà người dùng nhập ("${locationInput}").
-Nếu tên công việc người dùng nhập mang tính chất bình dân (ví dụ: "chạy grab", "bưng phở", "phục vụ"), hãy dịch/phân loại sang nhóm ngành chính thức tương ứng (ví dụ: "chạy grab" -> "Xe ôm công nghệ / Vận tải", "bưng phở" -> "Lao động dịch vụ ăn uống").
-
-Hãy phản hồi dưới dạng một đối tượng JSON duy nhất (không có markdown code block \`\`\`json ... \`\`\`, chỉ có chuỗi JSON thuần túy để parse được) chứa các trường sau:
-{
-  "job_category": "Tên nhóm ngành chính thức sau dịch/chuẩn hóa (ví dụ: Xe ôm công nghệ / Vận tải, Lao động dịch vụ ăn uống, Công nghệ thông tin...)",
-  "suggested_hourly_range": [min_hourly_vnd, max_hourly_vnd],
-  "is_exploited_text": "Đánh giá độ bóc lột bằng từ ngữ Gen Z cực độc lạ (ví dụ: 'Bóc lột sập nguồn', 'Tư bản bào mòn', 'Tạm ổn áp', 'Flex lương đỉnh chóp')",
-  "analysis_summary": "Phân tích chi tiết mà siêu hài hước bằng tiếng lóng Gen Z (dùng từ: 'ét ô ét', 'cứu cái lưng', 'tư bản bào', 'nằm im thở khò khò', 'kiếp làm thuê', 'chúa tể', 'chiến thần'). Phải giải thích rõ: 1) Lương theo giờ thực tế so với mức lương tối thiểu của khu vực làm việc đã chọn (${locationInput} với lương tối thiểu vùng là ${dynamicMinWage.toLocaleString()} đ/h) và trung bình ngành thế nào; 2) Giá trị thặng dư (m) bị chủ chiếm dụng; 3) Tỷ suất thặng dư (m') thể hiện mức độ sếp đang bào bạn thế nào; 4) Mối tương quan giữa lương và chi phí sinh hoạt tại vùng này (v) - đặc biệt nếu người dùng nhận thêm tiền trợ cấp của gia đình để bù đắp chi phí sống, hãy phân tích dí dỏm rằng gia đình họ đang gián tiếp 'tài trợ' cho nhà tư bản để họ có thể trả lương rẻ mạt cho bạn mà bạn vẫn không bị 'sập nguồn'; giải thích tại sao cùng mức lương đó nhưng chi phí ở vùng này đắt đỏ thì cuộc sống sẽ bấp bênh hơn.",
-  "advice": "Lời khuyên 'xịn sò' giúp nâng cấp bản thân, deal lương hoặc bảo vệ quyền lợi trước tư bản bào.",
-  "regional_living_cost_vnd": số_tiền_vnd_chi_phí_sinh_hoạt_tối_thiểu_một_tháng_tại_đây (nếu người dùng tự nhập chi phí sống > 0 và hợp lý thì giữ nguyên giá trị đó của họ, nếu họ để trống hoặc bằng 0 thì bạn tự tra cứu thực tế địa phương này và điền vào),
-  "regional_min_wage_hourly_vnd": số_tiền_lương_tối_thiểu_vùng_theo_giờ_tại_đây (tra cứu thực tế theo luật mới nhất cho địa điểm này),
-  "regional_brief_explanation": "Giải thích ngắn gọn (dưới 100 chữ) bằng tiếng Việt về chi tiết các khoản chi phí tối thiểu gồm thuê nhà trọ, ăn uống tại địa phương này."
-}`;
-
-    const userPrompt = `Hãy phân tích công việc sau:
-- Tên công việc: "${jobTitle}"
-- Khu vực làm việc: ${locationInput}
-- Lương tối thiểu vùng theo giờ (theo luật): ${dynamicMinWage.toLocaleString()} VND/giờ
-- Lương tháng từ việc làm: ${monthlySalary.toLocaleString()} VND
-- Tiền trợ cấp từ gia đình/bố mẹ mỗi tháng: ${familySupport.toLocaleString()} VND
-- Số ngày làm việc mỗi tháng: ${workingDays} ngày
-- Số giờ làm việc mỗi ngày: ${hoursPerDay} giờ
-- Chi phí sinh hoạt tối thiểu mỗi tháng của người dùng tại vùng này: ${costOfLiving.toLocaleString()} VND
-- Lương theo giờ thực tế tính toán được: ${Math.round(actualHourlyWage).toLocaleString()} VND/giờ`;
+    const prompt = [
+      "Phân loại công việc và đánh giá mức lương theo Kinh tế chính trị Mác - Lênin.",
+      "Trả về JSON thuần, không markdown.",
+      `Công việc: ${jobTitle}`,
+      `Lương tháng: ${monthlySalary} VND`,
+      `Giờ làm/ngày: ${hoursPerDay}`,
+      `Ngày làm/tháng: ${workingDays}`,
+      `Lương giờ: ${Math.round(hourlyWage)} VND/giờ`,
+      `Tỉnh/thành: ${province.name}`,
+      `Vùng lương app suy ra: ${region.name}`,
+      `Sàn tham chiếu: ${region.minHourlyWage} VND/giờ`,
+      `Chi phí sống: ${livingCost} VND/tháng`,
+      `Trợ cấp gia đình: ${familySupport} VND/tháng`,
+      "Schema: {\"jobCategory\":\"...\",\"suggestedHourlyRange\":[min,max],\"verdict\":\"...\",\"summary\":\"...\",\"advice\":\"...\"}"
+    ].join("\n");
 
     try {
-      if (isGoogleDirect && !isLikelyGoogleAiStudioKey) {
-        throw new Error("Không có Gemini API key hợp lệ.");
+      const text = await getAiText(prompt);
+      const parsed = parseAiJson(text);
+      if (!parsed?.jobCategory || !Array.isArray(parsed.suggestedHourlyRange)) {
+        throw new Error("AI trả dữ liệu sai định dạng");
       }
 
-      let response;
-      if (isGoogleDirect) {
-        response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": apiKey
-          },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: userPrompt }] }],
-            systemInstruction: { parts: [{ text: systemPrompt }] }
-          })
-        });
-      } else {
-        response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {})
-          },
-          body: JSON.stringify({
-            model: requestedModel,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt }
-            ]
-          })
-        });
-      }
-
-      if (!response.ok) {
-        throw new Error(`API response error: ${response.status}`);
-      }
-
-      const resData = await response.json();
-      let aiText = "";
-      if (isGoogleDirect) {
-        aiText = resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      } else {
-        aiText = resData.choices?.[0]?.message?.content || resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      }
-
-      let cleanText = aiText.trim();
-      if (cleanText.startsWith("```json")) {
-        cleanText = cleanText.substring(7);
-      }
-      if (cleanText.endsWith("```")) {
-        cleanText = cleanText.substring(0, cleanText.length - 3);
-      }
-      cleanText = cleanText.trim();
-
-      const parsed = JSON.parse(cleanText);
-      if (parsed && parsed.job_category && Array.isArray(parsed.suggested_hourly_range)) {
-        setAiResult({
-          job_category: parsed.job_category,
-          suggested_hourly_range: parsed.suggested_hourly_range,
-          is_exploited_text: parsed.is_exploited_text,
-          analysis_summary: parsed.analysis_summary,
-          advice: parsed.advice
-        });
-        if (parsed.regional_living_cost_vnd) {
-          setCostInput(parsed.regional_living_cost_vnd.toString());
-        }
-        if (parsed.regional_min_wage_hourly_vnd) {
-          setDynamicMinWage(parsed.regional_min_wage_hourly_vnd);
-        }
-        if (parsed.regional_brief_explanation) {
-          setRegionBriefExplanation(parsed.regional_brief_explanation);
-        }
-      } else {
-        throw new Error("Dữ liệu phản hồi AI không đúng cấu trúc.");
-      }
-    } catch (err) {
-      console.warn("AI Classification failed, using fallback parser:", err);
-      // Fail over to local rules
-      const localResult = getFallbackClassification(jobTitle, actualHourlyWage);
-      setAiResult(localResult);
-      setUsedFallback(true);
+      setAiResult({
+        jobCategory: String(parsed.jobCategory),
+        suggestedHourlyRange: [
+          Number(parsed.suggestedHourlyRange[0]) || fallbackClassification.suggestedHourlyRange[0],
+          Number(parsed.suggestedHourlyRange[1]) || fallbackClassification.suggestedHourlyRange[1]
+        ],
+        verdict: String(parsed.verdict || fallbackClassification.verdict),
+        summary: String(parsed.summary || fallbackClassification.summary),
+        advice: String(parsed.advice || fallbackClassification.advice),
+        source: "ai"
+      });
+    } catch (error) {
+      setAiResult(fallbackClassification);
+      setAiError(`Đang dùng luật dự phòng: ${error instanceof Error ? error.message : "AI lỗi"}.`);
     } finally {
-      setIsLoadingAi(false);
+      setIsAiLoading(false);
     }
   };
 
-  // Determine warning levels
-  const isWageUnderMinWage = actualHourlyWage < dynamicMinWage;
-  const isWageBelowSurvival = monthlySalary > 0 && monthlySalary < costOfLiving;
-  const isWageRidiculous = isWageUnderMinWage || isWageBelowSurvival;
-  const isWageUnderSuggested = aiResult && actualHourlyWage < aiResult.suggested_hourly_range[0];
-
-  const chartData = [
-    {
-      name: "Tái tạo Sức lao động (v)",
-      value: Number(effectiveNecessaryHours.toFixed(1)),
-      color: "#31e981" // Emerald green
-    },
-    {
-      name: "Thặng dư bị chủ chiếm (m)",
-      value: Number(surplusHours.toFixed(1)),
-      color: isWageRidiculous ? "#737373" : "#ff8a00" // Gray if ridiculous/unviable, Amber if standard
-    }
-  ];
+  const verdictTone = /toàn phần|nặng|bào/i.test(result.verdict)
+    ? "border-red-300/25 bg-red-400/10"
+    : /ổn|tốt/i.test(result.verdict)
+      ? "border-emerald-300/25 bg-emerald-300/10"
+      : "border-white/10 bg-white/[0.04]";
 
   return (
-    <div className="space-y-10">
-      {/* Upper header section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">
-            Công cụ thực nghiệm & Lý luận biện chứng
-          </span>
-          <h2
-            className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
-          >
-            <Briefcase className="text-white w-8 h-8" /> Sự Thật Về Tiền Lương & Thặng Dư
-          </h2>
+    <div className="space-y-5">
+      <header className="rounded-[24px] border border-white/10 bg-neutral-950/82 p-5 md:p-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-white/45">Chương 3</span>
+            <h2 className="mt-1 text-3xl md:text-5xl text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Phân tích lương & thặng dư
+            </h2>
+          </div>
+          <div className="text-sm text-white/55 md:text-right">
+            Nhập công việc thật. App tính lương giờ, mức sống và cảnh báo bóc lột.
+          </div>
         </div>
+      </header>
 
-        <button
-          onClick={onAskTeacher}
-          className="flex items-center gap-1 text-xs text-white/60 hover:text-white transition-all font-mono font-bold"
-        >
-          Hỏi Thầy Nam AI <ArrowUpRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      <section className="grid grid-cols-1 xl:grid-cols-[390px_1fr] gap-5">
+        <aside className="rounded-[24px] border border-white/10 bg-neutral-950/82 p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white">Dữ liệu</h3>
+            <Briefcase className="w-5 h-5 text-white/45" />
+          </div>
 
-      {/* 💡 Layperson Simple Explanation Box */}
-      <div className="liquid-glass border border-amber-500/20 bg-amber-500/5 text-amber-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-        <span className="text-xl">💡</span>
-        <div>
-          <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
-          <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-            Sếp trả lương cho bạn dựa trên chi phí sinh hoạt tối thiểu để bạn có thể đi làm hằng ngày (giá trị sức lao động). Nhưng trong ngày làm việc, bạn chỉ mất một phần thời gian (ví dụ 4 tiếng) để làm ra giá trị bằng lương của mình. Thời gian còn lại là thời gian bạn làm không công tạo ra <strong>giá trị thặng dư</strong> để chủ bỏ túi.
-          </p>
-        </div>
-      </div>
+          <label className="block space-y-2">
+            <span className="text-xs font-bold text-white/60">Tên công việc</span>
+            <input
+              value={jobTitle}
+              onChange={e => {
+                setJobTitle(e.target.value);
+                setDirty();
+              }}
+              placeholder="VD: chạy Grab, bưng phở, viết code..."
+              className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-white/35 outline-none focus:border-white/40"
+            />
+          </label>
 
-      {/* Quick presets row */}
-      <div className="space-y-2">
-        <label className="text-sm font-bold text-white/60 uppercase tracking-wider font-mono">
-          Tải nhanh ví dụ mẫu:
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {JOB_PRESETS.map(preset => (
-            <button
-              key={preset.id}
-              onClick={() => applyPreset(preset)}
-              className="px-5 py-2.5 rounded-full text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white transition-all cursor-pointer"
-            >
-              {preset.title.split(" (")[0]}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Left Column: Form Inputs */}
-        <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-6">
-          <h3 className="font-extrabold text-white text-lg flex items-center gap-2 font-mono uppercase tracking-wider">
-            <Coins className="w-4 h-4 text-emerald-400" /> Cấu hình công việc
-          </h3>
-
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Tên công việc</label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Lương tháng</span>
               <input
-                type="text"
-                placeholder="Nhập tên việc làm thêm..."
-                value={jobTitle}
-                onChange={e => setJobTitle(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-white/80 uppercase tracking-wide font-sans">Khu vực làm việc</label>
-              <select
-                value={region}
+                type="number"
+                value={salaryInput}
                 onChange={e => {
-                  const newReg = e.target.value as "vung1" | "vung2" | "vung3" | "vung4";
-                  handleRegionChange(newReg);
+                  setSalaryInput(e.target.value);
+                  setDirty();
                 }}
-                className="w-full bg-[#051c2c] border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all cursor-pointer font-sans"
+                placeholder="3000000"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Chi phí sống</span>
+              <input
+                type="number"
+                value={livingCostInput}
+                onChange={e => {
+                  setLivingCostInput(e.target.value);
+                  setDirty();
+                }}
+                placeholder="VD: 5000000"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
+              />
+              <span className="block text-[11px] leading-4 text-white/38">{LIVING_COST_DATA_NOTICE}</span>
+            </label>
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Giờ/ngày</span>
+              <input
+                type="number"
+                value={hoursInput}
+                onChange={e => {
+                  setHoursInput(e.target.value);
+                  setDirty();
+                }}
+                placeholder="6"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Ngày/tháng</span>
+              <input
+                type="number"
+                value={daysInput}
+                onChange={e => {
+                  setDaysInput(e.target.value);
+                  setDirty();
+                }}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Tỉnh/Thành phố</span>
+              <select
+                value={provinceId}
+                onChange={e => handleProvinceChange(e.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-neutral-900 px-4 py-3 text-sm text-white outline-none focus:border-white/40"
               >
-                {Object.values(REGION_CONFIGS).map(cfg => (
-                  <option key={cfg.id} value={cfg.id} className="bg-[#051c2c] text-white">
-                    {cfg.name}
-                  </option>
+                {PROVINCES.map(item => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
               </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-white/80 uppercase tracking-wide font-sans">Địa điểm làm việc cụ thể</label>
+              <span className="block text-[11px] text-white/38">{region.shortName}: {formatMoney(region.minHourlyWage)}/giờ</span>
+            </label>
+            <label className="block space-y-2">
+              <span className="text-xs font-bold text-white/60">Trợ cấp</span>
               <input
-                type="text"
-                placeholder="Ví dụ: Hà Nội, Đà Nẵng, Quảng Nam..."
-                value={locationInput}
-                onChange={e => setLocationInput(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all"
+                type="number"
+                value={familySupportInput}
+                onChange={e => {
+                  setFamilySupportInput(e.target.value);
+                  setDirty();
+                }}
+                placeholder="0"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
               />
-              {regionBriefExplanation && (
-                <p className="text-[11px] text-emerald-300 font-sans mt-1 leading-normal italic">
-                  Gợi ý thực tế: {regionBriefExplanation}
-                </p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Lương tháng (VND)</label>
-                <input
-                  type="number"
-                  placeholder="Ví dụ: 2000000"
-                  value={salaryInput}
-                  onChange={e => setSalaryInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Chi phí sống/tháng</label>
-                <input
-                  type="number"
-                  placeholder="Ví dụ: 2500000"
-                  value={costInput}
-                  onChange={e => setCostInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
-                />
-                {region === "vung1" && costOfLiving < 4500000 && costOfLiving > 0 && (
-                  <p className="text-[10px] text-amber-400 font-sans mt-1 leading-normal">
-                    ⚠️ Thực tế tại Hà Nội/TP.HCM trọ + ăn tối thiểu cần 4.5M - 6M đ. Mức bạn nhập có vẻ hơi thấp!
-                  </p>
-                )}
-                {region === "vung2" && costOfLiving < 3200000 && costOfLiving > 0 && (
-                  <p className="text-[10px] text-amber-400 font-sans mt-1 leading-normal">
-                    ⚠️ Tại Vùng II đô thị, chi phí sống tối thiểu thường cần khoảng 3.2M - 4.5M đ.
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Bố mẹ trợ cấp/tháng</label>
-                <input
-                  type="number"
-                  placeholder="Ví dụ: 3000000"
-                  value={familySupportInput}
-                  onChange={e => setFamilySupportInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Giờ làm / ngày</label>
-                <input
-                  type="number"
-                  placeholder="Ví dụ: 8"
-                  value={hoursInput}
-                  onChange={e => setHoursInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-sm font-bold text-white/80 uppercase tracking-wide">Số ngày làm / tháng</label>
-                <input
-                  type="number"
-                  placeholder="Ví dụ: 26"
-                  value={daysInput}
-                  onChange={e => setDaysInput(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-base font-semibold text-white focus:outline-none focus:border-white focus:bg-white/10 transition-all font-mono"
-                />
-              </div>
-            </div>
+            </label>
           </div>
 
-          <div className="pt-2">
+          <div className="flex gap-3">
             <button
-              onClick={handleAiClassify}
-              disabled={isLoadingAi || !jobTitle.trim()}
-              className="w-full py-4 rounded-2xl bg-white hover:bg-neutral-200 disabled:bg-neutral-800 disabled:text-neutral-500 font-extrabold text-sm text-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-white/5"
+              type="button"
+              onClick={runAiClassification}
+              disabled={isAiLoading}
+              className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-bold text-black hover:bg-neutral-200 disabled:bg-neutral-800 disabled:text-neutral-500 transition-all flex items-center justify-center gap-2"
             >
-              {isLoadingAi ? (
-                <>
-                  <RotateCcw className="w-4 h-4 animate-spin" />
-                  Đang phân tích dữ liệu...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Phân tích công việc bằng AI
-                </>
-              )}
+              {isAiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
+              Phân tích
             </button>
-            {aiError && <p className="text-red-400 text-[10px] mt-2 text-center">{aiError}</p>}
-          </div>
-
-          {/* AI Surplus value technology simulation card */}
-          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col gap-3">
-            <div className="flex items-start gap-2.5">
-              <div className="p-2 bg-white/10 rounded-lg text-white">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-              </div>
-              <div>
-                <h4 className="text-[11px] font-bold text-white uppercase tracking-wider font-mono">
-                  Cách mạng Công nghệ & Tăng năng suất
-                </h4>
-                <p className="text-[10px] text-white/50 mt-0.5 leading-relaxed">
-                  Tăng năng suất lao động cá biệt làm rút ngắn thời gian lao động tất yếu.
-                </p>
-              </div>
-            </div>
             <button
-              onClick={() => setIsAiApplied(!isAiApplied)}
-              className={`w-full py-3.5 rounded-2xl font-extrabold text-sm transition-all cursor-pointer border ${
-                isAiApplied
-                  ? "bg-emerald-500 text-black border-emerald-500"
-                  : "bg-transparent text-white border-white/20 hover:bg-white/5"
-              }`}
+              type="button"
+              onClick={resetForm}
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-white/70 hover:bg-white/[0.08] transition-all"
+              aria-label="Reset"
             >
-              {isAiApplied ? "Hủy mô phỏng Công nghệ" : "Mô phỏng Tăng năng suất (Relative Surplus)"}
+              <RotateCcw className="w-4 h-4" />
             </button>
           </div>
-        </div>
 
-        {/* Center & Right Column: Results and Analysis */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Cảnh báo bóc lột và đánh giá lương */}
-          <AnimatePresence mode="wait">
-            {isWageRidiculous ? (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="liquid-glass border border-red-500/30 bg-red-950/20 text-red-200 p-5 rounded-2xl flex items-start gap-3.5 shadow-lg"
-              >
-                <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5 text-red-400 animate-bounce" />
-                <div>
-                  <strong className="font-extrabold text-base block text-red-300 uppercase tracking-wider font-mono">
-                    Ét ô ét: Bạn đang bị bóc lột sập nguồn!
-                  </strong>
-                  <p className="text-sm mt-2 text-red-100/95 leading-relaxed font-sans font-medium">
-                    {isWageUnderMinWage && (
-                      <span className="block mb-2">
-                        ⚠️ <strong>Lương giờ cực thấp:</strong> Lương giờ thực tế của bạn (<span className="text-red-400 font-extrabold">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) đang <strong>dưới mức lương tối thiểu vùng</strong> quy định cho khu vực {locationInput} là <span className="text-emerald-400 font-extrabold">{dynamicMinWage.toLocaleString()} đ</span>/h.
-                      </span>
-                    )}
-                    {isWageBelowSurvival && (
-                      <span className="block">
-                        {totalIncome < costOfLiving ? (
-                          <>
-                            ⚠️ <strong>Không đủ sống:</strong> Tổng thu nhập tháng của bạn (<span className="text-red-400 font-extrabold">{totalIncome.toLocaleString()} đ</span>{familySupport > 0 ? ` bao gồm cả ${familySupport.toLocaleString()} đ bố mẹ trợ cấp` : ""}) <strong>không đủ để bù đắp chi phí sinh hoạt tối thiểu</strong> tại {locationInput} ({costOfLiving.toLocaleString()} đ). Đây là hiện tượng bán sức lao động dưới giá trị tái sản xuất, khiến bạn bị thâm hụt tài chính nghiêm trọng!
-                          </>
-                        ) : (
-                          <>
-                            💡 <strong>Cú lừa kinh điển:</strong> Lương từ chủ trả ({monthlySalary.toLocaleString()} đ) thấp hơn chi phí sống tối thiểu ({costOfLiving.toLocaleString()} đ). Bạn sống sót được ở {locationInput} là nhờ <strong>{familySupport.toLocaleString()} đ bố mẹ gửi trợ cấp</strong>. Dưới góc nhìn Mác-Lênin, <strong>gia đình bạn đang gián tiếp tài trợ cho chủ tư bản</strong> để họ có thể trả lương rẻ mạt cho bạn mà bạn vẫn không bị "sập nguồn"!
-                          </>
-                        )}
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </motion.div>
-            ) : isWageUnderSuggested ? (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="liquid-glass border border-amber-500/30 bg-amber-950/20 text-amber-200 p-5 rounded-2xl flex items-start gap-3.5 shadow-lg"
-              >
-                <AlertTriangle className="w-6 h-6 flex-shrink-0 mt-0.5 text-amber-400" />
-                <div>
-                  <strong className="font-extrabold text-base block text-amber-300 uppercase tracking-wider font-mono">
-                    Cảnh báo: Lương dưới mức trung bình của ngành!
-                  </strong>
-                  <p className="text-sm mt-2 text-amber-100/95 leading-relaxed font-sans font-medium">
-                    Mức lương theo giờ thực tế (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) của bạn đang
-                    thấp hơn so với ngưỡng đề xuất tối thiểu cho ngành {aiResult?.job_category} (từ{" "}
-                    {aiResult?.suggested_hourly_range[0].toLocaleString()} đ/h). Đồng chí đang bị bào thặng dư hơi nhiều rồi đấy,
-                    mau nâng cấp bản thân hoặc đấu tranh đòi deal lương công bằng hơn đi nào!
-                  </p>
-                </div>
-              </motion.div>
-            ) : aiResult ? (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                className="liquid-glass border border-emerald-500/30 bg-emerald-950/20 text-emerald-200 p-5 rounded-2xl flex items-start gap-3.5 shadow-lg"
-              >
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5 text-emerald-400" />
-                <div>
-                  <strong className="font-extrabold text-base block text-emerald-300 uppercase tracking-wider font-mono">
-                    Đánh giá: {aiResult.is_exploited_text}
-                  </strong>
-                  <p className="text-sm mt-2 text-emerald-100/95 leading-relaxed font-sans font-medium">
-                    Mức lương thực tế của bạn (<span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>/h) nằm trong khoảng
-                    phù hợp hoặc tốt so với đề xuất của ngành {aiResult.job_category} (khoảng{" "}
-                    {aiResult.suggested_hourly_range[0].toLocaleString()} -{" "}
-                    {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h). Sức lao động đang được trao đổi khá ngang giá,
-                    đủ để tái tạo năng lượng chiến đấu tiếp.
-                  </p>
-                </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-
-          {/* AI Analysis Result Board */}
-          {aiResult ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-4 shadow-xl"
-            >
-              <div className="flex justify-between items-start border-b border-white/5 pb-3">
-                <div>
-                  <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
-                    Phân tích AI từ Thầy Nam
-                  </span>
-                  <h4 className="text-base font-extrabold text-white mt-0.5">
-                    Nhóm việc: <span className="text-emerald-400">{aiResult.job_category}</span>
-                  </h4>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
-                    Khoảng đề xuất ngành
-                  </span>
-                  <span className="text-sm font-mono font-bold text-white">
-                    {aiResult.suggested_hourly_range[0].toLocaleString()} -{" "}
-                    {aiResult.suggested_hourly_range[1].toLocaleString()} đ/h
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-white/95 leading-relaxed italic bg-white/5 p-5 rounded-2xl border border-white/10 font-sans font-semibold">
-                  &ldquo;{aiResult.analysis_summary}&rdquo;
-                </p>
-                <div className="text-xs text-emerald-300 leading-relaxed flex items-start gap-2.5">
-                  <span className="text-base leading-none">💡</span>
-                  <div>
-                    <strong className="font-bold block text-emerald-200 text-sm">Khuyên đồng chí:</strong>
-                    {aiResult.advice}
-                  </div>
-                </div>
-              </div>
-              {usedFallback && (
-                <div className="text-[9px] text-white/30 text-right font-mono">
-                  *Kết nối AI gián đoạn, đang sử dụng hệ thống phân tích quy luật cục bộ.
-                </div>
-              )}
-            </motion.div>
-          ) : (
-            <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-4 shadow-xl bg-white/[0.02]">
-              <div className="border-b border-white/5 pb-3">
-                <span className="text-xs text-white/40 font-mono uppercase tracking-wider block">
-                  Trợ lý phân tích kinh tế
-                </span>
-                <h4 className="text-base font-extrabold text-white mt-0.5 flex items-center gap-2">
-                  <Sparkles className="w-4.5 h-4.5 text-emerald-400" /> Phân Tích Lý Luận Thặng Dư AI
-                </h4>
-              </div>
-              <p className="text-sm text-white/80 leading-relaxed font-sans font-medium">
-                Chào đồng chí! Công cụ này sử dụng mô hình trí tuệ nhân tạo **Gemini** để bóc tách và phân tích công việc làm thêm của bạn dưới lăng kính khoa học của **Kinh tế chính trị Mác - Lênin**:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-2">
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                  <strong className="text-xs text-emerald-300 font-bold block font-sans">🔍 Nhận diện & Đối chiếu ngành</strong>
-                  <p className="text-[11px] text-white/60 leading-normal">
-                    Tự động dịch các công việc làm thêm bình dân sang nhóm ngành chuẩn và so sánh với mức lương tối thiểu vùng quy định pháp luật.
-                  </p>
-                </div>
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                  <strong className="text-xs text-amber-300 font-bold block font-sans">⚖️ Tỷ suất thặng dư thực tế</strong>
-                  <p className="text-[11px] text-white/60 leading-normal">
-                    Phơi bày xem sếp đang "bào" bạn bao nhiêu phần trăm sức lực dưới dạng thời gian lao động thặng dư không công.
-                  </p>
-                </div>
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                  <strong className="text-xs text-red-300 font-bold block font-sans">💸 Cú lừa từ trợ cấp gia đình</strong>
-                  <p className="text-[11px] text-white/60 leading-normal">
-                    Nhận biết xem bố mẹ có đang phải "bơm máu" trả nốt phần chi phí sống thiếu hụt thay cho ông chủ tư bản hay không.
-                  </p>
-                </div>
-                <div className="p-3 bg-white/5 rounded-2xl border border-white/5 space-y-1">
-                  <strong className="text-xs text-purple-300 font-bold block font-sans">💡 Lời khuyên deal lương Gen Z</strong>
-                  <p className="text-[11px] text-white/60 leading-normal">
-                    Gợi ý giải pháp đàm phán nâng cao vị thế và deal mức lương xứng đáng, tránh bị bóc lột sập nguồn.
-                  </p>
-                </div>
-              </div>
-              <div className="text-[11px] text-emerald-300/80 font-sans italic text-center pt-2">
-                👉 Điền thông tin bên trái và nhấn nút "Phân tích công việc bằng AI" để bắt đầu!
-              </div>
-            </div>
-          )}
-
-          {/* Calculations Detail Box */}
-          <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-8">
-            <div className="space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-white/5 pb-4">
-                <h3 className="font-extrabold text-white text-sm uppercase tracking-wider font-mono">
-                  Phân tách ngày làm việc tiêu chuẩn {hoursPerDay} giờ
-                </h3>
-                <div className="flex items-center gap-4 text-xs uppercase font-mono tracking-wider text-white/50">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full"></span> Tất yếu (v)
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-neutral-600 rounded-full"></span> Thặng dư (m)
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress split bar */}
-              <div className="space-y-3">
-                <div className="w-full h-8 bg-neutral-950 rounded-full overflow-hidden flex p-1 border border-white/5">
-                  <div
-                    style={{ width: `${(effectiveNecessaryHours / hoursPerDay) * 100}%` }}
-                    className="bg-emerald-400 h-full rounded-full flex items-center justify-center text-xs font-black text-black transition-all duration-300"
-                  >
-                    {effectiveNecessaryHours.toFixed(1)} giờ
-                  </div>
-                  {surplusHours > 0 ? (
-                    <div
-                      style={{ width: `${(surplusHours / hoursPerDay) * 100}%` }}
-                      className="bg-neutral-600 h-full rounded-full flex items-center justify-center text-xs font-black text-white transition-all duration-300 ml-1"
-                    >
-                      {surplusHours.toFixed(1)} giờ
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex justify-between text-xs text-white/40 uppercase tracking-widest font-mono font-bold">
-                  <span>Bắt đầu ca làm</span>
-                  <span className="text-white font-semibold">
-                    Giá trị sức lao động hòa vốn tại {effectiveNecessaryHours.toFixed(1)}h
-                  </span>
-                  <span>Kết thúc ca</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Calculations Breakdown Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-white/5 pt-6">
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
-                    Lương theo giờ thực tế
-                  </div>
-                  <div className="text-2xl font-black text-white mt-1 font-mono">
-                    <span className="text-emerald-400">{Math.round(actualHourlyWage).toLocaleString()} đ</span>
-                  </div>
-                </div>
-                <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                  Lương tháng chia cho tổng số giờ làm việc thực tế trong một tháng.
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
-                    Tỷ suất thặng dư (m')
-                  </div>
-                  <div className="text-2xl font-black text-white mt-1 font-mono">
-                    <span className="text-amber-400">{Math.round(surplusRatio)}%</span>
-                  </div>
-                </div>
-                <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                  Tỷ lệ thời gian bạn làm không công cho chủ so với thời gian làm cho bản thân.
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col justify-between">
-                <div>
-                  <div className="text-xs font-extrabold text-white/40 uppercase font-mono">
-                    Thặng dư hàng tháng
-                  </div>
-                  <div className="text-2xl font-black text-white mt-1 font-mono">
-                    <span className="text-red-400">{Math.round(monthlySurplusValue).toLocaleString()} đ</span>
-                  </div>
-                </div>
-                <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                  Phần giá trị gia tăng mới mà bạn tạo thêm ngoài lương và bị sếp giữ lại.
-                </p>
-              </div>
-            </div>
-
-            {/* Value Created Distribution Visual Chart */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center border-t border-white/5 pt-6">
-              <div className="h-48 w-full relative flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={48}
-                      outerRadius={70}
-                      paddingAngle={4}
-                      dataKey="value"
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip
-                      contentStyle={{
-                        backgroundColor: "#031c2a",
-                        borderColor: "rgba(255,255,255,0.1)",
-                        borderRadius: "12px"
-                      }}
-                      itemStyle={{ color: "#fff", fontSize: "11px" }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-[9px] text-white/40 font-mono uppercase tracking-wider block">
-                    Tổng giá trị
-                  </span>
-                  <span className="text-sm font-mono font-bold text-white">
-                    {(monthlySalary + monthlySurplusValue).toLocaleString()} đ
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold text-white font-mono uppercase tracking-wider">
-                  Cơ cấu giá trị mới tạo ra
-                </h4>
-                <ul className="space-y-2 text-xs">
-                  <li className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full flex-shrink-0" />
-                    <span className="text-white/60">Bạn nhận được (v):</span>
-                    <strong className="text-white font-mono font-semibold">
-                      {monthlySalary.toLocaleString()} đ ({((monthlySalary / (monthlySalary + monthlySurplusValue || 1)) * 100).toFixed(0)}%)
-                    </strong>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: chartData[1].color }}
-                    />
-                    <span className="text-white/60">Chủ nhận được (m):</span>
-                    <strong className="text-white font-mono font-semibold">
-                      <span className="text-red-400">{Math.round(monthlySurplusValue).toLocaleString()} đ</span> ({((monthlySurplusValue / (monthlySalary + monthlySurplusValue || 1)) * 100).toFixed(0)}%)
-                    </strong>
-                  </li>
-                </ul>
-                <p className="text-[10px] text-white/45 leading-relaxed font-sans">
-                  *Theo lý thuyết Mác, giá trị thặng dư chính là nguồn gốc tích lũy của nhà tư bản, sinh ra từ sức lao động sống của công nhân mà sếp không trả tiền.
-                </p>
-              </div>
-            </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs leading-5 text-white/55">
+            <strong className="text-white">Nguồn đang dùng:</strong> tỉnh/thành chỉ dùng để suy ra vùng lương tối thiểu. Mức sống theo tỉnh cần import dataset gốc, hiện app không tự ước đoán.
           </div>
+        </aside>
 
-          {/* Cumulative Exploitation equivalences */}
-          <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <main className="space-y-5">
+          <section className={`rounded-[24px] border p-5 md:p-6 ${verdictTone}`}>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5">
               <div>
-                <h4 className="font-bold text-white text-sm uppercase tracking-wide font-mono">
-                  Mô phỏng thặng dư tích lũy của sếp
-                </h4>
-                <p className="text-[11px] text-white/50 mt-1 leading-relaxed">
-                  Nhập số tháng làm việc để thấy chủ tích lũy được bao nhiêu tài sản từ sức lao động của bạn.
+                <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-white/55">Kết luận</span>
+                <h3 className="mt-2 text-3xl md:text-4xl font-black text-white">{result.verdict}</h3>
+                <p className="mt-3 text-sm md:text-base leading-7 text-white/72">{result.summary}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="text-[10px] uppercase tracking-wider text-white/45">Lương giờ</div>
+                <div className="mt-1 text-3xl font-black text-white">{formatMoney(hourlyWage)}</div>
+                <div className="mt-1 text-xs text-white/55">Sàn: {formatMoney(region.minHourlyWage)}/giờ</div>
+              </div>
+            </div>
+          </section>
+
+          {aiError ? (
+            <div className="rounded-xl border border-amber-300/20 bg-amber-300/10 p-3 text-sm text-amber-100">{aiError}</div>
+          ) : null}
+
+          {inputWarnings.length ? (
+            <section className="rounded-[20px] border border-amber-300/20 bg-amber-300/10 p-4 space-y-2">
+              <h3 className="text-sm font-bold text-amber-100">Kiểm tra lại số liệu</h3>
+              {inputWarnings.map(item => (
+                <p key={item} className="text-sm leading-6 text-amber-50/85">{item}</p>
+              ))}
+            </section>
+          ) : null}
+
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="rounded-xl border border-white/10 bg-neutral-950/82 p-4">
+              <div className="text-[10px] uppercase tracking-wider text-white/40">Nhóm nghề</div>
+              <div className="mt-1 text-sm font-bold text-white">{result.jobCategory}</div>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-neutral-950/82 p-4">
+              <div className="text-[10px] uppercase tracking-wider text-white/40">Khoảng hợp lý</div>
+              <div className="mt-1 text-sm font-bold text-white">
+                {formatMoney(result.suggestedHourlyRange[0])} - {formatMoney(result.suggestedHourlyRange[1])}
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-neutral-950/82 p-4">
+              <div className="text-[10px] uppercase tracking-wider text-white/40">Thu nhập - chi phí</div>
+              <div className={`mt-1 text-sm font-bold ${totalIncomeGap < 0 ? "text-red-200" : "text-emerald-200"}`}>
+                {!hasLivingCost ? "Chưa nhập" : totalIncomeGap < 0 ? `Thiếu ${formatMoney(Math.abs(totalIncomeGap))}` : `Dư ${formatMoney(totalIncomeGap)}`}
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-neutral-950/82 p-4">
+              <div className="text-[10px] uppercase tracking-wider text-white/40">Tổng giờ/tháng</div>
+              <div className="mt-1 text-sm font-bold text-white">{Math.round(totalHoursMonth)} giờ</div>
+            </div>
+          </section>
+
+          <section className="rounded-[24px] border border-white/10 bg-neutral-950/82 p-5 md:p-6 space-y-5">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
+              <div>
+                <h3 className="text-xl font-bold text-white">Lương này có đủ sống không?</h3>
+                <p className="mt-1 text-sm leading-6 text-white/55">
+                  App so lương công việc với chi phí sống trước, rồi mới nói đến thặng dư.
                 </p>
               </div>
-              <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                <input
-                  type="number"
-                  min="1"
-                  max="48"
-                  value={workMonths}
-                  onChange={e => setWorkMonths(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-12 bg-transparent text-sm text-center text-white font-mono font-bold border-none focus:outline-none"
-                />
-                <span className="text-xs text-white/60 font-medium">tháng</span>
+              <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                <div className="text-[10px] uppercase tracking-wider text-white/40">Mức phủ chi phí sống</div>
+                <div className={`text-2xl font-black ${survivalPercent < 100 ? "text-red-200" : "text-emerald-200"}`}>
+                  {hasLivingCost ? `${Math.round(survivalPercent)}%` : "Chưa nhập"}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <input
-                type="range"
-                min="1"
-                max="36"
-                value={workMonths}
-                onChange={e => setWorkMonths(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white"
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                    <Coffee className="w-5 h-5 text-emerald-400" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-white/40 font-mono uppercase block">Cốc trà sữa</span>
-                    <strong className="text-base text-white font-mono">{itemsEquivalent.milktea} cốc</strong>
-                  </div>
-                </div>
-
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                    <Film className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-white/40 font-mono uppercase block">Vé xem phim IMAX</span>
-                    <strong className="text-base text-white font-mono">{itemsEquivalent.movie} vé</strong>
-                  </div>
-                </div>
-
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                    <Headphones className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-white/40 font-mono uppercase block">Tai nghe chống ồn</span>
-                    <strong className="text-base text-white font-mono">{itemsEquivalent.headphone} chiếc</strong>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="text-[10px] uppercase tracking-wider text-white/40">1. Chủ trả cho bạn</div>
+                <div className="mt-2 text-2xl font-black text-white">{formatMoney(monthlySalary)}</div>
+                <p className="mt-2 text-sm leading-6 text-white/58">
+                  {Math.round(totalHoursMonth)} giờ/tháng, tương đương {formatMoney(paidValuePerHour)}/giờ.
+                </p>
               </div>
 
-              <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl text-xs text-white/60 leading-relaxed font-sans">
-                Bạn tích lũy được tiền lương để trang trải sinh hoạt, nhưng sếp của bạn đã tích trữ được thêm{" "}
-                <strong className="text-white font-mono">{accumulatedSurplus.toLocaleString()} đ</strong> giá trị
-                thặng dư thô để mở rộng tư bản, thuê thêm nhân lực hoặc mua sắm tiêu dùng cao cấp.
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="text-[10px] uppercase tracking-wider text-white/40">2. Bạn cần để sống</div>
+                <div className="mt-2 text-2xl font-black text-white">{hasLivingCost ? formatMoney(livingCost) : "Chưa nhập"}</div>
+                <p className="mt-2 text-sm leading-6 text-white/58">
+                  {hasLivingCost
+                    ? `Chi phí sống bạn nhập tại ${province.name}. Trợ cấp gia đình: ${formatMoney(familySupport)}.`
+                    : `Chưa có dữ liệu gốc mức sống của ${province.name}; hãy nhập chi phí sống thực tế hoặc import dataset.`}
+                </p>
+              </div>
+
+              <div className={`rounded-2xl border p-4 ${
+                !hasLivingCost
+                  ? "border-amber-300/25 bg-amber-300/10"
+                  : isWageBelowLivingCost
+                    ? "border-red-300/25 bg-red-400/10"
+                    : "border-emerald-300/25 bg-emerald-300/10"
+              }`}>
+                <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
+                <div className="mt-2 text-2xl font-black text-white">
+                  {!hasLivingCost ? "Thiếu mốc mức sống" : isWageBelowLivingCost ? "Lương không đủ sống" : "Có phần vượt chi phí sống"}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-white/68">
+                  {!hasLivingCost
+                    ? "Chưa thể kết luận vì thiếu chi phí sống làm mốc so sánh."
+                    : isWageBelowLivingCost
+                    ? `Riêng lương công việc đang thiếu ${formatMoney(livingCost - monthlySalary)} so với chi phí sống.`
+                    : `Sau khi bù chi phí sống, lương còn dư ${formatMoney(monthlySalary - livingCost)}.`}
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3">
+              <h4 className="text-lg font-bold text-white">Vậy “thặng dư” hiểu thế nào?</h4>
+              <p className="text-sm leading-7 text-white/68">{surplusRealityNote}</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                  <div className="text-[10px] uppercase tracking-wider text-white/40">So với sàn tối thiểu</div>
+                  <div className={`mt-1 text-lg font-bold ${minimumPayGap < 0 ? "text-red-200" : "text-emerald-200"}`}>
+                    {minimumPayGap < 0 ? `Thiếu ${formatMoney(Math.abs(minimumPayGap))}` : `Cao hơn ${formatMoney(minimumPayGap)}`}
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-white/55">Sàn {region.shortName}: {formatMoney(minimumMonthlyPay)} cho tổng giờ đã nhập.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                  <div className="text-[10px] uppercase tracking-wider text-white/40">So với mặt bằng nghề</div>
+                  <div className={`mt-1 text-lg font-bold ${marketLowGap < 0 ? "text-red-200" : "text-emerald-200"}`}>
+                    {marketLowGap < 0 ? `Thấp hơn ${formatMoney(Math.abs(marketLowGap))}/giờ` : `Đạt đáy +${formatMoney(marketLowGap)}/giờ`}
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-white/55">{result.jobCategory}: {formatMoney(result.suggestedHourlyRange[0])} - {formatMoney(result.suggestedHourlyRange[1])}/giờ.</p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                  <div className="text-[10px] uppercase tracking-wider text-white/40">Ước tính thặng dư</div>
+                  <div className="mt-1 text-lg font-bold text-white">
+                    {isWageBelowLivingCost ? "Không đo bằng lương" : formatMoney(monthlySurplusValue)}
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-white/55">
+                    {isWageBelowLivingCost
+                      ? "Vì lương chưa đủ sống, cần xem đây là dấu hiệu bị ép giá sức lao động."
+                      : `${surplusHours.toFixed(1)} giờ/ngày vượt phần bù chi phí sống.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {practicalWarnings.map(item => (
+                <p key={item} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm leading-6 text-white/62">
+                  {item}
+                </p>
+              ))}
+            </div>
+          </section>
+
+          <details className="rounded-[20px] border border-white/10 bg-neutral-950/82 p-4">
+            <summary className="cursor-pointer text-sm font-bold text-white">Lý luận cần nhớ</summary>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">v:</strong> tiền lương / giá trị sức lao động.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">t:</strong> lao động tất yếu {effectiveNecessaryHours.toFixed(1)}h.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">t':</strong> lao động thặng dư {surplusHours.toFixed(1)}h.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">m':</strong> tỷ suất thặng dư {Math.round(surplusRatio)}%.</div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-white/60">{result.advice}</p>
+            <button
+              type="button"
+              onClick={onAskTeacher}
+              className="mt-4 rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-neutral-200 transition-all flex items-center gap-2"
+            >
+              Hỏi Thầy Nam AI <ArrowRight className="w-4 h-4" />
+            </button>
+          </details>
+        </main>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,63 @@
+{
+  "regions": {
+    "vung1": {
+      "id": "vung1",
+      "name": "Vùng I",
+      "minHourlyWage": 23800,
+      "source": "Nghị định 74/2024/NĐ-CP",
+      "date": "01/07/2024"
+    },
+    "vung2": {
+      "id": "vung2",
+      "name": "Vùng II",
+      "minHourlyWage": 21200,
+      "source": "Nghị định 74/2024/NĐ-CP",
+      "date": "01/07/2024"
+    },
+    "vung3": {
+      "id": "vung3",
+      "name": "Vùng III",
+      "minHourlyWage": 18600,
+      "source": "Nghị định 74/2024/NĐ-CP",
+      "date": "01/07/2024"
+    },
+    "vung4": {
+      "id": "vung4",
+      "name": "Vùng IV",
+      "minHourlyWage": 16600,
+      "source": "Nghị định 74/2024/NĐ-CP",
+      "date": "01/07/2024"
+    }
+  },
+  "provinces": [
+    { "id": "ha-noi", "name": "Hà Nội", "regionId": "vung1" },
+    { "id": "tp-hcm", "name": "TP. Hồ Chí Minh", "regionId": "vung1" },
+    { "id": "da-nang", "name": "Đà Nẵng", "regionId": "vung1" },
+    { "id": "hai-phong", "name": "Hải Phòng", "regionId": "vung1" },
+    { "id": "can-tho", "name": "Cần Thơ", "regionId": "vung2" },
+    { "id": "binh-duong", "name": "Bình Dương", "regionId": "vung1" },
+    { "id": "dong-nai", "name": "Đồng Nai", "regionId": "vung1" },
+    { "id": "ba-ria-vung-tau", "name": "Bà Rịa - Vũng Tàu", "regionId": "vung1" },
+    { "id": "quang-ninh", "name": "Quảng Ninh", "regionId": "vung1" },
+    { "id": "bac-ninh", "name": "Bắc Ninh", "regionId": "vung2" },
+    { "id": "hung-yen", "name": "Hưng Yên", "regionId": "vung2" },
+    { "id": "hai-duong", "name": "Hải Dương", "regionId": "vung2" },
+    { "id": "vinh-phuc", "name": "Vĩnh Phúc", "regionId": "vung2" },
+    { "id": "khanh-hoa", "name": "Khánh Hòa", "regionId": "vung2" },
+    { "id": "lam-dong", "name": "Lâm Đồng", "regionId": "vung2" },
+    { "id": "long-an", "name": "Long An", "regionId": "vung2" },
+    { "id": "tien-giang", "name": "Tiền Giang", "regionId": "vung2" },
+    { "id": "tay-ninh", "name": "Tây Ninh", "regionId": "vung2" },
+    { "id": "thua-thien-hue", "name": "Thừa Thiên Huế", "regionId": "vung2" },
+    { "id": "nghe-an", "name": "Nghệ An", "regionId": "vung3" },
+    { "id": "thanh-hoa", "name": "Thanh Hóa", "regionId": "vung3" },
+    { "id": "binh-dinh", "name": "Bình Định", "regionId": "vung3" },
+    { "id": "dak-lak", "name": "Đắk Lắk", "regionId": "vung3" },
+    { "id": "an-giang", "name": "An Giang", "regionId": "vung3" },
+    { "id": "dong-thap", "name": "Đồng Tháp", "regionId": "vung3" },
+    { "id": "soc-trang", "name": "Sóc Trăng", "regionId": "vung4" },
+    { "id": "ca-mau", "name": "Cà Mau", "regionId": "vung4" },
+    { "id": "dien-bien", "name": "Điện Biên", "regionId": "vung4" },
+    { "id": "ha-giang", "name": "Hà Giang", "regionId": "vung4" }
+  ]
+}

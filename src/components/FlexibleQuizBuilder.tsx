@@ -1,0 +1,385 @@
+import { useEffect, useState } from "react";
+import { AlertCircle, AlertTriangle, ArrowRight, BookOpen, CheckCircle2, RotateCcw } from "lucide-react";
+import { getQuizQuestions } from "../lib/quiz";
+import type { QuizQuestion } from "../lib/chapterToolTypes";
+import { InlineThayNamAI } from "./InlineThayNamAI";
+
+interface FlexibleQuizBuilderProps {
+  onBackToSyllabus?: () => void;
+  initialChapterIds?: number[];
+}
+
+const CHAPTER_IDS = [1, 2, 3, 4, 5, 6];
+const QUESTION_COUNTS = [5, 10, 20, 40];
+
+export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] }: FlexibleQuizBuilderProps) {
+  const [selectedChapters, setSelectedChapters] = useState<number[]>(initialChapterIds);
+  const [questionCountMode, setQuestionCountMode] = useState<number | "custom">(10);
+  const [customCountInput, setCustomCountInput] = useState("15");
+  const [availableQuestionsCount, setAvailableQuestionsCount] = useState(0);
+
+  const [isQuizActive, setIsQuizActive] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedOptionId, setSelectedOptionId] = useState<"A" | "B" | "C" | "D" | null>(null);
+  const [score, setScore] = useState(0);
+  const [showSummary, setShowSummary] = useState(false);
+  const [isCappedNotice, setIsCappedNotice] = useState(false);
+
+  useEffect(() => {
+    if (!isQuizActive) {
+      setSelectedChapters(initialChapterIds.length ? initialChapterIds : [1]);
+    }
+  }, [initialChapterIds, isQuizActive]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    getQuizQuestions(selectedChapters, 1).then(({ totalAvailableCount }) => {
+      if (mounted) setAvailableQuestionsCount(totalAvailableCount);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedChapters]);
+
+  const handleToggleChapter = (chapterId: number) => {
+    setSelectedChapters(prev => {
+      if (prev.includes(chapterId)) {
+        return prev.length === 1 ? prev : prev.filter(id => id !== chapterId);
+      }
+
+      return [...prev, chapterId].sort();
+    });
+  };
+
+  const selectAllChapters = () => setSelectedChapters(CHAPTER_IDS);
+
+  const getDesiredCount = () => {
+    if (questionCountMode === "custom") {
+      const parsed = Number.parseInt(customCountInput, 10);
+      return Number.isNaN(parsed) || parsed <= 0 ? 5 : parsed;
+    }
+
+    return questionCountMode;
+  };
+
+  const handleStartQuiz = async () => {
+    const { questions, isCapped } = await getQuizQuestions(selectedChapters, getDesiredCount());
+
+    setQuizQuestions(questions);
+    setIsCappedNotice(isCapped);
+    setCurrentIndex(0);
+    setSelectedOptionId(null);
+    setScore(0);
+    setIsQuizActive(true);
+    setShowSummary(false);
+  };
+
+  const handleSelectOption = (optionId: "A" | "B" | "C" | "D") => {
+    if (selectedOptionId !== null) return;
+
+    setSelectedOptionId(optionId);
+
+    const currentQ = quizQuestions[currentIndex];
+    if (optionId === currentQ.correctOptionId) {
+      setScore(prev => prev + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < quizQuestions.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      setSelectedOptionId(null);
+      return;
+    }
+
+    setShowSummary(true);
+  };
+
+  const handleRestart = () => {
+    setIsQuizActive(false);
+    setShowSummary(false);
+    setSelectedOptionId(null);
+  };
+
+  const getCurrentQuestionContext = () => {
+    const currentQ = quizQuestions[currentIndex];
+    if (!currentQ) return "";
+
+    return JSON.stringify({
+      chapterId: currentQ.chapterId,
+      prompt: currentQ.prompt,
+      options: currentQ.options,
+      userAnswer: selectedOptionId,
+      correctAnswer: currentQ.correctOptionId,
+      explanation: currentQ.explanation,
+      contextExcerpt: currentQ.contextExcerpt || ""
+    }, null, 2);
+  };
+
+  if (!isQuizActive) {
+    return (
+      <section className="rounded-[24px] border border-white/10 bg-neutral-950/85 p-4 md:p-6">
+        <div className="grid gap-4 border-b border-white/10 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">Ôn luyện tự chọn</div>
+            <h3 className="mt-2 text-xl font-bold text-white md:text-2xl">Tạo bộ câu hỏi</h3>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/65">
+            Có sẵn <strong className="text-white">{availableQuestionsCount}</strong> câu
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-[10px] uppercase tracking-[0.16em] text-white/45 font-mono">Chọn chương</label>
+              <button
+                type="button"
+                onClick={selectAllChapters}
+                className="text-xs font-semibold text-emerald-300 hover:text-emerald-200"
+              >
+                Chọn tất cả
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {CHAPTER_IDS.map(chapterId => {
+                const isSelected = selectedChapters.includes(chapterId);
+
+                return (
+                  <button
+                    key={chapterId}
+                    type="button"
+                    onClick={() => handleToggleChapter(chapterId)}
+                    className={`rounded-xl border px-4 py-3 text-left text-sm font-bold transition-colors ${
+                      isSelected
+                        ? "border-white bg-white text-black"
+                        : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07] hover:text-white"
+                    }`}
+                  >
+                    Chương {chapterId}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-[10px] uppercase tracking-[0.16em] text-white/45 font-mono">Số câu</label>
+            <div className="grid grid-cols-2 gap-2">
+              {QUESTION_COUNTS.map(count => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => setQuestionCountMode(count)}
+                  className={`rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                    questionCountMode === count
+                      ? "border-white bg-white text-black"
+                      : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07]"
+                  }`}
+                >
+                  {count}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setQuestionCountMode("custom")}
+                className={`rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                  questionCountMode === "custom"
+                    ? "border-white bg-white text-black"
+                    : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07]"
+                }`}
+              >
+                Tự nhập
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={customCountInput}
+                onChange={event => {
+                  setQuestionCountMode("custom");
+                  setCustomCountInput(event.target.value);
+                }}
+                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-neutral-950/70 px-4 py-3 text-sm font-semibold text-white outline-none focus:border-white/25"
+                placeholder="Số câu"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:justify-end">
+          {onBackToSyllabus && (
+            <button
+              type="button"
+              onClick={onBackToSyllabus}
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white/75 transition-colors hover:bg-white/[0.08] hover:text-white"
+            >
+              Về tóm tắt
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleStartQuiz}
+            disabled={availableQuestionsCount === 0}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Bắt đầu <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (showSummary) {
+    const percent = quizQuestions.length ? Math.round((score / quizQuestions.length) * 100) : 0;
+
+    return (
+      <section className="mx-auto max-w-2xl rounded-[24px] border border-white/10 bg-neutral-950/85 p-6 text-center md:p-8">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">Kết quả</div>
+        <h3 className="mt-2 text-2xl font-bold text-white">Bạn đúng {score}/{quizQuestions.length} câu</h3>
+        <div className="mx-auto mt-5 flex h-28 w-28 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-3xl font-black text-white">
+          {percent}%
+        </div>
+        <p className="mx-auto mt-5 max-w-lg text-sm leading-6 text-white/62">
+          {percent >= 80
+            ? "Nắm khá chắc. Có thể chuyển sang phần chi tiết giáo trình để đào sâu."
+            : percent >= 50
+              ? "Ổn nhưng còn hổng vài ý. Nên xem lại câu sai và hỏi Thầy Nam AI ở phần giải thích."
+              : "Cần đọc lại tóm tắt chương trước khi làm tiếp bộ câu mới."}
+        </p>
+
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={handleRestart}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white/75 transition-colors hover:bg-white/[0.08] hover:text-white"
+          >
+            <RotateCcw className="h-4 w-4" /> Làm đề khác
+          </button>
+          <a
+            href="/GIÁO TRÌNH FULL.pdf"
+            download
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-neutral-200"
+          >
+            <BookOpen className="h-4 w-4" /> Tải giáo trình
+          </a>
+        </div>
+      </section>
+    );
+  }
+
+  const currentQ = quizQuestions[currentIndex];
+  if (!currentQ) return null;
+
+  const isAnswered = selectedOptionId !== null;
+  const progressPercent = ((currentIndex + 1) / quizQuestions.length) * 100;
+
+  return (
+    <div className="space-y-5">
+      {isCappedNotice && currentIndex === 0 && (
+        <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
+          <AlertTriangle className="mr-2 inline h-4 w-4 text-amber-300" />
+          Số câu yêu cầu vượt dữ liệu hiện có, app tự giảm còn {quizQuestions.length} câu.
+        </div>
+      )}
+
+      <section className="rounded-[24px] border border-white/10 bg-neutral-950/85 p-4 md:p-6">
+        <div className="space-y-3 border-b border-white/10 pb-5">
+          <div className="flex items-center justify-between gap-3 text-[11px] text-white/50 font-mono">
+            <span>Câu {currentIndex + 1}/{quizQuestions.length}</span>
+            <span>Đúng {score}</span>
+          </div>
+          <div className="h-1 overflow-hidden rounded-full bg-white/10">
+            <div className="h-full bg-white transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-5">
+          <div>
+            <span className="rounded-md border border-white/15 bg-white/10 px-2 py-1 text-[10px] font-bold uppercase text-white/80">
+              Chương {currentQ.chapterId}
+            </span>
+            <h4 className="mt-3 text-base font-bold leading-7 text-white md:text-lg">{currentQ.prompt}</h4>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {currentQ.options.map(option => {
+              const isSelected = selectedOptionId === option.id;
+              const isCorrect = option.id === currentQ.correctOptionId;
+              const isWrong = isSelected && !isCorrect;
+              let optionStyle = "border-white/10 bg-white/[0.035] text-white/80 hover:bg-white/[0.07]";
+
+              if (isAnswered) {
+                if (isCorrect) optionStyle = "border-emerald-400/35 bg-emerald-400/10 text-emerald-200";
+                else if (isWrong) optionStyle = "border-rose-400/35 bg-rose-400/10 text-rose-200";
+                else optionStyle = "border-white/8 bg-white/[0.02] text-white/35";
+              }
+
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => handleSelectOption(option.id)}
+                  disabled={isAnswered}
+                  className={`min-h-[88px] rounded-xl border p-4 text-left text-sm font-medium transition-colors ${optionStyle}`}
+                >
+                  <span className="mr-2 font-mono text-xs font-bold">{option.id}.</span>
+                  <span className="leading-6">{option.text}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {isAnswered && (
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 md:p-5">
+              <div className="flex items-center gap-2 text-sm font-bold">
+                {selectedOptionId === currentQ.correctOptionId ? (
+                  <span className="inline-flex items-center gap-2 text-emerald-300">
+                    <CheckCircle2 className="h-4 w-4" /> Đúng
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 text-rose-300">
+                    <AlertCircle className="h-4 w-4" /> Sai, đáp án đúng là {currentQ.correctOptionId}
+                  </span>
+                )}
+              </div>
+              <p className="mt-3 text-sm leading-7 text-white/70">{currentQ.explanation}</p>
+              {currentQ.contextExcerpt && (
+                <details className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
+                  <summary className="cursor-pointer text-xs font-bold text-white/55">Ngữ cảnh giáo trình</summary>
+                  <p className="mt-3 text-xs leading-6 text-white/55">{currentQ.contextExcerpt}</p>
+                </details>
+              )}
+            </div>
+          )}
+
+          {isAnswered && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleNext}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-neutral-200"
+              >
+                {currentIndex < quizQuestions.length - 1 ? "Câu tiếp" : "Xem kết quả"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {isAnswered && (
+        <InlineThayNamAI
+          chapterId={currentQ.chapterId}
+          mode="quiz_explain"
+          currentStateSummary={getCurrentQuestionContext()}
+          curriculumContext={currentQ.contextExcerpt || currentQ.explanation}
+          placeholderText="Hỏi Thầy Nam AI về câu này..."
+        />
+      )}
+    </div>
+  );
+}
