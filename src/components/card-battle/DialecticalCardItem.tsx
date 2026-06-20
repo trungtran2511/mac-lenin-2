@@ -32,7 +32,7 @@ export const DialecticalCardItem: React.FC<DialecticalCardItemProps> = ({
       whileHover={{ scale: disabled ? 1 : 1.05, y: disabled ? 0 : -5 }}
       whileTap={{ scale: disabled ? 1 : 0.95 }}
       draggable={isDraggable && !disabled}
-      onDragStart={handleDragStart}
+      onDragStart={handleDragStart as any}
       onClick={onClick}
       className={`relative w-36 h-48 md:w-40 md:h-52 rounded-2xl border border-white/10 bg-gradient-to-br ${card.color} p-4 flex flex-col justify-between shadow-xl cursor-grab active:cursor-grabbing hover:shadow-2xl hover:shadow-white/5 transition-shadow select-none group ${disabled ? "opacity-40 pointer-events-none" : ""}`}
     >

@@ -34,7 +34,7 @@ export const CityGrid: React.FC<CityGridProps> = ({ grid, onCellClick }) => {
                   : "bg-neutral-900/50 border border-dashed border-white/5 pointer-events-none"
               }`}
               style={{
-                backgroundColor: cell.building ? getSectorColor(cell.sectorId) : undefined
+                backgroundColor: cell.building ? color : undefined
               }}
             >
               {cell.building ? (

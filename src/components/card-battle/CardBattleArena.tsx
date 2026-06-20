@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { BookOpen, Sparkles, HelpCircle } from "lucide-react";
 import { CARD_BATTLE_DEBATES } from "../../lib/cardBattleData";

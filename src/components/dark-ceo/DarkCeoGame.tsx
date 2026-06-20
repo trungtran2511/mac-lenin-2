@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, RotateCcw, AlertOctagon, CheckCircle2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { RotateCcw, AlertOctagon, CheckCircle2 } from "lucide-react";
 import { DARK_CEO_DEPARTMENTS, DARK_CEO_CRISES } from "../../lib/darkCeoData";
 import type { ChatEntry, KarmaTimer, CrisisMessage, CeoChoice } from "../../lib/darkCeoTypes";
 import { CeoStatsBar } from "./CeoStatsBar";
@@ -70,10 +70,10 @@ export default function DarkCeoGame() {
       }
     ];
     setChatHistory(initialHistory);
-    loadCrisis(1, initialHistory);
+    loadCrisis(1);
   };
 
-  const loadCrisis = (turn: number, history: ChatEntry[]) => {
+  const loadCrisis = (turn: number) => {
     setIsTyping(true);
     // Cycle through author crises based on turn number
     const crisisIndex = (turn - 1) % DARK_CEO_CRISES.length;
@@ -212,12 +212,12 @@ export default function DarkCeoGame() {
           }, 1500);
         } else {
           // Load next crisis
-          loadCrisis(nextTurn, finalHistory);
+          loadCrisis(nextTurn);
         }
       }, 500);
     } else {
       // Load next crisis directly
-      loadCrisis(nextTurn, updatedHistory);
+      loadCrisis(nextTurn);
     }
   };
 

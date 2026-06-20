@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Sparkles, BrainCircuit, ShieldCheck, HelpCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, BrainCircuit, ShieldCheck } from "lucide-react";
 import { SIM_ECON_SECTORS } from "../../lib/simEconData";
 import type { GridCell, EconomicSectorExtended } from "../../lib/simEconTypes";
 import { CityGrid } from "./CityGrid";
@@ -22,7 +22,7 @@ export default function SimEconCity() {
   const [forecast, setForecast] = useState<string>("");
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  const rebuildGrid = (stateC: number, privateC: number, fdiC: number): GridCell[] => {
+  const rebuildGrid = (stateC: number, privateC: number, _fdiC: number): GridCell[] => {
     const cells: GridCell[] = [];
     const sCount = Math.round(stateC);
     const pCount = Math.round(privateC);
