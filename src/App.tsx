@@ -775,9 +775,10 @@ export default function App() {
     { label: "Trang Chủ", target: "theory", active: activeView === "home" },
     { label: "Tính Lương", target: "surplus-value", active: activeView === "calculator" },
     { label: "Tự Học", target: "self-study", active: activeView === "self-study" },
-    { label: "Lý Luận", target: "about-section", active: false },
+    { label: "Biện Chứng Kỳ Đài", target: "market-dynamics", active: activeView === "market-dynamics" },
+    { label: "Giám Đốc Hắc Ám", target: "ethical-challenge", active: activeView === "ethical-challenge" },
+    { label: "Kinh Tế Kỳ Thành", target: "gdp-sectors", active: activeView === "gdp-sectors" },
     { label: "Mác AI", target: "marxist-ai", active: activeView === "ai-consultant" },
-    { label: "Cơ Cấu GDP", target: "gdp-sectors", active: activeView === "gdp-sectors" },
   ];
 
   const PIE_COLORS = ["#ffffff", "#a3a3a3", "#404040"];
@@ -818,12 +819,12 @@ export default function App() {
               </button>
 
               {/* Desktop Nav Links */}
-              <div className="hidden md:flex items-center gap-10">
+              <div className="hidden md:flex items-center gap-4 lg:gap-8">
                 {navLinks.map((link) => (
                   <button
                     key={link.label}
                     onClick={() => scrollToSection(link.target)}
-                    className={`text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
+                    className={`text-sm lg:text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                       }`}
@@ -937,12 +938,12 @@ export default function App() {
             </button>
 
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-10">
+            <div className="hidden md:flex items-center gap-4 lg:gap-8">
               {navLinks.map((link) => (
                 <button
                   key={link.label}
                   onClick={() => scrollToSection(link.target)}
-                  className={`text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
+                  className={`text-sm lg:text-base font-medium transition-colors duration-300 bg-transparent border-none outline-none cursor-pointer ${link.active
                     ? "text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                     }`}
