@@ -154,17 +154,6 @@ export default function CardBattleArena() {
             </div>
           </div>
 
-          {/* Description banner */}
-          <div className="bg-blue-950/20 border border-blue-500/15 rounded-2xl p-4 flex gap-3">
-            <BookOpen className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-sm font-bold text-blue-300">Khái quát Mâu thuẫn</h4>
-              <p className="text-xs md:text-sm text-neutral-400 mt-1 leading-relaxed font-light">
-                {activeDebate.description}
-              </p>
-            </div>
-          </div>
-
 
           {/* Collapsible Rules Box at the top */}
           <div className="bg-neutral-900/60 border border-white/5 rounded-2xl p-4 text-xs md:text-sm text-neutral-300 space-y-3">

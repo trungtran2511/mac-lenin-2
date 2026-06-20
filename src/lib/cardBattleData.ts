@@ -10,7 +10,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
     thesisCards: [
       {
         id: "theory-knowledge",
-        name: "Kiến thức hàn lâm",
+        name: "Kiến thức hàn lâm (Giảng đường)",
         category: "thesis",
         quantityValue: 2,
         icon: "BookOpen",
@@ -19,7 +19,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "high-gpa",
-        name: "Điểm số & GPA xuất sắc",
+        name: "Điểm số & GPA xuất sắc (Tiêu chuẩn trường học)",
         category: "thesis",
         quantityValue: 4,
         icon: "Award",
@@ -28,7 +28,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "deep-research",
-        name: "Nghiên cứu khoa học",
+        name: "Nghiên cứu khoa học (Chiều sâu tư duy)",
         category: "thesis",
         quantityValue: 5,
         icon: "Cpu",
@@ -37,7 +37,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "academic-olympiad",
-        name: "Học thuật đỉnh cao (Olympic)",
+        name: "Học thuật đỉnh cao (Tinh hoa / Olympic)",
         category: "thesis",
         quantityValue: 4,
         icon: "Trophy",
@@ -46,7 +46,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "foreign-languages",
-        name: "Tiêu chuẩn Quốc tế (IELTS 8.0)",
+        name: "Tiêu chuẩn Quốc tế (Chứng chỉ / IELTS 8.0)",
         category: "thesis",
         quantityValue: 3,
         icon: "Languages",
@@ -55,7 +55,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "scholarship-abroad",
-        name: "Học bổng quốc tế",
+        name: "Học bổng quốc tế (Học thuật tinh hoa thế giới)",
         category: "thesis",
         quantityValue: 5,
         icon: "Globe",
@@ -64,7 +64,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "advanced-theory",
-        name: "Lý luận chuyên sâu",
+        name: "Lý luận chuyên sâu (Hệ thống vĩ mô)",
         category: "thesis",
         quantityValue: 1,
         icon: "Search",
@@ -84,7 +84,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "networking",
-        name: "Mạng lưới kết nối",
+        name: "Mạng lưới kết nối (Chiều rộng quan hệ)",
         category: "antithesis",
         quantityValue: 5,
         icon: "Users",
@@ -93,7 +93,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "freelancer-work",
-        name: "Sức cạnh tranh Tự do (Freelance)",
+        name: "Sức cạnh tranh Tự do (Kinh tế tự do / Freelance)",
         category: "antithesis",
         quantityValue: 3,
         icon: "Activity",
@@ -102,7 +102,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "volunteer-leader",
-        name: "Hoạt động đại chúng (Tình nguyện)",
+        name: "Hoạt động đại chúng (Bình dân / Tình nguyện)",
         category: "antithesis",
         quantityValue: 4,
         icon: "HeartHandshake",
@@ -111,7 +111,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "technical-projects",
-        name: "Dự án thực chiến",
+        name: "Dự án thực chiến (Yêu cầu doanh nghiệp)",
         category: "antithesis",
         quantityValue: 5,
         icon: "Code2",
@@ -119,8 +119,17 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         color: "from-amber-700 to-red-800"
       },
       {
+        id: "local-projects",
+        name: "Dự án thực tế (Sản phẩm local / Mì ăn liền)",
+        category: "antithesis",
+        quantityValue: 3,
+        icon: "Cpu",
+        description: "Xây dựng dự án local thực tế yêu cầu triển khai nhanh gọn.",
+        color: "from-amber-600 to-orange-700"
+      },
+      {
         id: "corporate-internship",
-        name: "Thực tập tập đoàn lớn",
+        name: "Thực tập tập đoàn lớn (Sức ép vận hành vi mô)",
         category: "antithesis",
         quantityValue: 1,
         icon: "Building2",
@@ -188,7 +197,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         id: "global-tech-expert",
         name: "Kỹ sư Công nghệ Toàn cầu",
         requiredThesis: "scholarship-abroad",
-        requiredAntithesis: "technical-projects",
+        requiredAntithesis: "local-projects",
         leapThreshold: 8,
         description: "Mâu thuẫn giữa Tầm nhìn vĩ mô lý tưởng và Áp lực thực tế địa phương.",
         struggleDetail: "Học bổng quốc tế dạy bạn công nghệ cốt lõi và kiến trúc hệ thống chuẩn mực. Nhưng khi áp dụng vào dự án thực tế tại thị trường local, khách hàng thường chỉ muốn sản phẩm 'chạy được luôn', giá rẻ và thay đổi liên tục, tạo ra sự dằn vặt giữa 'làm chuẩn chỉnh' và 'làm cho nhanh'.",
