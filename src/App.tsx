@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
@@ -44,6 +44,10 @@ import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
 import { loadCurriculumLessons, type ChapterLessons } from "./lib/curriculum";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
+
+const CardBattleArena = React.lazy(() => import("./components/card-battle/CardBattleArena"));
+const DarkCeoGame = React.lazy(() => import("./components/dark-ceo/DarkCeoGame"));
+const SimEconCity = React.lazy(() => import("./components/sim-econ/SimEconCity"));
 
 // Define strict TypeScript contracts for safety
 interface JobOffer {
@@ -1716,143 +1720,14 @@ export default function App() {
               </button>
             </div>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
-            <div>
-              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Quy luật mâu thuẫn & Lượng - Chất</span>
-              <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                <TrendingUp className="text-white w-8 h-8" /> Võ Đài Biện Chứng Sinh Viên
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn mâu thuẫn:</label>
-              <select
-                value={selectedDebateId}
-                onChange={e => setSelectedDebateId(e.target.value)}
-                className="liquid-glass rounded-xl text-xs md:text-sm font-medium py-2.5 px-4 pr-10 border border-white/10 text-white outline-none appearance-none"
-              >
-                {economyData.dialectical_debates.map(deb => (
-                  <option key={deb.id} value={deb.id} className="bg-background text-white">{deb.title}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* 💡 Layperson Simple Explanation Box */}
-          <div className="liquid-glass border border-amber-500/20 bg-amber-500/5 text-amber-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-            <span className="text-xl">💡</span>
-            <div>
-              <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
-              <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Thế giới quan Marxist coi <strong>mâu thuẫn biện chứng</strong> là nguồn gốc của sự phát triển. Các mặt đối lập không tiêu diệt nhau hoàn toàn mà vừa đấu tranh vừa thống nhất. Đồng thời, sự tích lũy dần về <strong>LƯỢNG</strong> (ví dụ: số tuần học tập và rèn luyện) khi đạt đến 'Điểm nút' sẽ dẫn đến bước nhảy biến đổi về <strong>CHẤT</strong> (nâng tầm trình độ bản sắc).
-              </p>
-            </div>
-          </div>
-
-          {/* Two Opposing Forces */}
-          {(() => {
-            const currentDebate = economyData.dialectical_debates.find(d => d.id === selectedDebateId) || economyData.dialectical_debates[0];
-            return (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Side A */}
-                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 bg-white/[0.01] space-y-4">
-                    <div className="flex items-center gap-2.5 border-b border-white/5 pb-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
-                      <h3 className="font-bold text-white text-sm uppercase tracking-wider font-mono">{currentDebate.side_a}</h3>
-                    </div>
-                    <ul className="space-y-3">
-                      {currentDebate.side_a_arguments.map((arg, idx) => (
-                        <li key={idx} className="text-xs text-white/70 leading-relaxed flex items-start gap-2">
-                          <span className="text-red-400/80 mt-0.5">•</span>
-                          <span>{arg}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Side B */}
-                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 bg-white/[0.01] space-y-4">
-                    <div className="flex items-center gap-2.5 border-b border-white/5 pb-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-                      <h3 className="font-bold text-white text-sm uppercase tracking-wider font-mono">{currentDebate.side_b}</h3>
-                    </div>
-                    <ul className="space-y-3">
-                      {currentDebate.side_b_arguments.map((arg, idx) => (
-                        <li key={idx} className="text-xs text-white/70 leading-relaxed flex items-start gap-2">
-                          <span className="text-blue-400/80 mt-0.5">•</span>
-                          <span>{arg}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Recharts Chart: Lượng và Chất */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2 liquid-glass rounded-3xl p-6 border border-white/10 space-y-4">
-                    <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">
-                      Biểu đồ Biện Chứng: Tích lũy Lượng - Biến đổi Chất
-                    </h3>
-                    <div className="h-72 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart
-                          data={currentDebate.chart_data}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-                          <XAxis dataKey="step" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} />
-                          <YAxis yAxisId="left" stroke="rgba(255, 255, 255, 0.4)" fontSize={11} label={{ value: 'Lượng (Tích lũy)', angle: -90, position: 'insideLeft', fill: 'rgba(255, 255, 255, 0.4)', offset: 10 }} />
-                          <YAxis yAxisId="right" orientation="right" stroke="rgba(52, 211, 153, 0.6)" fontSize={11} label={{ value: 'Chất (Trình độ/Giá trị)', angle: 90, position: 'insideRight', fill: 'rgba(52, 211, 153, 0.6)', offset: 10 }} />
-                          <ChartTooltip
-                            contentStyle={{ backgroundColor: "rgba(10, 31, 53, 0.95)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "12px" }}
-                          />
-                          <Legend wrapperStyle={{ fontSize: 11, color: "#fff" }} />
-                          <Line
-                            yAxisId="left"
-                            type="monotone"
-                            dataKey="quantity"
-                            name="Lượng tích lũy"
-                            stroke="#ffffff"
-                            strokeWidth={3}
-                            dot={{ r: 4 }}
-                          />
-                          <Line
-                            yAxisId="right"
-                            type="monotone"
-                            dataKey="quality"
-                            name="Chất mới phát triển"
-                            stroke="#34d399"
-                            strokeWidth={3}
-                            dot={{ r: 4 }}
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  {/* Resolution card */}
-                  <div className="liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6">
-                    <div className="space-y-4">
-                      <h3 className="font-bold text-white flex items-center gap-2">
-                        <Award className="w-5 h-5 text-white" /> Khối Hợp Nhất (Synthesis)
-                      </h3>
-                      <strong className="text-xs text-white font-bold block mb-1">
-                        {currentDebate.resolution.title}
-                      </strong>
-                      <p className="text-xs text-white/60 leading-relaxed">
-                        {currentDebate.resolution.explanation}
-                      </p>
-                    </div>
-
-                    <div className="text-[10px] text-white/30 tracking-wider font-mono">
-                      *Minh họa trực quan Quy luật Lượng - Chất của phép biện chứng duy vật.
-                    </div>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
+                <div className="w-6 h-6 rounded-full border-2 border-t-transparent border-blue-500 animate-spin" />
+                Đang tải Võ Đài Biện Chứng...
+              </div>
+            }>
+              <CardBattleArena />
+            </Suspense>
 
           </div>
         </section>
@@ -1873,142 +1748,17 @@ export default function App() {
               </button>
             </div>
 
-          <div className="border-b border-white/10 pb-6">
-            <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trò chơi đóng vai</span>
-            <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-              <ShieldAlert className="text-white w-8 h-8" /> Thử Thách Làm Sếp: Đạo Đức vs Lợi Nhuận
-            </h2>
-            <p className="text-white/50 text-xs md:text-sm mt-1">
-              Nhập vai nhà điều hành để trải nghiệm các mâu thuẫn sinh tồn của doanh nghiệp trong thị trường cạnh tranh.
-            </p>
-          </div>
-
-          {/* 💡 Layperson Simple Explanation Box */}
-          <div className="liquid-glass border border-amber-500/20 bg-amber-500/5 text-amber-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-            <span className="text-xl">💡</span>
-            <div>
-              <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
-              <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Trong nền kinh tế thị trường, các ông chủ không hẳn là người xấu xa bẩm sinh, mà họ bị ép buộc bởi <strong>quy luật cạnh tranh khốc liệt</strong>. Nếu không tìm mọi cách cắt giảm chi phí (sa thải nhân viên, xả nước thải bẩn), họ sẽ bị các đối thủ cạnh tranh đè bẹp và phá sản. Đó là lý do Nhà nước cần can thiệp để bảo vệ người lao động và môi trường.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* Stats Panel */}
-            <div className="liquid-glass rounded-3xl p-6 border border-white/10 space-y-6">
-              <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Chỉ số doanh nghiệp</h3>
-
-              <div className="space-y-5">
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span>Lợi nhuận doanh thu</span>
-                    <span className="text-white font-bold">{bossScores.profit}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                    <div style={{ width: `${bossScores.profit}%` }} className="bg-white h-full transition-all duration-300"></div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span>Sức cạnh tranh sản phẩm</span>
-                    <span className="text-white font-bold">{bossScores.competitiveness}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                    <div style={{ width: `${bossScores.competitiveness}%` }} className="bg-neutral-400 h-full transition-all duration-300"></div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span>Trách nhiệm xã hội</span>
-                    <span className="text-white font-bold">{bossScores.social}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                    <div style={{ width: `${bossScores.social}%` }} className="bg-neutral-600 h-full transition-all duration-300"></div>
-                  </div>
-                </div>
-
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
+                <div className="w-6 h-6 rounded-full border-2 border-t-transparent border-blue-500 animate-spin" />
+                Đang tải Giám Đốc Hắc Ám...
               </div>
-
-              <div className="pt-4 border-t border-white/5 flex justify-center">
-                <button
-                  onClick={resetDilemma}
-                  className="px-5 py-2.5 rounded-full bg-white text-black text-xs font-bold hover:bg-stone-200 transition-all cursor-pointer border-none"
-                >
-                  Khởi động lại
-                </button>
-              </div>
-            </div>
-
-            {/* Scenario & Choices */}
-            <div className="lg:col-span-2 liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6">
-
-              <div className="space-y-4">
-                <span className="px-2.5 py-1 text-[10px] font-bold bg-white/10 text-white border border-white/20 rounded-md uppercase font-mono">
-                  Tình huống {dilemmaIndex + 1}
-                </span>
-                <p className="text-white text-sm md:text-base font-semibold leading-relaxed">
-                  {economyData.ethical_dilemmas[dilemmaIndex]?.scenario}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                {economyData.ethical_dilemmas[dilemmaIndex]?.choices.map((choice, idx) => (
-                  <button
-                    key={idx}
-                    disabled={selectedChoiceIndex !== null}
-                    onClick={() => handleDilemmaChoice(choice, idx)}
-                    className={`w-full text-left p-4 rounded-xl text-xs md:text-sm transition-all duration-200 border cursor-pointer ${selectedChoiceIndex === idx
-                      ? "bg-white text-black border-white font-medium"
-                      : selectedChoiceIndex !== null
-                        ? "opacity-40 border-white/5 text-white/30"
-                        : "bg-white/5 border-white/10 hover:border-white hover:bg-white/10 text-white"
-                      }`}
-                  >
-                    {choice.text}
-                  </button>
-                ))}
-              </div>
-
-              {selectedChoiceIndex !== null && (
-                <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-white text-xs font-bold">
-                    <CheckCircle2 className="w-4 h-4" /> Bản chất quy luật kinh tế
-                  </div>
-                  <p className="text-xs text-white/70 leading-relaxed">
-                    {economyData.ethical_dilemmas[dilemmaIndex]?.choices[selectedChoiceIndex]?.explanation}
-                  </p>
-
-                  {dilemmaIndex < economyData.ethical_dilemmas.length - 1 ? (
-                    <div className="pt-2 flex justify-end">
-                      <button
-                        onClick={() => {
-                          setDilemmaIndex(prev => prev + 1);
-                          setSelectedChoiceIndex(null);
-                        }}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-stone-200 text-black text-xs font-bold transition-all cursor-pointer border-none"
-                      >
-                        Tình huống tiếp theo <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="pt-2 text-center text-xs text-white font-bold tracking-wider font-mono">
-                      🎉 Hoàn thành kịch bản quản trị!
-                    </div>
-                  )}
-                </div>
-              )}
-
-            </div>
+            }>
+              <DarkCeoGame />
+            </Suspense>
 
           </div>
-
-        </div>
-      </section>
+        </section>
       )}
 
       {/* 10. GDP SECTOR MATRIX SECTION */}
@@ -2026,114 +1776,17 @@ export default function App() {
               </button>
             </div>
 
-          <div className="border-b border-white/10 pb-6">
-            <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Cơ Cấu Hiến Định</span>
-            <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-              <Building className="text-white w-8 h-8" /> Thành Phần Kinh Tế Việt Nam
-            </h2>
-            <p className="text-white/50 text-xs md:text-sm mt-1">
-              Phân tích cơ cấu định hướng XHCN thông qua tỷ trọng đóng góp GDP.
-            </p>
-          </div>
-
-          {/* 💡 Layperson Simple Explanation Box */}
-          <div className="liquid-glass border border-amber-500/20 bg-amber-500/5 text-amber-200 p-5 rounded-2xl flex items-start gap-3 shadow-md">
-            <span className="text-xl">💡</span>
-            <div>
-              <strong className="font-semibold text-sm block">Khái niệm đơn giản dành cho bạn:</strong>
-              <p className="text-xs mt-1 text-amber-300/80 leading-relaxed">
-                Việt Nam không đi theo con đường chủ nghĩa tư bản thuần túy, mà phát triển <strong>Kinh tế thị trường định hướng XHCN</strong>. Nghĩa là nền kinh tế vẫn vận hành theo quy luật thị trường, có sự đóng góp mạnh mẽ của khối Tư nhân và nước ngoài (FDI), nhưng Nhà nước (qua kinh tế Nhà nước giữ vai trò chủ đạo) sẽ điều tiết vĩ mô để đảm bảo công bằng xã hội, giàu mạnh và dân chủ.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div className="lg:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 flex flex-col items-center justify-center space-y-6">
-              <h3 className="font-semibold text-white text-sm uppercase tracking-wider font-mono">Đóng góp GDP thành phần</h3>
-
-              <div className="h-64 w-full flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={economyData.economic_sectors}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={65}
-                      outerRadius={90}
-                      paddingAngle={6}
-                      dataKey="gdp_contribution"
-                      nameKey="name"
-                    >
-                      {economyData.economic_sectors.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={PIE_COLORS[index % PIE_COLORS.length]}
-                          className="cursor-pointer outline-none focus:outline-none"
-                          onClick={() => setSelectedSectorId(entry.id)}
-                        />
-                      ))}
-                    </Pie>
-                    <ChartTooltip
-                      contentStyle={{ backgroundColor: "rgba(10, 31, 53, 0.95)", border: "1px solid rgba(255, 255, 255, 0.1)", borderRadius: "12px" }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
+                <div className="w-6 h-6 rounded-full border-2 border-t-transparent border-blue-500 animate-spin" />
+                Đang tải Kinh Tế Kỳ Thành...
               </div>
-
-              <div className="flex flex-wrap gap-6 justify-center text-xs font-semibold">
-                {economyData.economic_sectors.map((entry, index) => (
-                  <button
-                    key={entry.id}
-                    onClick={() => setSelectedSectorId(entry.id)}
-                    className={`flex items-center gap-2 transition-all cursor-pointer bg-transparent border-none ${selectedSectorId === entry.id ? "opacity-100 scale-105" : "opacity-40 hover:opacity-80"
-                      }`}
-                  >
-                    <span style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} className="w-3.5 h-3.5 rounded-full border border-white/10"></span>
-                    <span>{entry.name} ({entry.gdp_contribution}%)</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Detail Panel */}
-            <div className="liquid-glass rounded-3xl p-6 border border-white/10 flex flex-col justify-between space-y-6">
-              {(() => {
-                const sector = economyData.economic_sectors.find(s => s.id === selectedSectorId) || economyData.economic_sectors[0];
-                return (
-                  <div className="space-y-5">
-                    <span className="px-3 py-1 text-[10px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
-                      Hiến pháp Việt Nam
-                    </span>
-
-                    <h3 className="text-xl font-bold text-white tracking-tight">{sector.name}</h3>
-
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                      <strong className="text-[10px] text-white/60 uppercase font-mono block mb-1">Quy định hiến định:</strong>
-                      <p className="text-xs text-white/80 leading-relaxed italic">
-                        "{sector.constitutional_role}"
-                      </p>
-                    </div>
-
-                    <div className="space-y-1">
-                      <strong className="text-[10px] text-white/40 uppercase font-mono block">Vai trò kinh tế thực tiễn:</strong>
-                      <p className="text-xs text-white/60 leading-relaxed">
-                        {sector.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              <div className="text-[10px] text-white/30 font-mono">
-                *Định hướng kinh tế thị trường XHCN.
-              </div>
-            </div>
+            }>
+              <SimEconCity />
+            </Suspense>
 
           </div>
-
-        </div>
-      </section>
+        </section>
       )}
 
       {/* 11. FOOTER */}

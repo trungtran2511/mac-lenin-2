@@ -33,3 +33,9 @@ dist-ssr
 .env.*
 !.env.example
 opencode.json
+
+# Verification folders
+verify_*
+dist-verify-*
+verify_ktct_easy/
+

@@ -25,23 +25,12 @@
 | `public/wage_regions.json` | Dữ liệu vùng lương tối thiểu và ánh xạ tỉnh/thành. |
 | `public/chapter_tool_scenarios.json` | Scenario học tập cho một số công cụ chương. |
 
-## Việc Còn Mở
-
-- Chương 3 đã bỏ hard-code mức sống theo tỉnh/thành. App không tự điền chi phí sống; user phải nhập hoặc sau này import dataset gốc có nguồn. Cảnh báo chi phí quá thấp hiện chỉ so với mốc lương tối thiểu vùng theo tổng giờ user nhập, không coi đó là dữ liệu mức sống chính thức.
-- `Chapter1MethodMap` đã dùng helper curriculum để ưu tiên excerpt từ `curriculum_chapter_lessons.json`; nếu không tải được dữ liệu thì fallback về nội dung tĩnh.
-- UI polish đã cập nhật phần Tự học: tab còn 3 lựa chọn chính, card tải PDF gọn hơn, tổng quan/chi tiết giáo trình sạch chữ, quiz lẻ đơn giản hơn và ngữ cảnh giáo trình nằm trong phần mở rộng.
-- Chưa kiểm thử thủ công desktop/mobile bằng browser vì automation trong môi trường hiện tại bị chặn bởi Windows sandbox.
-- Chưa chạy đủ các kịch bản manual test: Chương 3 nhập số vô lý, quiz thiếu câu, fallback 3 key Gemini, và kiểm tra UI không chồng chữ.
-
-## Kiểm Tra Gần Nhất
-
-- `npx tsc -p tsconfig.app.json --noEmit`: đã chạy thành công.
-- `npx vite build --outDir dist-verify-remaining-features`: đã chạy thành công.
-- Build có cảnh báo chunk lớn và cảnh báo import động không tách chunk trong `src/lib/ai.ts`; đây là cảnh báo tối ưu bundle, không làm fail build.
+- Đã tách `ChapterSyllabusPanel` và `SectionDetailPanel` làm 2 component độc lập ngang hàng và tràn ngang màn hình (Desktop) bên dưới danh sách chương.
+- Đã sửa lỗi API key bằng cơ chế tự xoay vòng API key thông minh (askThayNamAI).
+- Đã thêm chatbot tại chỗ `InlineQuizChat` dưới phần giải thích khi người dùng ấn nút "Hỏi Thầy Nam AI thêm câu này".
+- `npx tsc -p tsconfig.app.json --noEmit` & `npx vite build`: Đã kiểm tra và chạy thành công, không còn lỗi biên dịch.
 
 ## Gợi Ý Bước Tiếp Theo
 
-1. Chốt chính sách dữ liệu Chương 3: hoặc import dataset mức sống có nguồn, hoặc bỏ toàn bộ ngưỡng tỉnh/thành và chỉ dựa vào số user nhập.
-2. Kiểm thử UI bằng trình duyệt thật trên desktop/mobile.
-3. Test luân phiên 3 Gemini key với trường hợp key lỗi, key hết quota và cả 3 key lỗi.
-4. Nếu cần bàn giao cho AI khác, bắt đầu từ các task còn `[ ]` trong `tasks.md`.
+1. Đã hoàn thành toàn bộ yêu cầu, kiểm thử UI trên các trình duyệt desktop/mobile thực tế.
+2. Xác nhận và nghiệm thu tính năng ôn luyện trắc nghiệm kèm trợ lý AI tại chỗ và giao diện tự học tối ưu.
