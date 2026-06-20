@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { ShieldAlert, Zap } from "lucide-react";
 
@@ -16,14 +17,14 @@ export const KarmaAlert: React.FC<KarmaAlertProps> = ({ eventText, sourceChoiceT
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
+  const alertContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md">
       {/* Screen flash red */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 1, 0] }}
         transition={{ duration: 0.5, times: [0, 0.2, 1] }}
-        className="absolute inset-0 bg-red-950/40 z-50 pointer-events-none"
+        className="absolute inset-0 bg-red-950/40 z-[10000] pointer-events-none"
       />
 
       {/* Vibration box */}
@@ -74,4 +75,6 @@ export const KarmaAlert: React.FC<KarmaAlertProps> = ({ eventText, sourceChoiceT
       </motion.div>
     </div>
   );
+
+  return createPortal(alertContent, document.body);
 };

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 
 interface LeapAnimationProps {
@@ -23,14 +24,14 @@ export const LeapAnimation: React.FC<LeapAnimationProps> = ({ onComplete }) => {
     color: i % 2 === 0 ? "bg-amber-400" : i % 3 === 0 ? "bg-blue-400" : "bg-red-500"
   }));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md overflow-hidden">
+  const animationContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-md overflow-hidden">
       {/* Screen flash white */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 1, 0] }}
         transition={{ duration: 0.6, times: [0, 0.2, 1] }}
-        className="absolute inset-0 bg-white z-50 pointer-events-none"
+        className="absolute inset-0 bg-white z-[10000] pointer-events-none"
       />
 
       {/* Screen shake container */}
@@ -95,4 +96,6 @@ export const LeapAnimation: React.FC<LeapAnimationProps> = ({ onComplete }) => {
       </motion.div>
     </div>
   );
+
+  return createPortal(animationContent, document.body);
 };
