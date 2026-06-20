@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Sparkles, RotateCcw, AlertOctagon, CheckCircle2 } from "lucide-react";
 import { DARK_CEO_DEPARTMENTS, DARK_CEO_CRISES } from "../../lib/darkCeoData";
 import type { ChatEntry, KarmaTimer, CrisisMessage, CeoChoice } from "../../lib/darkCeoTypes";
@@ -8,6 +8,7 @@ import { KarmaAlert } from "./KarmaAlert";
 
 export default function DarkCeoGame() {
   const maxTurns = 10;
+  const typingTimeoutRef = useRef<any>(null);
 
   // Game States
   const [currentTurn, setCurrentTurn] = useState(1);
@@ -37,9 +38,17 @@ export default function DarkCeoGame() {
   // Initialize first turn
   useEffect(() => {
     startGame();
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
   }, []);
 
   const startGame = () => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
     setCurrentTurn(1);
     setScores({
       profit: 50,
@@ -73,7 +82,11 @@ export default function DarkCeoGame() {
     const dept = DARK_CEO_DEPARTMENTS.find((d) => d.id === baseCrisis.departmentId);
     setTypingDeptName(dept?.name || "Hệ thống");
 
-    setTimeout(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
       const newCrisis: CrisisMessage = {
         ...baseCrisis,
@@ -82,15 +95,24 @@ export default function DarkCeoGame() {
       };
 
       setCurrentCrisis(newCrisis);
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          type: "department",
-          departmentId: newCrisis.departmentId,
-          text: newCrisis.text,
-          timestamp: newCrisis.timestamp
-        }
-      ]);
+      setChatHistory((prev) => {
+        const hasDuplicate = prev.some(
+          (entry) =>
+            entry.type === "department" &&
+            entry.text === newCrisis.text &&
+            entry.timestamp === newCrisis.timestamp
+        );
+        if (hasDuplicate) return prev;
+        return [
+          ...prev,
+          {
+            type: "department",
+            departmentId: newCrisis.departmentId,
+            text: newCrisis.text,
+            timestamp: newCrisis.timestamp
+          }
+        ];
+      });
     }, 1200);
   };
 

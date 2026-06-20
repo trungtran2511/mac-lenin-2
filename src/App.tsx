@@ -1708,8 +1708,8 @@ export default function App() {
 
       {/* 8. DIALECTICAL DEBATE SECTION */}
       {activeView === "market-dynamics" && (
-        <section id="market-dynamics" className="subpage-shell relative bg-background px-4 md:px-12 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
-          <div className="max-w-7xl w-full space-y-12 animate-fade-rise">
+        <section id="market-dynamics" className="subpage-shell relative bg-background px-4 md:px-12 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-7xl w-full space-y-6 animate-fade-rise">
 
             {/* Back Button */}
             <div className="pb-4">
@@ -1736,8 +1736,8 @@ export default function App() {
 
       {/* 9. ETHICAL BOSS CHALLENGE SECTION */}
       {activeView === "ethical-challenge" && (
-        <section id="ethical-challenge" className="subpage-shell relative bg-background px-4 md:px-12 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
-          <div className="max-w-7xl w-full space-y-12 animate-fade-rise">
+        <section id="ethical-challenge" className="subpage-shell relative bg-background px-4 md:px-12 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-7xl w-full space-y-6 animate-fade-rise">
 
             {/* Back Button */}
             <div className="pb-4">
@@ -1764,8 +1764,8 @@ export default function App() {
 
       {/* 10. GDP SECTOR MATRIX SECTION */}
       {activeView === "gdp-sectors" && (
-        <section id="gdp-sectors" className="subpage-shell relative bg-background px-4 md:px-12 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
-          <div className="max-w-7xl w-full space-y-12 animate-fade-rise">
+        <section id="gdp-sectors" className="subpage-shell relative bg-background px-4 md:px-12 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-7xl w-full space-y-6 animate-fade-rise">
 
             {/* Back Button */}
             <div className="pb-4">
