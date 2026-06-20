@@ -240,14 +240,14 @@ export default function DarkCeoGame() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
         <div>
-          <h2 className="text-xl font-black text-white flex items-center gap-2">
+          <h2 className="text-2xl font-black text-white flex items-center gap-2">
             👔 Giám Đốc Hắc Ám: Biện Chứng Sinh Tồn
           </h2>
-          <p className="text-xs text-neutral-400 mt-1 font-light max-w-xl">
+          <p className="text-sm text-neutral-400 mt-1 font-light max-w-xl">
             Mọi sự vật hiện tượng đều vận động thông qua đấu tranh của các mặt đối lập. Hãy đóng vai CEO điều hành một doanh nghiệp tư bản trong môi trường định hướng XHCN, giữ thăng bằng giữa lợi nhuận và lợi ích tập thể.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-neutral-300">
+        <div className="flex items-center gap-2 text-sm font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-neutral-300">
           <span>Lượt chơi:</span>
           <span className="font-bold text-white">
             {currentTurn} / {maxTurns}
@@ -264,11 +264,11 @@ export default function DarkCeoGame() {
           <div className="p-3 bg-red-500/20 rounded-full border border-red-500/30">
             <AlertOctagon className="w-8 h-8 text-red-500" />
           </div>
-          <h3 className="text-lg font-black text-white uppercase tracking-wider">PHÁ SẢN BIỆN CHỨNG (GAME OVER)</h3>
-          <p className="text-sm text-neutral-300 max-w-md leading-relaxed font-light">{gameOverReason}</p>
+          <h3 className="text-xl font-black text-white uppercase tracking-wider">PHÁ SẢN BIỆN CHỨNG (GAME OVER)</h3>
+          <p className="text-base text-neutral-300 max-w-md leading-relaxed font-light">{gameOverReason}</p>
           <button
             onClick={startGame}
-            className="mt-2 flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-xs font-bold transition-all hover:scale-105 active:scale-95"
+            className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-sm font-bold transition-all hover:scale-105 active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Khởi động lại doanh nghiệp
@@ -282,13 +282,13 @@ export default function DarkCeoGame() {
           <div className="p-3 bg-emerald-500/20 rounded-full border border-emerald-500/30">
             <CheckCircle2 className="w-8 h-8 text-emerald-500" />
           </div>
-          <h3 className="text-lg font-black text-white uppercase tracking-wider">CEO KIỆT XUẤT (VICTORY)</h3>
-          <p className="text-sm text-neutral-300 max-w-md leading-relaxed font-light">
+          <h3 className="text-xl font-black text-white uppercase tracking-wider">CEO KIỆT XUẤT (VICTORY)</h3>
+          <p className="text-base text-neutral-300 max-w-md leading-relaxed font-light">
             Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 10 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
           </p>
           <button
             onClick={startGame}
-            className="mt-2 flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all hover:scale-105 active:scale-95"
+            className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all hover:scale-105 active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Chơi lượt mới
@@ -308,7 +308,7 @@ export default function DarkCeoGame() {
           {currentCrisis && !isTyping && (
             <div className="md:col-span-4 flex flex-col">
               <div className="bg-neutral-900/40 border border-white/10 rounded-2xl p-5 flex flex-col gap-4 h-full justify-start">
-                <span className="text-xs uppercase tracking-wider text-amber-400 font-extrabold flex items-center gap-1.5">
+                <span className="text-sm uppercase tracking-wider text-amber-400 font-extrabold flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                   Yêu cầu quyết định khẩn cấp
                 </span>
@@ -318,9 +318,9 @@ export default function DarkCeoGame() {
                     <button
                       key={choice.id}
                       onClick={() => handleChoice(choice)}
-                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-sm font-semibold text-neutral-200 hover:text-white leading-relaxed group flex items-start gap-2.5"
+                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-base font-semibold text-neutral-200 hover:text-white leading-relaxed group flex items-start gap-2.5"
                     >
-                      <span className="w-6 h-6 inline-flex items-center justify-center rounded bg-white/5 border border-white/10 text-xs text-neutral-400 group-hover:bg-white/10 group-hover:text-white transition-colors shrink-0">
+                      <span className="w-6 h-6 inline-flex items-center justify-center rounded bg-white/5 border border-white/10 text-sm text-neutral-400 group-hover:bg-white/10 group-hover:text-white transition-colors shrink-0">
                         {choice.id.split("-").pop()?.toUpperCase()}
                       </span>
                       <span className="flex-1">{choice.text}</span>

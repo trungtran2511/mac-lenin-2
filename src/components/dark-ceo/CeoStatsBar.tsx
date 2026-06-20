@@ -66,11 +66,11 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
           >
             {/* Header */}
             <div className="flex justify-between items-center">
-              <span className="text-[10px] md:text-xs font-bold text-neutral-300 flex items-center gap-1.5">
-                <Icon className={`w-3.5 h-3.5 ${isDanger ? "text-red-400" : "text-neutral-400"}`} />
+              <span className="text-xs md:text-sm font-bold text-neutral-300 flex items-center gap-1.5">
+                <Icon className={`w-4 h-4 ${isDanger ? "text-red-400" : "text-neutral-400"}`} />
                 {stat.name}
               </span>
-              <span className={`font-mono text-xs font-black ${isDanger ? "text-red-400" : "text-white"}`}>
+              <span className={`font-mono text-sm md:text-base font-black ${isDanger ? "text-red-400" : "text-white"}`}>
                 {stat.value}%
               </span>
             </div>
@@ -89,7 +89,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
             </div>
 
             {/* Description Tooltip helper */}
-            <p className="text-[8px] md:text-[9px] text-neutral-500 font-light leading-tight">
+            <p className="text-[10px] md:text-xs text-neutral-500 font-light leading-tight">
               {stat.description}
             </p>
           </div>

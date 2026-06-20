@@ -31,12 +31,12 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
       <div className="flex justify-between items-center bg-[#1a1d21] border-b border-white/5 px-4 py-2.5">
         <div className="flex items-center gap-1.5">
           <Hash className="w-4 h-4 text-neutral-400" />
-          <span className="text-sm font-black text-white">#ban-giam-doc-ceos</span>
+          <span className="text-base font-black text-white">#ban-giam-doc-ceos</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         </div>
         <div className="flex items-center gap-3 text-neutral-400">
           <Bell className="w-3.5 h-3.5 hover:text-white cursor-pointer transition-colors" />
-          <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-white font-medium select-none">
+          <span className="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-white font-medium select-none">
             3 Online
           </span>
         </div>
@@ -48,7 +48,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
           if (entry.type === "system") {
             return (
               <div key={index} className="flex justify-center my-2">
-                <span className="text-[10px] bg-white/5 border border-white/15 px-3 py-1 rounded-full text-neutral-400 font-mono">
+                <span className="text-xs bg-white/5 border border-white/15 px-3 py-1 rounded-full text-neutral-400 font-mono">
                   {entry.text}
                 </span>
               </div>
@@ -66,10 +66,10 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
                 </div>
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-[11px] font-black text-red-400 uppercase tracking-wider">PHỦ ĐỊNH</span>
-                    <span className="text-[9px] text-neutral-500 font-mono">{entry.timestamp}</span>
+                    <span className="text-xs font-black text-red-400 uppercase tracking-wider">PHỦ ĐỊNH</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">{entry.timestamp}</span>
                   </div>
-                  <p className="text-sm text-red-200 mt-1 leading-relaxed font-semibold">{entry.text}</p>
+                  <p className="text-base text-red-200 mt-1 leading-relaxed font-semibold">{entry.text}</p>
                 </div>
               </div>
             );
@@ -93,15 +93,15 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                   <span
-                    className={`text-sm font-black ${
+                    className={`text-base font-black ${
                       isCeo ? "text-indigo-400" : dept?.color || "text-neutral-300"
                     }`}
                   >
                     {isCeo ? "Bạn (CEO)" : dept?.name || "Bộ phận"}
                   </span>
-                  <span className="text-[10px] text-neutral-500 font-mono">{entry.timestamp}</span>
+                  <span className="text-xs text-neutral-500 font-mono">{entry.timestamp}</span>
                 </div>
-                <p className="text-sm text-neutral-300 mt-1 leading-relaxed font-light whitespace-pre-wrap">
+                <p className="text-base text-neutral-300 mt-1 leading-relaxed font-light whitespace-pre-wrap">
                   {entry.text}
                 </p>
               </div>
@@ -116,7 +116,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
               💬
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-bold text-neutral-400">{typingDeptName} đang soạn thảo...</span>
+              <span className="text-xs font-bold text-neutral-400">{typingDeptName} đang soạn thảo...</span>
               <div className="flex items-center gap-1 py-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: "0ms" }} />
                 <span className="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: "150ms" }} />
@@ -129,9 +129,8 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
         <div ref={bottomRef} />
       </div>
 
-      {/* Input mimic footer */}
       <div className="bg-[#1a1d21] border-t border-white/5 p-3 flex gap-2 items-center">
-        <div className="flex-1 bg-neutral-900 border border-white/5 rounded-xl px-3 py-2 text-sm text-neutral-500 italic flex items-center justify-between">
+        <div className="flex-1 bg-neutral-900 border border-white/5 rounded-xl px-3 py-2 text-base text-neutral-500 italic flex items-center justify-between">
           <span>Ban giám đốc đang trả lời tin nhắn...</span>
           <Send className="w-3.5 h-3.5 text-neutral-600" />
         </div>
