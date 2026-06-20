@@ -298,31 +298,35 @@ export default function DarkCeoGame() {
 
       {/* Active gameplay elements */}
       {!gameOver && !gameWon && (
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
           {/* Slack chat window */}
-          <SlackChatPanel chatHistory={chatHistory} isTyping={isTyping} typingDeptName={typingDeptName} />
+          <div className={currentCrisis && !isTyping ? "md:col-span-6 flex flex-col" : "md:col-span-10 flex flex-col"}>
+            <SlackChatPanel chatHistory={chatHistory} isTyping={isTyping} typingDeptName={typingDeptName} />
+          </div>
 
           {/* Decision Box */}
           {currentCrisis && !isTyping && (
-            <div className="bg-neutral-900/40 border border-white/10 rounded-2xl p-5 flex flex-col gap-3">
-              <span className="text-[10px] uppercase tracking-wider text-amber-400 font-extrabold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                Yêu cầu quyết định khẩn cấp
-              </span>
+            <div className="md:col-span-4 flex flex-col">
+              <div className="bg-neutral-900/40 border border-white/10 rounded-2xl p-5 flex flex-col gap-4 h-full justify-start">
+                <span className="text-xs uppercase tracking-wider text-amber-400 font-extrabold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                  Yêu cầu quyết định khẩn cấp
+                </span>
 
-              <div className="grid grid-cols-1 gap-2.5 mt-2">
-                {currentCrisis.choices.map((choice) => (
-                  <button
-                    key={choice.id}
-                    onClick={() => handleChoice(choice)}
-                    className="w-full text-left p-3.5 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-xs font-semibold text-neutral-200 hover:text-white leading-relaxed group"
-                  >
-                    <span className="w-5 h-5 inline-flex items-center justify-center rounded bg-white/5 border border-white/10 text-[10px] text-neutral-400 group-hover:bg-white/10 group-hover:text-white mr-2.5 transition-colors">
-                      {choice.id.split("-").pop()?.toUpperCase()}
-                    </span>
-                    {choice.text}
-                  </button>
-                ))}
+                <div className="grid grid-cols-1 gap-3.5 mt-2 flex-1 justify-center">
+                  {currentCrisis.choices.map((choice) => (
+                    <button
+                      key={choice.id}
+                      onClick={() => handleChoice(choice)}
+                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-sm font-semibold text-neutral-200 hover:text-white leading-relaxed group flex items-start gap-2.5"
+                    >
+                      <span className="w-6 h-6 inline-flex items-center justify-center rounded bg-white/5 border border-white/10 text-xs text-neutral-400 group-hover:bg-white/10 group-hover:text-white transition-colors shrink-0">
+                        {choice.id.split("-").pop()?.toUpperCase()}
+                      </span>
+                      <span className="flex-1">{choice.text}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
