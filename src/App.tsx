@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
@@ -41,6 +41,7 @@ import HomeFeatureCards from "./components/HomeFeatureCards";
 import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
 import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
+import { loadCurriculumLessons, type ChapterLessons } from "./lib/curriculum";
 import animeTeacher from "./assets/anime_teacher.png";
 import chibiTeacher from "./assets/chibi_teacher.png";
 
@@ -361,6 +362,7 @@ export default function App() {
   }
 
   const [curriculumData, setCurriculumData] = useState<CurriculumData | null>(null);
+  const [lessons, setLessons] = useState<ChapterLessons[]>([]);
 
   // Self-study & practice quiz states
   const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice'>('syllabus');
@@ -518,6 +520,10 @@ export default function App() {
       .catch(err => {
         console.error("Error loading curriculum knowledge:", err);
       });
+      
+    loadCurriculumLessons()
+      .then(setLessons)
+      .catch(err => console.error("Failed to load detailed lessons", err));
   }, []);
 
   // Job calculations (handled in child component)
@@ -1269,30 +1275,73 @@ export default function App() {
                 </div>
 
                 {/* Chapter details content panel */}
-                <div className="md:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between">
+                <div className="md:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between max-h-[85vh] overflow-y-auto">
                   {(() => {
                     const activeCh = curriculumData?.chapters.find(c => c.id === selectedChapterDetails);
                     if (!activeCh) return null;
+                    const activeLesson = lessons.find(l => l.chapterId === selectedChapterDetails);
+                    
                     return (
                       <>
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                           <div className="flex items-center gap-2 border-b border-white/5 pb-4">
                             <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
-                              Hệ thống tri thức
+                              Hệ thống tri thức chi tiết
                             </span>
                             <span className="text-white/40 text-[10px] font-mono">Chương {activeCh.id}</span>
                           </div>
                           
                           <h3 className="text-xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
                           
-                          <div className="text-xs text-white/70 leading-relaxed space-y-4 whitespace-pre-line font-light">
-                            {activeCh.summary}
-                          </div>
+                          {activeLesson ? (
+                            <div className="space-y-6">
+                              <p className="text-xs text-white/70 leading-relaxed font-light">{activeLesson.intro}</p>
+                              
+                              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                                <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono mb-3">Hướng dẫn ôn tập</h4>
+                                <ul className="list-disc pl-5 space-y-1.5 text-xs text-white/70 leading-relaxed">
+                                  {activeLesson.studyGuide.map((g, i) => (
+                                    <li key={i}>{g}</li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div className="space-y-4 pt-4 border-t border-white/5">
+                                <h4 className="text-xs font-bold text-white uppercase tracking-widest font-mono">Các mục kiến thức trọng tâm</h4>
+                                <div className="space-y-4">
+                                  {activeLesson.keyPoints.map((point, index) => (
+                                    <div key={index} className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] space-y-2">
+                                      <h5 className="text-sm font-bold text-white flex items-center gap-2">
+                                        <span className="text-xs font-mono text-emerald-400">0{index + 1}.</span>
+                                        {point.heading}
+                                      </h5>
+                                      <p className="text-xs text-white/60 leading-relaxed font-light">{point.text}</p>
+                                      <details className="group mt-2">
+                                        <summary className="text-[11px] text-emerald-400 font-semibold cursor-pointer select-none hover:text-emerald-300 transition-colors list-none flex items-center gap-1">
+                                          <span>📖 Đọc chi tiết luận giải</span>
+                                          <span className="transition-transform group-open:rotate-180 text-[10px]">▼</span>
+                                        </summary>
+                                        <div className="mt-3 pl-3 border-l-2 border-white/10 text-xs text-white/75 space-y-3 font-light leading-relaxed select-text">
+                                          {point.details?.map((p, idx) => (
+                                            <p key={idx}>{p}</p>
+                                          ))}
+                                        </div>
+                                      </details>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-white/70 leading-relaxed space-y-4 whitespace-pre-line font-light">
+                              {activeCh.summary}
+                            </div>
+                          )}
                         </div>
 
                         <div className="border-t border-white/5 pt-6 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                           <span className="text-[10px] text-white/30 font-mono italic">
-                            *Tóm tắt cô đọng theo giáo trình của Bộ Giáo dục & Đào tạo.
+                            *Nội dung chi tiết được biên soạn từ giáo trình chính thức.
                           </span>
                           <button
                             onClick={() => {
