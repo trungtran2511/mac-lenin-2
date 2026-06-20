@@ -63,7 +63,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
 
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-5 h-5 text-amber-400 animate-spin" style={{ animationDuration: "3s" }} />
-        <span className="text-[10px] tracking-[0.3em] uppercase text-amber-400 font-extrabold">Dung Hợp Thành Công</span>
+        <span className="text-xs tracking-[0.3em] uppercase text-amber-400 font-extrabold">Dung Hợp Thành Công</span>
       </div>
 
       <h3 className="text-xl md:text-2xl font-black text-white text-center leading-tight mb-6">
@@ -79,7 +79,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
 
         <div className="flex justify-between items-center">
-          <span className="px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-black/30 text-amber-200">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/30 text-amber-200">
             Hợp đề (Synthesis)
           </span>
           <Sparkles className="w-4 h-4 text-amber-200" />
@@ -89,10 +89,10 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
           <div className="p-3 rounded-full bg-black/25">
             <Sparkles className="w-8 h-8 text-amber-200" />
           </div>
-          <h4 className="text-sm font-extrabold text-white leading-tight px-1">{synthesisCard.name}</h4>
+          <h4 className="text-base font-extrabold text-white leading-tight px-1">{synthesisCard.name}</h4>
         </div>
 
-        <p className="text-[9px] text-amber-50/90 text-center leading-snug font-light border-t border-white/10 pt-2">
+        <p className="text-[11px] text-amber-50/90 text-center leading-snug font-normal border-t border-white/10 pt-2">
           {synthesisCard.description}
         </p>
       </motion.div>
@@ -101,7 +101,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
       <div className="mt-8 w-full border-t border-white/10 pt-5">
         <div className="flex items-center gap-2 mb-3 text-neutral-400">
           <MessageSquareCode className="w-4 h-4 text-blue-400" />
-          <span className="text-xs font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
+          <span className="text-sm font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
         </div>
 
         <div className="bg-black/30 rounded-2xl p-4 border border-white/5 min-h-[80px] flex items-center justify-center">
@@ -112,7 +112,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           ) : (
-            <p className="text-xs md:text-sm text-neutral-200 leading-relaxed font-normal text-left whitespace-pre-line w-full">
+            <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-normal text-left whitespace-pre-line w-full">
               {commentary}
             </p>
           )}
@@ -121,7 +121,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
 
       <button
         onClick={onReset}
-        className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-xs font-bold transition-all hover:scale-105 active:scale-95"
+        className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95"
       >
         <RefreshCw className="w-3.5 h-3.5" />
         Vòng biện chứng mới

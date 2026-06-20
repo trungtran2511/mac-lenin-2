@@ -34,12 +34,12 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
             <div className="flex justify-between items-start">
               <div>
                 <span
-                  className="text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 border border-white/10"
+                  className="text-xs font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/5 border border-white/10"
                   style={{ color: sector.color }}
                 >
                   X-Ray Chẩn Đoán Cơ Cấu
                 </span>
-                <h3 className="text-lg font-black text-white mt-1.5">{sector.name}</h3>
+                <h3 className="text-xl font-black text-white mt-1.5">{sector.name}</h3>
               </div>
               <button
                 onClick={onClose}
@@ -53,8 +53,8 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
             <div className="bg-neutral-950/40 border border-white/5 rounded-2xl p-4 flex gap-3">
               <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: sector.color }} />
               <div>
-                <h4 className="text-xs font-bold text-neutral-300">Quy định Hiến pháp & Vai trò Chủ đạo</h4>
-                <p className="text-[11px] text-neutral-400 mt-1 leading-relaxed font-light">
+                <h4 className="text-sm font-bold text-neutral-300">Quy định Hiến pháp & Vai trò Chủ đạo</h4>
+                <p className="text-xs text-neutral-300 mt-1.5 leading-relaxed font-light">
                   {sector.constitutional_role}
                 </p>
               </div>
@@ -62,7 +62,7 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
 
             {/* Key Industries */}
             <div className="flex flex-col gap-3">
-              <h4 className="text-xs font-bold text-neutral-300 flex items-center gap-1.5">
+              <h4 className="text-sm font-bold text-neutral-300 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 Các Ngành Hạt Nhân & Định Hướng Phát Triển
               </h4>
@@ -76,9 +76,9 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
                     <div className="text-lg mt-0.5 select-none">{ind.icon}</div>
                     <div className="flex-1">
                       <div className="flex justify-between items-center gap-2">
-                        <span className="text-xs font-bold text-white">{ind.name}</span>
+                        <span className="text-sm font-bold text-white">{ind.name}</span>
                         <span
-                          className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded-md ${
+                          className={`text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-md ${
                             ind.importance === "critical"
                               ? "bg-red-500/10 text-red-400 border border-red-500/20"
                               : ind.importance === "important"
@@ -93,7 +93,7 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
                             : "Bổ trợ"}
                         </span>
                       </div>
-                      <p className="text-[10px] text-neutral-400 mt-1 leading-normal font-light">
+                      <p className="text-xs text-neutral-300 mt-1.5 leading-normal font-light">
                         {ind.description}
                       </p>
                     </div>
@@ -103,14 +103,14 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
             </div>
 
             {/* Footer status */}
-            <div className="flex justify-between items-center text-[10px] text-neutral-500 border-t border-white/5 pt-4">
+            <div className="flex justify-between items-center text-xs text-neutral-400 border-t border-white/5 pt-4">
               <span className="flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                 Dữ liệu chuẩn hóa theo Hiến pháp 2013
               </span>
               <button
                 onClick={onClose}
-                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-xs font-bold transition-all hover:scale-105 active:scale-95"
+                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-sm font-bold transition-all hover:scale-105 active:scale-95"
               >
                 Đóng
               </button>

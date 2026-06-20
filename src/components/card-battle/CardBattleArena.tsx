@@ -124,22 +124,22 @@ export default function CardBattleArena() {
           {/* Header Controls */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
             <div>
-              <h2 className="text-xl font-black text-white flex items-center gap-2">
+              <h2 className="text-2xl font-black text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
                 Biện Chứng Kỳ Đài: Đấu Trường Thẻ Bài
               </h2>
-              <p className="text-xs text-neutral-400 mt-1 font-light max-w-xl">
+              <p className="text-sm text-neutral-400 mt-1 font-light max-w-xl">
                 Quy luật Lượng đổi dẫn đến Chất đổi. Kéo thả thẻ Đề xuất và Phản đề để tích lũy Lượng đến Điểm Nút nhằm kích hoạt Bước Nhảy tạo ra Chất mới.
               </p>
             </div>
 
             {/* Select Debate dropdown */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs text-neutral-400 whitespace-nowrap font-light">Chọn mâu thuẫn:</span>
+              <span className="text-sm text-neutral-400 whitespace-nowrap font-light">Chọn mâu thuẫn:</span>
               <select
                 value={selectedDebateId}
                 onChange={(e) => setSelectedDebateId(e.target.value)}
-                className="w-full sm:w-56 bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-blue-500"
+                className="w-full sm:w-56 bg-neutral-900 border border-white/10 rounded-xl px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-blue-500"
               >
                 {CARD_BATTLE_DEBATES.map((d) => (
                   <option key={d.id} value={d.id}>
@@ -154,8 +154,8 @@ export default function CardBattleArena() {
           <div className="bg-blue-950/20 border border-blue-500/15 rounded-2xl p-4 flex gap-3">
             <BookOpen className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-xs font-bold text-blue-300">Khái quát Mâu thuẫn</h4>
-              <p className="text-[11px] text-neutral-400 mt-1 leading-relaxed font-light">
+              <h4 className="text-sm font-bold text-blue-300">Khái quát Mâu thuẫn</h4>
+              <p className="text-xs md:text-sm text-neutral-400 mt-1 leading-relaxed font-light">
                 {activeDebate.description}
               </p>
             </div>
@@ -164,8 +164,8 @@ export default function CardBattleArena() {
           {/* Realtime chart section */}
           <div className="bg-neutral-900/30 border border-white/5 rounded-2xl p-4">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-bold text-neutral-300">Đồ thị tích lũy Lượng (Biến động Biện chứng)</span>
-              <span className="text-[10px] text-neutral-500 font-light">Cập nhật realtime khi ra bài</span>
+              <span className="text-sm font-bold text-neutral-300">Đồ thị tích lũy Lượng (Biến động Biện chứng)</span>
+              <span className="text-xs text-neutral-500 font-light">Cập nhật realtime khi ra bài</span>
             </div>
             <div className="w-full h-40">
               <ResponsiveContainer width="100%" height="100%">
@@ -219,9 +219,9 @@ export default function CardBattleArena() {
 
           {/* Player Hand Area */}
           <div className="bg-neutral-950/40 border border-dashed border-white/10 rounded-2xl p-5">
-            <h3 className="text-xs font-bold text-neutral-300 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
+            <h3 className="text-sm font-bold text-neutral-300 mb-4 flex items-center gap-1.5 uppercase tracking-wider">
               🃏 Thẻ bài trên tay của bạn
-              <span className="text-[10px] text-neutral-500 font-normal normal-case italic">
+              <span className="text-xs text-neutral-500 font-normal normal-case italic">
                 (Nhấp để chọn hoặc kéo thả vào đúng cột đối lập bên trên)
               </span>
             </h3>
@@ -230,10 +230,10 @@ export default function CardBattleArena() {
               {playerHand.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center gap-2">
                   <HelpCircle className="w-8 h-8 text-neutral-600" />
-                  <p className="text-xs text-neutral-500 italic">Đã ra hết bài. Nhấn reset để chơi lại.</p>
+                  <p className="text-sm text-neutral-500 italic">Đã ra hết bài. Nhấn reset để chơi lại.</p>
                   <button
                     onClick={resetGame}
-                    className="mt-2 text-xs font-bold text-blue-400 hover:text-blue-300 underline"
+                    className="mt-2 text-sm font-bold text-blue-400 hover:text-blue-300 underline"
                   >
                     Reset sàn đấu
                   </button>

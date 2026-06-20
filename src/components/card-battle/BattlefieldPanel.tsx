@@ -80,12 +80,12 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
       >
         <div>
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-extrabold text-blue-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <h3 className="text-base font-extrabold text-blue-400 flex items-center gap-1.5 uppercase tracking-wider">
               <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
               Mặt Đối Lập A: {sideAName}
             </h3>
           </div>
-          <p className="text-[10px] text-neutral-400 mb-4 font-light">Thả thẻ Đề xuất để tích lũy Lượng.</p>
+          <p className="text-xs text-neutral-400 mb-4 font-light">Thả thẻ Đề xuất để tích lũy Lượng.</p>
         </div>
 
         {/* Dropped Cards Area */}
@@ -101,7 +101,7 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
 
         {/* Quantity Progress Bar */}
         <div className="mt-2 pt-3 border-t border-white/5">
-          <div className="flex justify-between text-[11px] font-mono text-neutral-400 mb-1.5">
+          <div className="flex justify-between text-xs md:text-sm font-mono text-neutral-400 mb-1.5">
             <span>Tích lũy Lượng:</span>
             <span className="font-bold text-white">
               {thesisQuantity} / <span className="text-amber-400 font-black">{threshold} (Điểm Nút)</span>
@@ -131,12 +131,12 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
       >
         <div>
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-extrabold text-red-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <h3 className="text-base font-extrabold text-red-400 flex items-center gap-1.5 uppercase tracking-wider">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
               Mặt Đối Lập B: {sideBName}
             </h3>
           </div>
-          <p className="text-[10px] text-neutral-400 mb-4 font-light">Thả thẻ Phản đề để tích lũy Lượng.</p>
+          <p className="text-xs text-neutral-400 mb-4 font-light">Thả thẻ Phản đề để tích lũy Lượng.</p>
         </div>
 
         {/* Dropped Cards Area */}
@@ -152,7 +152,7 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
 
         {/* Quantity Progress Bar */}
         <div className="mt-2 pt-3 border-t border-white/5">
-          <div className="flex justify-between text-[11px] font-mono text-neutral-400 mb-1.5">
+          <div className="flex justify-between text-xs md:text-sm font-mono text-neutral-400 mb-1.5">
             <span>Tích lũy Lượng:</span>
             <span className="font-bold text-white">
               {antithesisQuantity} / <span className="text-amber-400 font-black">{threshold} (Điểm Nút)</span>

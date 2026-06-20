@@ -41,11 +41,11 @@ export const DialecticalCardItem: React.FC<DialecticalCardItemProps> = ({
 
       {/* Header */}
       <div className="flex justify-between items-center z-10">
-        <span className="px-2 py-0.5 rounded-md text-[8px] md:text-[9px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
+        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
           {card.category === "thesis" ? "Đề xuất" : "Phản đề"}
         </span>
         <div className="flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded-full backdrop-blur-sm">
-          <span className="text-[8px] md:text-[9px] font-mono text-white/70">Lượng:</span>
+          <span className="text-[10px] font-mono text-white/70">Lượng:</span>
           <span className="text-xs font-mono font-bold text-white">{card.quantityValue}</span>
         </div>
       </div>
@@ -55,11 +55,11 @@ export const DialecticalCardItem: React.FC<DialecticalCardItemProps> = ({
         <div className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm">
           <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-white stroke-[1.8]" />
         </div>
-        <h4 className="text-xs font-extrabold text-white leading-tight px-1">{card.name}</h4>
+        <h4 className="text-sm font-extrabold text-white leading-tight px-1">{card.name}</h4>
       </div>
 
       {/* Description Footer */}
-      <div className="text-[9px] text-white/80 line-clamp-2 leading-snug text-center border-t border-white/10 pt-2 font-light z-10">
+      <div className="text-[11px] text-white/90 line-clamp-2 leading-snug text-center border-t border-white/10 pt-2 font-normal z-10">
         {card.description}
       </div>
     </motion.div>
