@@ -1222,8 +1222,8 @@ export default function App() {
 
             {/* 6.5. SELF-STUDY & PRACTICE SECTION */}
       {activeView === "self-study" && (
-        <section id="self-study" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
-          <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
+        <section id="self-study" className="subpage-shell relative bg-background px-4 md:px-8 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+          <div className="max-w-[95%] w-full space-y-12 animate-fade-rise">
 
             {/* Back Button */}
             <div className="pb-4">
@@ -1287,26 +1287,26 @@ export default function App() {
 
             {/* Sub-tab 1: Syllabus summary */}
             {quizSubTab === "syllabus" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Chapters list sidebar */}
-                <div className="space-y-3">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono px-2">Danh sách chương học</span>
+              <div className="grid grid-cols-1 md:grid-cols-10 gap-8">
+                {/* Chapters list sidebar (40% width) */}
+                <div className="md:col-span-4 space-y-3">
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono px-2">Danh sách chương học</span>
                   {curriculumData?.chapters.map(chapter => (
                     <button
                       key={chapter.id}
                       onClick={() => setSelectedChapterDetails(chapter.id)}
                       className={`w-full text-left p-4 rounded-2xl border transition-all flex flex-col gap-1.5 cursor-pointer ${selectedChapterDetails === chapter.id ? "bg-white border-white text-black" : "bg-neutral-900/50 border-white/5 text-white/70 hover:bg-white/5 hover:text-white"}`}
                     >
-                      <span className={`text-[10px] font-bold uppercase tracking-wider font-mono ${selectedChapterDetails === chapter.id ? "text-neutral-500" : "text-white/40"}`}>
+                      <span className={`text-xs font-bold uppercase tracking-wider font-mono ${selectedChapterDetails === chapter.id ? "text-neutral-500" : "text-white/40"}`}>
                         Chương {chapter.id}
                       </span>
-                      <h4 className="text-xs font-bold leading-tight">{chapter.title}</h4>
+                      <h4 className="text-sm font-bold leading-snug">{chapter.title}</h4>
                     </button>
                   ))}
                 </div>
 
-                {/* Chapter details content panel */}
-                <div className="md:col-span-2 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between">
+                {/* Chapter details content panel (60% width) */}
+                <div className="md:col-span-6 liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between relative pb-28 md:pb-32">
                   <ChapterSyllabusPanel
                     activeChapterId={selectedChapterDetails}
                     chapters={curriculumData?.chapters || []}
@@ -1326,6 +1326,11 @@ export default function App() {
                       handleResetQuiz();
                     }}
                   />
+
+                  {/* Small Chibi Teacher Mascot inside the right column */}
+                  <div className="absolute bottom-4 right-4 w-20 h-24 md:w-24 md:h-28 z-20 pointer-events-none">
+                    <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]" />
+                  </div>
                 </div>
               </div>
             )}

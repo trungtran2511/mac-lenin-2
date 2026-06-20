@@ -29,11 +29,11 @@ export const ChapterSyllabusPanel: React.FC<ChapterSyllabusPanelProps> = ({
         </span>
       </div>
 
-      <h3 className="text-2xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
+      <h3 className="text-3xl font-bold text-white tracking-tight leading-snug">{activeCh.title}</h3>
 
       {activeLesson ? (
         <div className="space-y-5 flex-1">
-          <p className="text-sm text-white/60 leading-relaxed font-light">{activeLesson.intro}</p>
+          <p className="text-base text-white/80 leading-relaxed font-light">{activeLesson.intro}</p>
           {/* 2 columns, bigger cells */}
           <div className="grid grid-cols-2 gap-3.5">
             {activeLesson.keyPoints.map((point, index) => (
@@ -48,13 +48,13 @@ export const ChapterSyllabusPanel: React.FC<ChapterSyllabusPanelProps> = ({
                 }`}
               >
                 <span
-                  className={`text-[11px] font-bold uppercase tracking-wider font-mono ${
+                  className={`text-xs font-bold uppercase tracking-wider font-mono ${
                     selectedSectionIndex === index ? "text-neutral-500" : "text-emerald-400"
                   }`}
                 >
                   Mục 0{index + 1}
                 </span>
-                <h5 className="text-[15px] font-bold leading-snug line-clamp-2">{point.heading}</h5>
+                <h5 className="text-base font-bold leading-snug line-clamp-2">{point.heading}</h5>
               </button>
             ))}
           </div>

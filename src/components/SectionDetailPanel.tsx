@@ -40,10 +40,10 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
             <BookOpen className="w-4 h-4 text-emerald-400" />
           </div>
           <div>
-            <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400 font-mono block">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono block">
               Chương {activeChapterId} — Mục 0{selectedSectionIndex + 1}
             </span>
-            <h4 className="text-sm font-bold text-white leading-tight mt-0.5">
+            <h4 className="text-base font-bold text-white leading-tight mt-0.5">
               {point.heading}
             </h4>
           </div>
@@ -61,17 +61,17 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
       {/* Content body */}
       <div className="p-6 space-y-5">
         {/* Summary text */}
-        <p className="text-xs text-white/70 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
+        <p className="text-sm text-white/90 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
           {point.text}
         </p>
 
         {/* Detailed content */}
         {point.details && point.details.length > 0 && (
           <div className="space-y-3">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-white/30 font-mono">
+            <span className="text-xs font-bold uppercase tracking-widest text-white/30 font-mono">
               Nội dung chi tiết từ giáo trình
             </span>
-            <div className="text-xs text-white/80 leading-relaxed space-y-3 font-light select-text">
+            <div className="text-sm text-white/80 leading-relaxed space-y-3 font-light select-text">
               {point.details.map((p, idx) => (
                 <p key={idx} className="pl-4 border-l border-white/[0.06]">{p}</p>
               ))}
@@ -81,12 +81,12 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
 
         {/* Footer action */}
         <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-          <span className="text-[10px] text-white/30 font-mono italic">
+          <span className="text-xs text-white/35 font-mono italic">
             *Nội dung biên soạn từ giáo trình chính thức.
           </span>
           <button
             onClick={() => onPracticeQuiz(activeChapterId)}
-            className="px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-[11px] transition-all flex items-center gap-2 cursor-pointer border-none"
+            className="px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center gap-2 cursor-pointer border-none"
           >
             Luyện trắc nghiệm <ArrowRight className="w-3.5 h-3.5" />
           </button>

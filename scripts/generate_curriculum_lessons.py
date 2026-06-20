@@ -1,0 +1,497 @@
+import json
+import re
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+KNOWLEDGE_PATH = ROOT / "public" / "curriculum_knowledge.json"
+LESSONS_PATH = ROOT / "public" / "curriculum_chapter_lessons.json"
+SEARCH_INDEX_PATH = ROOT / "public" / "curriculum_search_index.json"
+
+
+CHAPTER_BLUEPRINTS = {
+    1: {
+        "studyGuide": [
+            "Nắm bối cảnh ra đời của môn Kinh tế chính trị và mốc năm 1615.",
+            "Phân biệt vai trò của các trường phái Trọng thương, Trọng nông và Cổ điển Anh.",
+            "Ghi nhớ đối tượng nghiên cứu của Kinh tế chính trị Mác - Lênin.",
+            "Hiểu vì sao trừu tượng hóa khoa học là phương pháp đặc thù.",
+            "Thuộc bốn chức năng cơ bản của môn học.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Lịch sử hình thành",
+                "source": "Giáo trình - khái quát chương",
+                "sentences": [0],
+                "details": [
+                    "Kinh tế chính trị xuất hiện như một nhu cầu nhận thức đời sống kinh tế khi sản xuất hàng hóa và trao đổi thị trường phát triển mạnh ở châu Âu. Khi hoạt động thương mại, tích lũy tiền tệ và mở rộng thị trường ngày càng trở thành động lực của xã hội, con người không chỉ quản lý kinh tế bằng kinh nghiệm mà còn cần một hệ thống lý luận để lý giải vì sao của cải được tạo ra, phân phối và vận động.",
+                    "Mốc năm 1615 gắn với Antoine de Montchrestien thường được xem là dấu mốc tên gọi của môn khoa học này được xác lập rõ ràng. Từ đây, kinh tế chính trị từng bước tách khỏi triết học luân lý và nghệ thuật cai trị đơn thuần để trở thành một lĩnh vực nghiên cứu các quy luật khách quan của đời sống kinh tế xã hội.",
+                    "Ý nghĩa của phần lịch sử hình thành không chỉ nằm ở chuyện nhớ mốc thời gian, mà còn ở việc hiểu rằng mỗi lý thuyết kinh tế đều ra đời từ một bối cảnh xã hội cụ thể. Khi lực lượng sản xuất, quan hệ giai cấp và tổ chức thị trường thay đổi thì cách con người giải thích kinh tế cũng thay đổi theo."
+                ],
+            },
+            {
+                "heading": "Các trường phái tiêu biểu",
+                "source": "Giáo trình - tiến trình phát triển",
+                "sentences": [1],
+                "details": [
+                    "Chủ nghĩa Trọng thương là hệ thống lý luận kinh tế sớm nghiên cứu phương thức sản xuất tư bản chủ nghĩa. Trường phái này tập trung vào lĩnh vực lưu thông, đặc biệt là thương nghiệp, và cho rằng tích lũy tiền tệ, mở rộng buôn bán, xuất siêu là con đường làm giàu cho quốc gia.",
+                    "Chủ nghĩa Trọng nông ở Pháp đã chuyển trọng tâm nghiên cứu từ lưu thông sang sản xuất. Điểm tiến bộ của trường phái này là nhấn mạnh sản xuất mới là nơi tạo ra của cải, dù họ còn giới hạn khi xem nông nghiệp là lĩnh vực sản xuất duy nhất tạo ra sản phẩm ròng.",
+                    "Kinh tế chính trị Cổ điển Anh với các đại biểu như William Petty, Adam Smith và David Ricardo đã hệ thống hóa nhiều phạm trù quan trọng như hàng hóa, giá trị, tiền tệ, tiền lương, lợi nhuận và địa tô. Đây là bước phát triển rất lớn vì tư duy kinh tế đã tiến gần hơn tới việc tìm ra các quy luật khách quan của đời sống kinh tế.",
+                    "C.Mác và Ph.Ăng-ghen kế thừa có phê phán những thành tựu đó, đặc biệt là từ Ricardo, để phát triển thành Kinh tế chính trị Mác - Lênin. Điểm nổi bật là làm rõ bản chất các quan hệ sản xuất, nguồn gốc giá trị thặng dư và vai trò lịch sử của các phương thức sản xuất."
+                ],
+            },
+            {
+                "heading": "Đối tượng nghiên cứu",
+                "source": "Giáo trình - mục đối tượng",
+                "sentences": [2],
+                "details": [
+                    "Đối tượng nghiên cứu của Kinh tế chính trị Mác - Lênin không phải là từng hành vi mua bán riêng lẻ, cũng không chỉ là kỹ thuật sản xuất. Trọng tâm của môn học là các quan hệ sản xuất và trao đổi giữa người với người trong quá trình tạo ra, phân phối, trao đổi và tiêu dùng của cải vật chất.",
+                    "Những quan hệ đó luôn được xem xét trong mối liên hệ biện chứng với lực lượng sản xuất. Nghĩa là không thể hiểu quan hệ kinh tế nếu tách rời công cụ lao động, trình độ khoa học công nghệ, kỹ năng người lao động và trình độ tổ chức sản xuất của từng thời kỳ lịch sử.",
+                    "Khi học phần này, người học cần nhớ rằng kinh tế chính trị nghiên cứu bản chất xã hội của nền kinh tế. Nó giúp trả lời các câu hỏi lớn như ai sở hữu tư liệu sản xuất, ai quyết định phân phối thành quả lao động, và vì sao mâu thuẫn kinh tế nảy sinh trong những hình thái kinh tế khác nhau."
+                ],
+            },
+            {
+                "heading": "Phương pháp nghiên cứu",
+                "source": "Giáo trình - mục phương pháp",
+                "sentences": [3],
+                "details": [
+                    "Phương pháp đặc thù quan trọng nhất là trừu tượng hóa khoa học. Nhà nghiên cứu phải gạt bỏ những biểu hiện ngẫu nhiên, tạm thời và bề ngoài của hiện tượng kinh tế để giữ lại cái ổn định, có tính bản chất và lặp lại trong nhiều trường hợp khác nhau.",
+                    "Nhờ trừu tượng hóa khoa học, từ các hiện tượng phức tạp như giá cả biến động, cung cầu thay đổi, cạnh tranh hay thất nghiệp, người học có thể đi đến những phạm trù khái quát hơn như hàng hóa, giá trị, tư bản, giá trị thặng dư và quy luật kinh tế. Đây là cách tiếp cận giúp môn học không dừng ở mô tả hiện tượng mà tiến tới phát hiện quy luật.",
+                    "Phương pháp này thường đi cùng với logic biện chứng, lịch sử cụ thể và phân tích quan hệ nhân quả. Vì vậy khi ôn chương 1, không nên học từng khái niệm rời rạc mà cần luôn tự hỏi: hiện tượng này phản ánh bản chất gì, nảy sinh trong hoàn cảnh lịch sử nào, và vận động theo quy luật nào."
+                ],
+            },
+            {
+                "heading": "Chức năng của môn học",
+                "source": "Giáo trình - mục chức năng",
+                "sentences": [4],
+                "details": [
+                    "Chức năng nhận thức giúp người học hiểu được bản chất của các hiện tượng kinh tế đang diễn ra xung quanh mình. Nhờ đó, những vấn đề như lạm phát, thất nghiệp, cạnh tranh hay chênh lệch giàu nghèo không còn là các sự kiện rời rạc mà được nhìn như kết quả của những quy luật và quan hệ kinh tế nhất định.",
+                    "Chức năng thực tiễn thể hiện ở việc môn học cung cấp cơ sở để lựa chọn cách hành động phù hợp trong sản xuất, quản lý và hoạch định chính sách. Người học không chỉ biết giải thích hiện thực mà còn có thể định hướng ứng xử trong hiện thực kinh tế cụ thể.",
+                    "Chức năng phương pháp luận và giáo dục có ý nghĩa lâu dài. Môn học rèn cho người học tư duy phân tích có hệ thống, đồng thời bồi dưỡng thế giới quan khoa học, ý thức xã hội và trách nhiệm khi nhìn nhận các vấn đề phát triển kinh tế gắn với con người."
+                ],
+            },
+        ],
+    },
+    2: {
+        "studyGuide": [
+            "Hiểu hàng hóa là gì và điều kiện để sản phẩm trở thành hàng hóa.",
+            "Ghi nhớ hai thuộc tính của hàng hóa và không nhầm lẫn giữa chúng.",
+            "Phân biệt lao động cụ thể với lao động trừu tượng.",
+            "Liên hệ lượng giá trị, tiền tệ và quy luật giá trị trong trao đổi.",
+            "Xác định đúng vai trò của người sản xuất, người tiêu dùng, trung gian và Nhà nước.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Sản xuất hàng hóa",
+                "source": "Giáo trình - phần hàng hóa",
+                "sentences": [0, 1],
+                "details": [
+                    "Sản xuất hàng hóa là kiểu tổ chức kinh tế mà trong đó sản phẩm được làm ra chủ yếu để trao đổi trên thị trường chứ không chỉ để người sản xuất tự tiêu dùng. Muốn một vật trở thành hàng hóa, nó phải là sản phẩm của lao động và phải thỏa mãn nhu cầu nào đó của con người thông qua trao đổi.",
+                    "Điều này giúp phân biệt sản xuất hàng hóa với sản xuất tự cấp tự túc. Nếu một người trồng rau chỉ để gia đình ăn thì sản phẩm đó chưa phải hàng hóa theo nghĩa đầy đủ; nhưng khi rau được đưa ra chợ và gắn với quan hệ mua bán, nó đã bước vào thế giới của hàng hóa.",
+                    "Phần kiến thức này là nền tảng của cả chương vì từ hàng hóa mới mở ra các vấn đề lớn hơn như giá trị, tiền tệ, thị trường và cạnh tranh. Khi nắm chắc khái niệm hàng hóa, người học sẽ dễ hiểu vì sao nền kinh tế thị trường luôn gắn với quan hệ xã hội giữa những người sản xuất độc lập nhưng phụ thuộc lẫn nhau thông qua trao đổi."
+                ],
+            },
+            {
+                "heading": "Hai thuộc tính của hàng hóa",
+                "source": "Giáo trình - giá trị và giá trị sử dụng",
+                "sentences": [2],
+                "details": [
+                    "Mỗi hàng hóa đều có giá trị sử dụng và giá trị. Giá trị sử dụng là công dụng của vật, khả năng thỏa mãn một nhu cầu nào đó của con người, còn giá trị là lao động xã hội của người sản xuất đã kết tinh trong hàng hóa.",
+                    "Hai thuộc tính này thống nhất nhưng không đồng nhất với nhau. Một vật có thể rất hữu ích nhưng nếu không phải là sản phẩm của lao động đem ra trao đổi thì chưa trở thành hàng hóa; ngược lại, hàng hóa có giá trị nhưng nếu không có công dụng thực tế thì cũng không thể bán được.",
+                    "Người học thường dễ nhầm giá trị với giá cả. Cần nhớ rằng giá trị là phạm trù phản ánh quan hệ xã hội sản xuất, còn giá cả là hình thức biểu hiện bằng tiền của giá trị và có thể lên xuống quanh giá trị do tác động của cung cầu, cạnh tranh và nhiều yếu tố thị trường khác."
+                ],
+            },
+            {
+                "heading": "Tính hai mặt của lao động",
+                "source": "Giáo trình - lao động sản xuất hàng hóa",
+                "sentences": [3, 4],
+                "details": [
+                    "Lao động sản xuất hàng hóa có hai mặt là lao động cụ thể và lao động trừu tượng. Lao động cụ thể là hoạt động lao động với hình thức nghề nghiệp xác định như may, xây, trồng trọt, lập trình; chính nó tạo ra giá trị sử dụng của hàng hóa.",
+                    "Lao động trừu tượng là sự hao phí sức lao động nói chung của con người, không xét dưới hình thức nghề nghiệp cụ thể nào. Đây là mặt tạo ra giá trị của hàng hóa và là cơ sở để so sánh các hàng hóa khác nhau trên thị trường.",
+                    "Ý nghĩa lớn của phần này là nó giải thích vì sao trong nền kinh tế hàng hóa, những sản phẩm rất khác nhau vẫn có thể trao đổi với nhau. Chúng trao đổi được vì đằng sau sự khác nhau về công dụng là một điểm chung: đều chứa lao động xã hội của con người."
+                ],
+            },
+            {
+                "heading": "Tiền tệ và quy luật giá trị",
+                "source": "Giáo trình - quy luật cơ bản",
+                "sentences": [5, 6],
+                "details": [
+                    "Tiền tệ không xuất hiện ngẫu nhiên mà là kết quả của quá trình phát triển lâu dài của trao đổi hàng hóa. Khi trao đổi ngày càng mở rộng, xã hội cần một vật ngang giá chung để biểu hiện giá trị của tất cả hàng hóa, và từ đó tiền tệ ra đời.",
+                    "Quy luật giá trị là quy luật kinh tế cơ bản của sản xuất và trao đổi hàng hóa. Nó đòi hỏi việc sản xuất và trao đổi phải dựa trên hao phí lao động xã hội cần thiết, nghĩa là ai sản xuất kém hiệu quả hơn mặt bằng xã hội sẽ gặp bất lợi trong cạnh tranh.",
+                    "Trong thực tế, quy luật giá trị tác động thông qua biến động giá cả, sự di chuyển nguồn lực và sàng lọc người sản xuất. Người học nên liên hệ quy luật này với hiện tượng doanh nghiệp đổi mới công nghệ, tối ưu chi phí và tìm cách nâng năng suất để tồn tại trên thị trường."
+                ],
+            },
+            {
+                "heading": "Các chủ thể của thị trường",
+                "source": "Giáo trình - vai trò chủ thể tham gia",
+                "sentences": [7],
+                "details": [
+                    "Thị trường không phải một thực thể trừu tượng mà là không gian quan hệ giữa nhiều chủ thể: người sản xuất, người tiêu dùng, các trung gian và Nhà nước. Mỗi chủ thể có mục tiêu, lợi ích và cách tác động khác nhau đến quá trình vận hành của thị trường.",
+                    "Người sản xuất quyết định cung ứng hàng hóa, đầu tư công nghệ và tổ chức lao động; người tiêu dùng thông qua nhu cầu và sức mua sẽ tạo tín hiệu cho sản xuất. Các trung gian như thương mại, logistics, tài chính hay nền tảng số giúp kết nối cung cầu, giảm chi phí giao dịch và mở rộng quy mô thị trường.",
+                    "Nhà nước giữ vai trò kiến tạo và điều tiết. Trong nền kinh tế thị trường hiện đại, Nhà nước không đứng ngoài mà ban hành luật chơi, kiểm soát độc quyền, xử lý thất bại thị trường và hướng thị trường phát triển theo mục tiêu chung của xã hội."
+                ],
+            },
+        ],
+    },
+    3: {
+        "studyGuide": [
+            "Hiểu vì sao chương 3 là hạt nhân của học thuyết kinh tế Mác.",
+            "Ghi nhớ điều kiện để sức lao động trở thành hàng hóa.",
+            "Làm rõ nguồn gốc của giá trị thặng dư.",
+            "Phân biệt tư bản bất biến và tư bản khả biến.",
+            "Nắm hai phương pháp sản xuất giá trị thặng dư và khái niệm tích lũy tư bản.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Vai trò trung tâm của chương",
+                "source": "Giáo trình - mở đầu chương",
+                "sentences": [0],
+                "details": [
+                    "Chương 3 được xem là hạt nhân của học thuyết kinh tế Mác vì nó giải thích cơ chế tạo ra giá trị thặng dư, tức phần giá trị dôi ra ngoài giá trị sức lao động mà nhà tư bản chi trả cho công nhân. Đây là chìa khóa để hiểu bản chất bóc lột trong chủ nghĩa tư bản.",
+                    "Nếu chương 2 giúp ta hiểu hàng hóa và giá trị nói chung, thì chương 3 đi sâu vào loại hàng hóa đặc biệt nhất là sức lao động. Từ việc phân tích hàng hóa này, Mác chỉ ra vì sao trao đổi trên thị trường nhìn bề ngoài có vẻ ngang giá nhưng trong sản xuất lại nảy sinh một phần giá trị mới bị chiếm đoạt.",
+                    "Vì vậy, khi học chương 3 cần nhìn mọi khái niệm như sức lao động, tư bản, ngày lao động hay tích lũy tư bản như các mắt xích của cùng một logic. Mục tiêu không phải nhớ rời rạc công thức c, v, m mà là hiểu cơ chế vận động của toàn bộ quan hệ tư bản chủ nghĩa."
+                ],
+            },
+            {
+                "heading": "Sức lao động là hàng hóa",
+                "source": "Giáo trình - hàng hóa sức lao động",
+                "sentences": [1],
+                "details": [
+                    "Sức lao động trở thành hàng hóa khi người lao động có quyền tự do về thân thể, được quyền bán sức lao động của mình, nhưng lại không sở hữu tư liệu sản xuất cần thiết để tự tổ chức sản xuất độc lập. Khi đó họ buộc phải bán sức lao động để sống.",
+                    "Giá trị của hàng hóa sức lao động được quyết định bởi lượng lao động xã hội cần thiết để sản xuất và tái sản xuất sức lao động, bao gồm chi phí ăn ở, học nghề, nuôi dưỡng gia đình và duy trì mức sống phù hợp với điều kiện lịch sử xã hội nhất định.",
+                    "Điểm đặc biệt của hàng hóa này là khi được sử dụng trong quá trình lao động, nó tạo ra một lượng giá trị mới lớn hơn giá trị của bản thân nó. Chính tính chất đặc biệt này làm cho sức lao động trở thành nguồn gốc trực tiếp của giá trị thặng dư."
+                ],
+            },
+            {
+                "heading": "Nguồn gốc giá trị thặng dư",
+                "source": "Giáo trình - bản chất giá trị mới",
+                "sentences": [2],
+                "details": [
+                    "Giá trị thặng dư không sinh ra trong lưu thông đơn thuần, cũng không do gian lận mua rẻ bán đắt mà có. Nó được tạo ra trong quá trình sản xuất, khi người lao động làm việc lâu hơn khoảng thời gian cần thiết để tái tạo giá trị sức lao động của chính mình.",
+                    "Có thể hình dung ngày lao động được chia thành hai phần: thời gian lao động tất yếu và thời gian lao động thặng dư. Trong phần tất yếu, công nhân tạo ra giá trị ngang với tiền lương mình nhận; trong phần thặng dư, họ tiếp tục tạo ra giá trị nhưng giá trị này thuộc về nhà tư bản.",
+                    "Ý nghĩa của khái niệm này rất lớn vì nó bóc tách bản chất của lợi nhuận tư bản chủ nghĩa. Lợi nhuận nhìn bề ngoài có vẻ là kết quả bình thường của kinh doanh, nhưng xét đến cùng lại bắt nguồn từ việc chiếm đoạt lao động không công của người làm thuê."
+                ],
+            },
+            {
+                "heading": "Tư bản bất biến và khả biến",
+                "source": "Giáo trình - phân chia tư bản",
+                "sentences": [3],
+                "details": [
+                    "Tư bản bất biến là phần tư bản đầu tư vào máy móc, thiết bị, nguyên nhiên vật liệu và các yếu tố vật chất khác của sản xuất. Trong quá trình sản xuất, phần giá trị này chỉ chuyển dần vào sản phẩm chứ không tự tăng thêm về lượng.",
+                    "Tư bản khả biến là phần tư bản dùng để mua sức lao động, tức chi trả tiền lương cho công nhân. Gọi là khả biến vì thông qua việc sử dụng sức lao động trong sản xuất, phần tư bản này không chỉ được bảo tồn mà còn tạo ra giá trị mới lớn hơn chính nó.",
+                    "Sự phân chia này giúp xác định đúng nguồn gốc của giá trị thặng dư. Không phải máy móc hay nguyên liệu tự sinh lợi, mà chỉ có lao động sống của con người mới tạo ra giá trị mới; còn tư liệu sản xuất chỉ là điều kiện vật chất để quá trình đó diễn ra."
+                ],
+            },
+            {
+                "heading": "Sản xuất và tích lũy tư bản",
+                "source": "Giáo trình - phương pháp sản xuất m",
+                "sentences": [4, 5],
+                "details": [
+                    "Có hai phương pháp cơ bản để sản xuất giá trị thặng dư. Phương pháp tuyệt đối là kéo dài ngày lao động hoặc tăng cường độ lao động trong khi thời gian lao động tất yếu chưa đổi; phương pháp tương đối là rút ngắn thời gian lao động tất yếu bằng cách nâng cao năng suất lao động xã hội.",
+                    "Trong chủ nghĩa tư bản hiện đại, hai phương pháp này thường đan xen nhau. Doanh nghiệp có thể không tăng giờ làm một cách lộ liễu nhưng lại dùng công nghệ, giám sát, dữ liệu và tổ chức lao động để khiến người lao động tạo ra nhiều giá trị hơn trong cùng một khoảng thời gian.",
+                    "Tích lũy tư bản là việc chuyển hóa một phần giá trị thặng dư thành tư bản mới để mở rộng sản xuất. Quá trình này làm quy mô tư bản ngày càng lớn, đồng thời kéo theo sự tích tụ và tập trung tư bản, cạnh tranh gay gắt hơn và mâu thuẫn xã hội sâu sắc hơn."
+                ],
+            },
+        ],
+    },
+    4: {
+        "studyGuide": [
+            "Theo dõi quá trình chuyển từ cạnh tranh tự do sang độc quyền.",
+            "Nhận diện các hình thức tổ chức độc quyền cơ bản.",
+            "Hiểu độc quyền kiếm lợi nhuận cao bằng cơ chế nào.",
+            "Ghi nhớ khái niệm tư bản tài chính và tài phiệt.",
+            "Phân tích bản chất của độc quyền nhà nước trong chủ nghĩa tư bản.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Từ cạnh tranh đến độc quyền",
+                "source": "Giáo trình - khái quát chuyển biến",
+                "sentences": [0],
+                "details": [
+                    "Cạnh tranh tự do là giai đoạn mà nhiều nhà tư bản cùng tham gia thị trường và đấu tranh với nhau về giá cả, công nghệ, quy mô và thị phần. Tuy nhiên, chính cạnh tranh lại thúc đẩy quá trình tích tụ và tập trung sản xuất, khiến một số doanh nghiệp lớn mạnh nhanh chóng hơn phần còn lại.",
+                    "Khi sản xuất đạt quy mô lớn, các doanh nghiệp mạnh có xu hướng nuốt chửng hoặc loại bỏ đối thủ yếu hơn, từ đó làm giảm số lượng người chơi trên thị trường. Đến một mức độ nhất định, cạnh tranh tự do không biến mất hoàn toàn nhưng bị chi phối bởi các lực lượng có sức mạnh độc quyền.",
+                    "Phần này giúp người học hiểu rằng độc quyền không phải hiện tượng ngẫu nhiên hay ngoại lệ của chủ nghĩa tư bản, mà là kết quả phát triển nội tại của chính cạnh tranh tư bản chủ nghĩa khi tư bản ngày càng tập trung vào một số ít chủ thể lớn."
+                ],
+            },
+            {
+                "heading": "Các tổ chức độc quyền",
+                "source": "Giáo trình - hình thức tổ chức",
+                "sentences": [1],
+                "details": [
+                    "Các tổ chức độc quyền có thể mang nhiều hình thức như cartel, syndicate, trust hay consortium. Điểm chung là các doanh nghiệp lớn liên kết với nhau để giảm mức độ cạnh tranh trực tiếp và cùng kiểm soát sản lượng, giá cả hoặc thị trường tiêu thụ.",
+                    "Cartel thường là sự thỏa thuận giữa các doanh nghiệp còn độc lập về pháp lý nhưng phối hợp về giá hoặc sản lượng. Syndicate chặt chẽ hơn khi khâu tiêu thụ có thể được tập trung vào một đầu mối chung, còn trust thể hiện sự sáp nhập mạnh hơn về quản lý và sở hữu.",
+                    "Việc nhận diện các hình thức này giúp người học thấy rõ mức độ xã hội hóa sản xuất ngày càng cao nhưng kết quả chi phối lại tập trung vào một nhóm nhỏ tư bản lớn. Đó là nét đặc trưng của giai đoạn tư bản độc quyền."
+                ],
+            },
+            {
+                "heading": "Giá cả và lợi nhuận độc quyền",
+                "source": "Giáo trình - cơ chế chi phối thị trường",
+                "sentences": [2],
+                "details": [
+                    "Khi nắm quyền chi phối thị trường, các tổ chức độc quyền có thể áp đặt giá cả độc quyền, bán hàng với giá cao hơn hoặc mua đầu vào với giá thấp hơn so với điều kiện cạnh tranh bình thường. Từ đó, chúng thu được lợi nhuận độc quyền cao.",
+                    "Nguồn lợi nhuận này không chỉ đến từ bóc lột lao động trong doanh nghiệp của chính họ mà còn từ việc phân phối lại giá trị thặng dư trong toàn xã hội. Người tiêu dùng, doanh nghiệp nhỏ, người sản xuất nguyên liệu và thậm chí cả các nước yếu hơn có thể trở thành đối tượng bị hút giá trị thông qua cơ chế giá độc quyền.",
+                    "Điểm quan trọng khi học mục này là phải thấy độc quyền làm méo mó tín hiệu thị trường. Nó không chỉ phản ánh năng lực sản xuất cao hơn mà còn phản ánh quyền lực kinh tế đủ mạnh để định đoạt điều kiện trao đổi theo hướng có lợi cho kẻ chi phối."
+                ],
+            },
+            {
+                "heading": "Tư bản tài chính và tài phiệt",
+                "source": "Giáo trình - kết hợp tư bản",
+                "sentences": [3],
+                "details": [
+                    "Tư bản tài chính hình thành từ sự dung hợp giữa tư bản ngân hàng độc quyền với tư bản công nghiệp độc quyền. Khi ngân hàng không còn chỉ làm trung gian tín dụng mà tham gia trực tiếp vào kiểm soát sản xuất, đầu tư và sở hữu, sức mạnh tài chính trở thành trung tâm chi phối nền kinh tế.",
+                    "Từ đó xuất hiện tầng lớp tài phiệt tài chính, tức nhóm người hoặc nhóm tổ chức nắm trong tay quyền lực kinh tế cực lớn thông qua mạng lưới vốn, cổ phần, tín dụng và quan hệ điều hành chéo. Họ có thể tác động sâu vào cả sản xuất, thương mại, đầu tư lẫn chính sách công.",
+                    "Khái niệm này vẫn có giá trị nhận diện trong hiện thực hiện nay, khi các tập đoàn tài chính, quỹ đầu tư, ngân hàng và công ty công nghệ lớn liên kết thành những mạng lưới ảnh hưởng toàn cầu. Người học nên xem đây là bước phát triển cao hơn của quyền lực tư bản chứ không phải hiện tượng tách rời khỏi sản xuất."
+                ],
+            },
+            {
+                "heading": "Độc quyền nhà nước",
+                "source": "Giáo trình - điều tiết vĩ mô",
+                "sentences": [4],
+                "details": [
+                    "Độc quyền nhà nước trong chủ nghĩa tư bản là sự kết hợp giữa sức mạnh của các tổ chức độc quyền tư nhân với bộ máy nhà nước nhằm phục vụ lợi ích của tư bản độc quyền. Nhà nước can thiệp sâu hơn vào kinh tế nhưng không phải để xóa bỏ nền tảng tư bản chủ nghĩa, mà chủ yếu để duy trì và củng cố nó.",
+                    "Sự kết hợp này biểu hiện qua chính sách tài khóa, tiền tệ, trợ cấp, đơn đặt hàng công, pháp luật cạnh tranh, kiểm soát khủng hoảng và điều tiết thị trường lao động. Khi cần, nhà nước có thể cứu trợ những tập đoàn lớn để giữ ổn định hệ thống, cho thấy mối liên hệ chặt giữa quyền lực công và quyền lực tư bản.",
+                    "Người học cần phân biệt hiện tượng nhà nước quản lý kinh tế nói chung với bản chất độc quyền nhà nước trong chủ nghĩa tư bản. Ở đây, vấn đề không chỉ là mức độ can thiệp mà là câu hỏi: sự can thiệp đó cuối cùng phục vụ cho lợi ích chủ đạo của lực lượng xã hội nào."
+                ],
+            },
+        ],
+    },
+    5: {
+        "studyGuide": [
+            "Xác định bản chất của mô hình kinh tế thị trường định hướng XHCN ở Việt Nam.",
+            "Ghi nhớ vai trò của Đảng và Nhà nước trong định hướng phát triển.",
+            "Phân biệt các thành phần kinh tế và vị trí của từng khu vực.",
+            "Nắm nguyên tắc phân phối trong nền kinh tế thị trường định hướng XHCN.",
+            "Phân tích quan hệ lợi ích và yêu cầu hài hòa lợi ích trong thực tiễn Việt Nam.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Mô hình kinh tế của Việt Nam",
+                "source": "Giáo trình - mở đầu chương",
+                "sentences": [0],
+                "details": [
+                    "Kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam là mô hình vừa tuân theo các quy luật của thị trường, vừa bảo đảm mục tiêu phát triển vì con người, tiến bộ và công bằng xã hội. Nó không phải bản sao của kinh tế thị trường tư bản chủ nghĩa, cũng không phải quay lại cơ chế kế hoạch hóa tập trung bao cấp trước đây.",
+                    "Điểm cốt lõi của mô hình này là chấp nhận thị trường như một công cụ phân bổ nguồn lực quan trọng, nhưng không để thị trường tự phát quyết định toàn bộ hướng phát triển xã hội. Nhà nước pháp quyền xã hội chủ nghĩa và sự lãnh đạo của Đảng giữ vai trò định hướng, điều tiết và khắc phục các mặt trái của thị trường.",
+                    "Khi học mục này, người học nên hiểu đây là mô hình phát triển được hình thành từ thực tiễn đổi mới của Việt Nam. Vì vậy việc nắm khái niệm phải gắn với các yêu cầu thực tế như tăng trưởng đi đôi với ổn định, hội nhập đi đôi với tự chủ và hiệu quả đi đôi với công bằng."
+                ],
+            },
+            {
+                "heading": "Bản chất định hướng XHCN",
+                "source": "Giáo trình - đặc trưng mô hình",
+                "sentences": [1],
+                "details": [
+                    "Định hướng xã hội chủ nghĩa thể hiện trước hết ở mục tiêu phát triển, tức không chỉ chạy theo tăng trưởng GDP mà hướng tới dân giàu, nước mạnh, dân chủ, công bằng và văn minh. Đây là điểm phân biệt quan trọng giữa mục tiêu phát triển xã hội với động cơ tối đa hóa lợi nhuận thuần túy.",
+                    "Bản chất đó còn thể hiện ở vai trò của hệ thống chính trị, đặc biệt là sự lãnh đạo của Đảng Cộng sản Việt Nam và quản lý của Nhà nước pháp quyền xã hội chủ nghĩa. Nhà nước sử dụng pháp luật, quy hoạch, chính sách tài khóa, tiền tệ, an sinh và đầu tư công để định hướng nền kinh tế phát triển ổn định, bao trùm và bền vững.",
+                    "Ngoài ra, định hướng xã hội chủ nghĩa còn thể hiện trong cách giải quyết các quan hệ lớn như tăng trưởng với tiến bộ xã hội, lợi ích cá nhân với lợi ích cộng đồng, hội nhập quốc tế với giữ vững độc lập tự chủ. Vì thế đây không phải khẩu hiệu chung chung mà là hệ tiêu chí xuyên suốt khi nhìn vào chính sách kinh tế."
+                ],
+            },
+            {
+                "heading": "Nhiều thành phần kinh tế",
+                "source": "Giáo trình - cơ cấu sở hữu",
+                "sentences": [2],
+                "details": [
+                    "Nền kinh tế Việt Nam hiện tồn tại đa dạng hình thức sở hữu và nhiều thành phần kinh tế cùng phát triển lâu dài, hợp tác và cạnh tranh theo pháp luật. Điều này phản ánh tính khách quan của thời kỳ quá độ khi lực lượng sản xuất còn nhiều trình độ khác nhau và nhu cầu huy động nguồn lực xã hội rất lớn.",
+                    "Trong đó, kinh tế nhà nước giữ vai trò chủ đạo ở những lĩnh vực then chốt; kinh tế tập thể được củng cố dần; kinh tế tư nhân là một động lực quan trọng; còn kinh tế có vốn đầu tư nước ngoài là bộ phận quan trọng của nền kinh tế quốc dân. Mỗi khu vực có vị trí, chức năng và đóng góp khác nhau trong tăng trưởng, việc làm và đổi mới công nghệ.",
+                    "Người học cần tránh hiểu sai rằng nhiều thành phần kinh tế đồng nghĩa với buông lỏng định hướng. Ngược lại, chính việc thừa nhận sự đa dạng này nhưng đặt chúng trong cùng một khung thể chế và mục tiêu phát triển chung mới là nét đặc trưng của mô hình Việt Nam."
+                ],
+            },
+            {
+                "heading": "Nguyên tắc phân phối",
+                "source": "Giáo trình - cơ chế phân phối",
+                "sentences": [3],
+                "details": [
+                    "Trong nền kinh tế thị trường định hướng xã hội chủ nghĩa, phân phối không dựa trên một nguyên tắc duy nhất mà kết hợp nhiều căn cứ như kết quả lao động, hiệu quả kinh tế, mức đóng góp vốn và các nguồn lực khác. Cách tiếp cận này phù hợp với tính đa dạng của chủ thể và hình thức sở hữu trong thời kỳ quá độ.",
+                    "Nguyên tắc phân phối theo lao động vẫn giữ ý nghĩa định hướng vì nó gắn quyền lợi của người lao động với năng suất, chất lượng và hiệu quả công việc. Đồng thời, phân phối theo vốn, tài sản và các nguồn lực khác được thừa nhận trong khuôn khổ pháp luật để khuyến khích đầu tư và huy động nguồn lực cho phát triển.",
+                    "Bên cạnh đó, Nhà nước còn thực hiện phân phối lại thông qua thuế, ngân sách, phúc lợi xã hội và an sinh để giảm bất bình đẳng quá mức. Đây là mắt xích quan trọng để bảo đảm thị trường vận hành năng động mà vẫn giữ được định hướng công bằng xã hội."
+                ],
+            },
+            {
+                "heading": "Quan hệ lợi ích kinh tế",
+                "source": "Giáo trình - hài hòa lợi ích",
+                "sentences": [4],
+                "details": [
+                    "Quan hệ lợi ích kinh tế là mối liên hệ giữa các chủ thể xã hội trong quá trình thỏa mãn nhu cầu vật chất của mình. Trong nền kinh tế nhiều thành phần, lợi ích của cá nhân, doanh nghiệp, tập thể, nhà nước và toàn xã hội vừa thống nhất vừa có thể mâu thuẫn với nhau.",
+                    "Nếu chỉ tuyệt đối hóa lợi ích cá nhân hoặc lợi ích cục bộ, nền kinh tế dễ rơi vào xung đột, đầu cơ, khai thác ngắn hạn và bất công. Ngược lại, nếu không coi trọng động lực lợi ích cá nhân thì sản xuất và sáng tạo cũng khó phát triển. Vì vậy bài toán thực tiễn là hài hòa các lợi ích chứ không phải phủ nhận một phía nào.",
+                    "Vai trò của Nhà nước ở đây rất quan trọng: xây dựng thể chế minh bạch, phân phối cơ hội công bằng, xử lý mâu thuẫn lợi ích và giữ ổn định xã hội. Khi ôn phần này, người học nên liên hệ với các tình huống thực tế như tiền lương, đất đai, thuế, môi trường, đầu tư công hay trách nhiệm xã hội của doanh nghiệp."
+                ],
+            },
+        ],
+    },
+    6: {
+        "studyGuide": [
+            "Bắt đầu từ nhiệm vụ phát triển lực lượng sản xuất của Việt Nam.",
+            "Hiểu đúng bản chất của công nghiệp hóa, hiện đại hóa trong bối cảnh mới.",
+            "Ghi nhớ mục tiêu cơ cấu lại nền kinh tế và nâng cao năng suất lao động.",
+            "Nắm khái niệm hội nhập kinh tế quốc tế và các kênh hội nhập chính.",
+            "Liên hệ phương châm chủ động, tích cực hội nhập của Việt Nam hiện nay.",
+        ],
+        "keyPoints": [
+            {
+                "heading": "Nhiệm vụ phát triển lực lượng sản xuất",
+                "source": "Giáo trình - mở đầu chương",
+                "sentences": [0],
+                "details": [
+                    "Phát triển lực lượng sản xuất là yêu cầu có tính nền tảng đối với quá trình đi lên chủ nghĩa xã hội ở Việt Nam. Khi lực lượng sản xuất còn thấp thì không thể tạo ra năng suất cao, của cải dồi dào hay nền tảng vật chất đủ mạnh để thực hiện các mục tiêu phát triển xã hội rộng lớn hơn.",
+                    "Lực lượng sản xuất không chỉ bao gồm máy móc và công nghệ mà còn gồm người lao động, trình độ tổ chức quản lý, khoa học kỹ thuật, kết cấu hạ tầng và năng lực đổi mới sáng tạo. Vì vậy phát triển lực lượng sản xuất là quá trình tổng hợp, đòi hỏi đầu tư đồng thời vào con người, công nghệ và thể chế.",
+                    "Mục này giúp người học thấy rằng công nghiệp hóa, hiện đại hóa và hội nhập quốc tế không phải ba câu chuyện tách rời. Chúng đều là các con đường cụ thể để nâng trình độ lực lượng sản xuất của đất nước."
+                ],
+            },
+            {
+                "heading": "Bản chất công nghiệp hóa, hiện đại hóa",
+                "source": "Giáo trình - nội dung chuyển đổi",
+                "sentences": [1],
+                "details": [
+                    "Công nghiệp hóa, hiện đại hóa là quá trình chuyển đổi căn bản và toàn diện các hoạt động kinh tế từ dựa chủ yếu vào lao động thủ công sang dựa nhiều hơn vào máy móc, công nghệ, tri thức và phương thức quản trị tiên tiến. Đây là sự thay đổi về chất của nền sản xuất chứ không chỉ là tăng thêm số lượng nhà máy.",
+                    "Trong bối cảnh mới, công nghiệp hóa không còn chỉ đồng nghĩa với phát triển công nghiệp nặng theo lối truyền thống. Nó gắn chặt với chuyển đổi số, kinh tế xanh, kinh tế tri thức, tự động hóa và khả năng tham gia các chuỗi giá trị toàn cầu trong thời đại Cách mạng công nghiệp 4.0.",
+                    "Người học nên nhớ rằng hiện đại hóa diễn ra trong mọi lĩnh vực: nông nghiệp, công nghiệp, dịch vụ, quản trị nhà nước, hạ tầng và giáo dục. Vì thế đây là chiến lược phát triển toàn diện của quốc gia chứ không phải một chương trình riêng của ngành sản xuất."
+                ],
+            },
+            {
+                "heading": "Mục tiêu của quá trình chuyển đổi",
+                "source": "Giáo trình - mục tiêu phát triển",
+                "sentences": [2],
+                "details": [
+                    "Mục tiêu trọng tâm của công nghiệp hóa, hiện đại hóa là xây dựng cơ cấu kinh tế hợp lý, nâng cao năng suất lao động xã hội và tạo ra nền tảng vật chất kỹ thuật hiện đại cho phát triển đất nước. Điều này bao hàm cả tăng trưởng kinh tế lẫn cải thiện chất lượng phát triển.",
+                    "Cơ cấu kinh tế hợp lý không chỉ là tăng tỷ trọng công nghiệp và dịch vụ mà còn là sắp xếp lại nguồn lực theo hướng hiệu quả hơn, gắn giữa vùng, ngành, doanh nghiệp và nguồn nhân lực. Quá trình này cần đi cùng nâng cấp hạ tầng, đổi mới giáo dục đào tạo và phát triển khoa học công nghệ.",
+                    "Khi ôn mục tiêu, người học nên chú ý rằng năng suất lao động là chỉ số then chốt. Một nền kinh tế muốn bứt lên bền vững không thể chỉ dựa vào vốn hay lao động giá rẻ, mà phải dựa vào năng suất, đổi mới và khả năng tạo giá trị gia tăng cao."
+                ],
+            },
+            {
+                "heading": "Hội nhập kinh tế quốc tế",
+                "source": "Giáo trình - khái niệm hội nhập",
+                "sentences": [3],
+                "details": [
+                    "Hội nhập kinh tế quốc tế là quá trình gắn kết nền kinh tế quốc gia với nền kinh tế khu vực và thế giới thông qua thương mại, đầu tư, tài chính, dịch vụ, chuyển giao công nghệ và tham gia các thể chế kinh tế quốc tế. Đây là xu hướng khách quan trong bối cảnh toàn cầu hóa.",
+                    "Đối với Việt Nam, hội nhập tạo cơ hội mở rộng thị trường, thu hút vốn, học hỏi công nghệ, nâng cao năng lực quản trị và tham gia sâu hơn vào chuỗi giá trị toàn cầu. Tuy nhiên, hội nhập cũng làm gia tăng sức ép cạnh tranh, đòi hỏi doanh nghiệp và thể chế trong nước phải nâng cấp liên tục.",
+                    "Người học nên nắm cả hai mặt của hội nhập: cơ hội và thách thức. Hiểu như vậy mới thấy hội nhập không phải chỉ là ký kết FTA, mà là quá trình tái cấu trúc trong nước để đủ sức tham gia cuộc chơi quốc tế."
+                ],
+            },
+            {
+                "heading": "Phương châm hội nhập của Việt Nam",
+                "source": "Giáo trình - định hướng thực hiện",
+                "sentences": [4],
+                "details": [
+                    "Việt Nam thực hiện phương châm chủ động, tích cực hội nhập kinh tế quốc tế trên cơ sở giữ vững độc lập, tự chủ, bảo đảm lợi ích quốc gia dân tộc và cùng có lợi. Điều đó có nghĩa là hội nhập phải được chuẩn bị bằng năng lực nội sinh chứ không phải phụ thuộc thụ động vào bên ngoài.",
+                    "Chủ động thể hiện ở việc lựa chọn lộ trình, đối tác, lĩnh vực ưu tiên và chuẩn bị thể chế trong nước để tận dụng cơ hội từ hội nhập. Tích cực thể hiện ở tinh thần tham gia sâu vào các sân chơi quốc tế, nâng cao năng lực cạnh tranh, cải thiện môi trường đầu tư và thúc đẩy cải cách trong nước.",
+                    "Phần này rất sát thực tiễn vì nó liên quan trực tiếp đến chiến lược phát triển hiện nay của Việt Nam. Khi học, có thể liên hệ với các hiệp định thương mại tự do thế hệ mới, yêu cầu về tiêu chuẩn lao động, môi trường, chuyển đổi số và năng lực tự chủ của nền kinh tế."
+                ],
+            },
+        ],
+    },
+}
+
+
+def split_sentences(text: str) -> list[str]:
+    return [part.strip() for part in re.split(r"(?<=[.!?])\s+", text.strip()) if part.strip()]
+
+
+def build_lessons(knowledge: dict) -> list[dict]:
+    questions_by_chapter = {}
+    for question in knowledge["quiz_questions"]:
+        questions_by_chapter.setdefault(question["chapter"], []).append(question)
+
+    lessons = []
+    for chapter in knowledge["chapters"]:
+        chapter_id = chapter["id"]
+        blueprint = CHAPTER_BLUEPRINTS[chapter_id]
+        sentences = split_sentences(chapter["summary"])
+        key_points = []
+
+        for point in blueprint["keyPoints"]:
+            text = " ".join(sentences[i] for i in point["sentences"] if i < len(sentences))
+            key_points.append(
+                {
+                    "heading": point["heading"],
+                    "text": text,
+                    "source": point["source"],
+                    "details": point.get("details", []),
+                }
+            )
+
+        quick_questions = [
+            {
+                "id": question["id"],
+                "question": question["question"],
+                "correctAnswer": question["correctAnswer"],
+                "explanation": question["explanation"],
+            }
+            for question in questions_by_chapter.get(chapter_id, [])[:5]
+        ]
+
+        lessons.append(
+            {
+                "chapterId": chapter_id,
+                "title": chapter["title"],
+                "intro": chapter["summary"],
+                "studyGuide": blueprint["studyGuide"],
+                "keyPoints": key_points,
+                "quickQuestions": quick_questions,
+            }
+        )
+
+    return lessons
+
+
+def build_search_index(lessons: list[dict], knowledge: dict) -> list[dict]:
+    questions_by_chapter = {}
+    for question in knowledge["quiz_questions"]:
+        questions_by_chapter.setdefault(question["chapter"], []).append(question)
+
+    snippets = []
+    for lesson in lessons:
+        chapter_id = lesson["chapterId"]
+        snippets.append(
+            {
+                "id": f"chapter-{chapter_id}-intro",
+                "chapterId": chapter_id,
+                "kind": "chapter_chunk",
+                "title": lesson["title"],
+                "text": lesson["intro"],
+            }
+        )
+
+        for point_index, point in enumerate(lesson["keyPoints"], start=1):
+            detail_text = " ".join(point.get("details", []))
+            snippets.append(
+                {
+                    "id": f"chapter-{chapter_id}-point-{point_index}",
+                    "chapterId": chapter_id,
+                    "kind": "chapter_chunk",
+                    "title": f"{lesson['title']} - {point['heading']}",
+                    "text": " ".join(part for part in [point["text"], detail_text] if part),
+                }
+            )
+
+        for question in questions_by_chapter.get(chapter_id, [])[:5]:
+            snippets.append(
+                {
+                    "id": f"chapter-{chapter_id}-{question['id']}",
+                    "chapterId": chapter_id,
+                    "kind": "quiz",
+                    "title": f"Ôn tập chương {chapter_id}",
+                    "text": f"{question['question']} {question['explanation']}",
+                }
+            )
+
+    return snippets
+
+
+def main() -> None:
+    knowledge = json.loads(KNOWLEDGE_PATH.read_text(encoding="utf-8"))
+    lessons = build_lessons(knowledge)
+    search_index = build_search_index(lessons, knowledge)
+
+    LESSONS_PATH.write_text(
+        json.dumps(lessons, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    SEARCH_INDEX_PATH.write_text(
+        json.dumps(search_index, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    print(f"Updated {LESSONS_PATH.name} with {len(lessons)} lessons.")
+    print(f"Updated {SEARCH_INDEX_PATH.name} with {len(search_index)} snippets.")
+
+
+if __name__ == "__main__":
+    main()
