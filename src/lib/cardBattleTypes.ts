@@ -15,6 +15,9 @@ export interface SynthesisCard {
   requiredAntithesis: string;
   leapThreshold: number;
   description: string;
+  struggleDetail?: string;
+  unityDetail?: string;
+  outcomeDetail?: string;
 }
 
 export interface DialecticalDebate {

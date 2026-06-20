@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { BookOpen, Sparkles, HelpCircle } from "lucide-react";
 import { CARD_BATTLE_DEBATES } from "../../lib/cardBattleData";
 import type { DialecticalCard, SynthesisCard } from "../../lib/cardBattleTypes";
@@ -25,6 +24,7 @@ export default function CardBattleArena() {
   const [showLeapAnimation, setShowLeapAnimation] = useState(false);
   const [showSynthesisResult, setShowSynthesisResult] = useState(false);
   const [achievedSynthesis, setAchievedSynthesis] = useState<SynthesisCard | null>(null);
+  const [showRecipes, setShowRecipes] = useState(false);
 
   // Initialize game when active debate changes
   useEffect(() => {
@@ -41,6 +41,7 @@ export default function CardBattleArena() {
     setShowLeapAnimation(false);
     setShowSynthesisResult(false);
     setAchievedSynthesis(null);
+    setShowRecipes(false);
   };
 
   const handleDropCard = (card: DialecticalCard, target: "thesis" | "antithesis") => {
@@ -164,47 +165,48 @@ export default function CardBattleArena() {
             </div>
           </div>
 
-          {/* Realtime chart section */}
-          <div className="bg-neutral-900/30 border border-white/5 rounded-2xl p-4">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-bold text-neutral-300">Đồ thị tích lũy Lượng (Biến động Biện chứng)</span>
-              <span className="text-xs text-neutral-500 font-light">Cập nhật realtime khi ra bài</span>
-            </div>
-            <div className="w-full h-40">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
-                  <XAxis dataKey="step" stroke="#737373" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#737373" fontSize={10} tickLine={false} domain={[0, "auto"]} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "#171717", borderColor: "#404040", borderRadius: "12px" }}
-                    labelStyle={{ fontSize: "11px", fontWeight: "bold", color: "#a3a3a3" }}
-                    itemStyle={{ fontSize: "11px", padding: 0 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="thesisQ"
-                    name={activeDebate.side_a.split(" ")[0]}
-                    stroke="#3b82f6"
-                    strokeWidth={2.5}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="antithesisQ"
-                    name={activeDebate.side_b.split(" ")[0]}
-                    stroke="#ef4444"
-                    strokeWidth={2.5}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+
+          {/* Collapsible Rules Box at the top */}
+          <div className="bg-neutral-900/60 border border-white/5 rounded-2xl p-4 text-xs md:text-sm text-neutral-300 space-y-3">
+            <h4 className="font-bold text-white flex items-center gap-1.5 text-sm uppercase tracking-wide">
+              <HelpCircle className="w-4 h-4 text-emerald-400 animate-pulse" />
+              Hướng dẫn Luật chơi & cách "Nổ Hũ" (Tạo Hợp Đề):
+            </h4>
+            <ul className="list-disc pl-5 space-y-1 text-neutral-400 text-xs">
+              <li><strong className="text-white">Bước 1:</strong> Hạ các cặp thẻ đối lập (1 thẻ Đề xuất <span className="text-blue-400 font-semibold">Bên A</span> và 1 thẻ Phản đề <span className="text-orange-400 font-semibold">Bên B</span>) từ tay của từng phe xuống bàn đấu.</li>
+              <li><strong className="text-white">Bước 2:</strong> Tích lũy đủ điểm <strong>Lượng</strong> (chỉ số ghi trên thẻ) vượt qua <strong>Ngưỡng của Hợp đề</strong> (Ví dụ: Ngưỡng 4, 6 hoặc 8).</li>
+              <li><strong className="text-white">Pro Tip:</strong> Thả thật nhiều thẻ phụ để tích lũy lượng vượt ngưỡng trước, sau đó thả cặp thẻ chính của công thức vào là "nổ hũ" Chất mới ngay lập tức!</li>
+            </ul>
+            
+            <div className="pt-2 border-t border-white/5">
+              <button
+                type="button"
+                onClick={() => setShowRecipes(!showRecipes)}
+                className="flex items-center gap-1 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-semibold text-amber-400 border border-amber-500/10 cursor-pointer transition-all"
+              >
+                {showRecipes ? "🙈 Ẩn bớt công thức" : "📖 Xem các Công thức Hợp Đề (Nổ Hũ) của Mâu thuẫn này"}
+              </button>
+              {showRecipes && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 animate-fade-in text-[11px] md:text-xs">
+                  {activeDebate.synthesisCards.map((recipe) => {
+                    const thesisName = activeDebate.thesisCards.find(c => c.id === recipe.requiredThesis)?.name || "";
+                    const antithesisName = activeDebate.antithesisCards.find(c => c.id === recipe.requiredAntithesis)?.name || "";
+                    return (
+                      <div key={recipe.id} className="p-2.5 rounded-xl bg-neutral-950/40 border border-white/5 flex flex-col gap-1">
+                        <span className="font-bold text-amber-400">✨ {recipe.name}</span>
+                        <span className="text-neutral-400 font-light">
+                          Công thức: <strong className="text-blue-400">"{thesisName}"</strong> + <strong className="text-orange-400">"{antithesisName}"</strong>
+                        </span>
+                        <span className="text-[10px] text-neutral-500 font-mono">Yêu cầu Ngưỡng Lượng tích lũy: {recipe.leapThreshold}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Battlefield Area */}
+          {/* Battlefield Area with hand integrated */}
           <BattlefieldPanel
             thesisCards={thesisField}
             antithesisCards={antithesisField}
@@ -218,97 +220,122 @@ export default function CardBattleArena() {
             sideAName={activeDebate.side_a}
             sideBName={activeDebate.side_b}
             onDropCard={handleDropCard}
+            thesisHand={thesisHand}
+            antithesisHand={antithesisHand}
+            onPlayCard={handleDropCard}
+            onReset={resetGame}
           />
 
-          {/* Player Hand Area */}
-          <div className="bg-neutral-950/40 border border-white/10 rounded-3xl p-6 space-y-6">
-            {/* Luật chơi giải thích ngắn gọn */}
-            <div className="bg-neutral-900/60 border border-white/5 rounded-2xl p-4 text-xs md:text-sm text-neutral-300 space-y-2">
-              <h4 className="font-bold text-white flex items-center gap-1.5 text-sm uppercase tracking-wide">
-                <HelpCircle className="w-4 h-4 text-emerald-400 animate-pulse" />
-                Hướng dẫn Luật chơi & cách "Nổ Hũ" (Tạo Hợp Đề):
-              </h4>
-              <ul className="list-disc pl-5 space-y-1 text-neutral-400 text-xs">
-                <li><strong className="text-white">Bước 1:</strong> Bạn cần thả các cặp thẻ bài đối lập (1 thẻ Đề xuất <span className="text-blue-400 font-semibold">màu xanh/tím</span> bên trái và 1 thẻ Phản đề <span className="text-orange-400 font-semibold">màu cam/đỏ</span> bên phải) lên bàn đấu.</li>
-                <li><strong className="text-white">Bước 2:</strong> Đồng thời tích lũy đủ điểm <strong>Lượng</strong> (chỉ số ghi trên thẻ) trên đồ thị vượt qua <strong>Ngưỡng của Hợp đề</strong> (Ví dụ: Ngưỡng 4, 6 hoặc 8).</li>
-                <li><strong className="text-white">Pro Tip:</strong> Thả thật nhiều thẻ phụ để tích lũy lượng vượt ngưỡng trước, sau đó thả cặp thẻ chính của công thức vào là "nổ hũ" Chất mới ngay lập tức!</li>
-              </ul>
+          {/* Dynamic Dialectical Hints */}
+          {(thesisField.length > 0 || antithesisField.length > 0) && (
+            <div className="bg-neutral-900/85 border border-white/10 rounded-3xl p-6 text-xs md:text-sm text-neutral-300 space-y-4 animate-fade-in backdrop-blur-md shadow-2xl">
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <h4 className="font-extrabold text-amber-400 flex items-center gap-2 uppercase tracking-wider text-xs md:text-sm">
+                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                  Gợi Ý Giải Quyết Mâu Thuẫn (Biện Chứng Kỳ Đài)
+                </h4>
+                <span className="text-[10px] text-neutral-400 bg-neutral-950 px-2 py-0.5 rounded font-mono">
+                  Phân tích realtime
+                </span>
+              </div>
+              
+              <p className="text-neutral-400 text-xs leading-relaxed font-light">
+                Triết lý: <strong>"Sự phát triển là cuộc đấu tranh của các mặt đối lập"</strong>. Lượng đổi chỉ dẫn đến Chất đổi (Nổ hũ) khi bạn kết hợp đúng cặp thẻ tương khắc để giải quyết mâu thuẫn:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-2">
+                {/* Thesis Suggestions */}
+                {thesisField.map((card) => {
+                  const matches = activeDebate.synthesisCards.filter((s) => s.requiredThesis === card.id);
+                  return matches.map((recipe) => {
+                    const oppositeCard = activeDebate.antithesisCards.find((c) => c.id === recipe.requiredAntithesis);
+                    const isOppositeOnField = antithesisField.some((c) => c.id === recipe.requiredAntithesis);
+                    return (
+                      <div
+                        key={recipe.id}
+                        className={`p-3 rounded-2xl border flex flex-col justify-between gap-3 transition-all duration-300 ${
+                          isOppositeOnField
+                            ? "bg-emerald-950/30 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                            : "bg-neutral-950 border-white/5 text-neutral-300 shadow-inner"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-1">
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 font-mono">
+                              Cặp đôi mâu thuẫn
+                            </div>
+                            <div className="text-xs md:text-sm">
+                              <span className="font-bold text-blue-400">"{card.name}"</span>
+                              <span className="mx-1 text-neutral-400">↔</span>
+                              <span className={`font-bold ${isOppositeOnField ? "text-emerald-400" : "text-amber-400 underline decoration-dashed underline-offset-4"}`}>
+                                "{oppositeCard?.name}"
+                              </span>
+                            </div>
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold shrink-0 ${isOppositeOnField ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/10 text-amber-400"}`}>
+                            Ngưỡng: {recipe.leapThreshold}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-xs border-t border-white/5 pt-2">
+                          {isOppositeOnField ? (
+                            <>
+                              <span className="text-emerald-400 text-sm">✅</span>
+                              <span className="text-neutral-400">Đã khớp! Đang tích lũy Lượng để kích hoạt bước nhảy sang <strong>{recipe.name}</strong>.</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-red-400 text-sm">⚠️</span>
+                              <span className="text-neutral-400">Hãy hạ thêm thẻ <strong className="text-amber-400">"{oppositeCard?.name}"</strong> từ tay để "nổ hũ" <strong>{recipe.name}</strong>!</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })}
+
+                {/* Antithesis Suggestions */}
+                {antithesisField.map((card) => {
+                  const matches = activeDebate.synthesisCards.filter((s) => s.requiredAntithesis === card.id);
+                  return matches.map((recipe) => {
+                    const isThesisOnField = thesisField.some((c) => c.id === recipe.requiredThesis);
+                    if (isThesisOnField) return null; // already handled by thesis loop
+                    const oppositeCard = activeDebate.thesisCards.find((c) => c.id === recipe.requiredThesis);
+                    return (
+                      <div
+                        key={recipe.id}
+                        className="p-3 rounded-2xl border bg-neutral-950 border-white/5 text-neutral-300 shadow-inner flex flex-col justify-between gap-3"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-1">
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 font-mono">
+                              Cặp đôi mâu thuẫn
+                            </div>
+                            <div className="text-xs md:text-sm">
+                              <span className="font-bold text-orange-400">"{card.name}"</span>
+                              <span className="mx-1 text-neutral-400">↔</span>
+                              <span className="font-bold text-blue-400 underline decoration-dashed underline-offset-4">
+                                "{oppositeCard?.name}"
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-mono font-bold shrink-0">
+                            Ngưỡng: {recipe.leapThreshold}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-xs border-t border-white/5 pt-2">
+                          <span className="text-red-400 text-sm">⚠️</span>
+                          <span className="text-neutral-400">Hãy hạ thêm thẻ <strong className="text-blue-400">"{oppositeCard?.name}"</strong> từ tay để "nổ hũ" <strong>{recipe.name}</strong>!</span>
+                        </div>
+                      </div>
+                    );
+                  });
+                })}
+              </div>
             </div>
-
-            <h3 className="text-sm font-bold text-neutral-300 flex items-center gap-1.5 uppercase tracking-wider">
-              🃏 Thẻ bài trên tay của bạn
-              <span className="text-xs text-neutral-500 font-normal normal-case italic">
-                (Nhấp để tự động hạ bài vào đúng cột bên dưới)
-              </span>
-            </h3>
-
-            {playerHand.length === 0 ? (
-              <div className="flex flex-col items-center py-6 text-center gap-2">
-                <HelpCircle className="w-8 h-8 text-neutral-600" />
-                <p className="text-sm text-neutral-500 italic">Đã ra hết bài. Nhấn reset để chơi lại.</p>
-                <button
-                  onClick={resetGame}
-                  className="mt-2 px-4 py-2 bg-white text-black text-xs font-bold rounded-xl hover:bg-neutral-200 transition-all cursor-pointer"
-                >
-                  Reset sàn đấu
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/5 pt-6">
-                {/* Cột trái: Đề xuất */}
-                <div className="space-y-4 bg-blue-950/5 border border-blue-500/10 p-4 rounded-2xl">
-                  <div className="flex justify-between items-center border-b border-blue-500/15 pb-2">
-                    <span className="text-xs font-bold text-blue-400 font-mono uppercase tracking-wider">
-                      Bên A: {activeDebate.side_a}
-                    </span>
-                    <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-mono">
-                      {thesisHand.length} thẻ
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-3 justify-start content-start min-h-[120px]">
-                    {thesisHand.length === 0 ? (
-                      <p className="text-xs text-neutral-500 italic m-auto">Đã hết thẻ Đề xuất</p>
-                    ) : (
-                      thesisHand.map((card) => (
-                        <DialecticalCardItem
-                          key={card.id}
-                          card={card}
-                          onDragStart={() => {}}
-                          onClick={() => handleDropCard(card, "thesis")}
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Cột phải: Phản đề */}
-                <div className="space-y-4 bg-orange-950/5 border border-orange-500/10 p-4 rounded-2xl">
-                  <div className="flex justify-between items-center border-b border-orange-500/15 pb-2">
-                    <span className="text-xs font-bold text-orange-400 font-mono uppercase tracking-wider">
-                      Bên B: {activeDebate.side_b}
-                    </span>
-                    <span className="text-[10px] bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-mono">
-                      {antithesisHand.length} thẻ
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-3 justify-start content-start min-h-[120px]">
-                    {antithesisHand.length === 0 ? (
-                      <p className="text-xs text-neutral-500 italic m-auto">Đã hết thẻ Phản đề</p>
-                    ) : (
-                      antithesisHand.map((card) => (
-                        <DialecticalCardItem
-                          key={card.id}
-                          card={card}
-                          onDragStart={() => {}}
-                          onClick={() => handleDropCard(card, "antithesis")}
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
     </div>

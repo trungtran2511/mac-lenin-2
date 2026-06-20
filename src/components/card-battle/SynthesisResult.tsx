@@ -119,6 +119,32 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
         </div>
       </div>
 
+      {/* Detailed Dialectical Breakdown */}
+      {synthesisCard.struggleDetail && (
+        <div className="mt-6 w-full space-y-3 border-t border-white/10 pt-5 text-xs md:text-sm text-neutral-300">
+          <h4 className="font-extrabold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider text-xs">
+            🍀 Phân Tích Bản Chất Biện Chứng
+          </h4>
+          
+          <div className="space-y-3 bg-neutral-950/50 p-4.5 rounded-2xl border border-white/5 text-left">
+            <div>
+              <span className="font-extrabold text-red-400 text-xs block mb-1">🔥 MẶT ĐẤU TRANH (MÂU THUẪN):</span>
+              <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.struggleDetail}</p>
+            </div>
+            
+            <div className="border-t border-white/5 pt-3">
+              <span className="font-extrabold text-blue-400 text-xs block mb-1">🤝 MẶT THỐNG NHẤT (ĐỒNG HÀNH):</span>
+              <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.unityDetail}</p>
+            </div>
+            
+            <div className="border-t border-white/5 pt-3">
+              <span className="font-extrabold text-emerald-400 text-xs block mb-1">⚡ KẾT QUẢ (CHẤT MỚI):</span>
+              <p className="text-neutral-200 text-xs font-medium leading-relaxed">{synthesisCard.outcomeDetail}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={onReset}
         className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95"

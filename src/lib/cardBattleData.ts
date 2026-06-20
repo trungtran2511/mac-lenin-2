@@ -19,7 +19,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "high-gpa",
-        name: "Học bổng & GPA xuất sắc",
+        name: "Điểm số & GPA xuất sắc",
         category: "thesis",
         quantityValue: 4,
         icon: "Award",
@@ -28,7 +28,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "deep-research",
-        name: "Đề tài nghiên cứu khoa học",
+        name: "Nghiên cứu khoa học",
         category: "thesis",
         quantityValue: 5,
         icon: "Cpu",
@@ -36,26 +36,8 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         color: "from-cyan-500 to-blue-600"
       },
       {
-        id: "scientific-publications",
-        name: "Công bố khoa học",
-        category: "thesis",
-        quantityValue: 3,
-        icon: "FileText",
-        description: "Viết bài báo khoa học đăng trên các tạp chí uy tín trong nước hoặc quốc tế.",
-        color: "from-sky-500 to-indigo-500"
-      },
-      {
-        id: "advanced-theory",
-        name: "Lý luận chuyên sâu",
-        category: "thesis",
-        quantityValue: 1,
-        icon: "Search",
-        description: "Nghiên cứu sâu sắc lý luận kinh tế học vĩ mô và triết học Mác - Lênin.",
-        color: "from-blue-600 to-cyan-700"
-      },
-      {
         id: "academic-olympiad",
-        name: "Giải thưởng Olympic",
+        name: "Học thuật đỉnh cao (Olympic)",
         category: "thesis",
         quantityValue: 4,
         icon: "Trophy",
@@ -64,7 +46,7 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
       },
       {
         id: "foreign-languages",
-        name: "Ngoại ngữ IELTS 8.0",
+        name: "Tiêu chuẩn Quốc tế (IELTS 8.0)",
         category: "thesis",
         quantityValue: 3,
         icon: "Languages",
@@ -77,14 +59,23 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         category: "thesis",
         quantityValue: 5,
         icon: "Globe",
-        description: "Học bổng trao đổi hoặc du học tại các trường đại học hàng đầu thế giới.",
+        description: "Học bổng đào tạo tại nước ngoài hoặc các chương trình chuẩn quốc tế.",
         color: "from-blue-700 to-purple-800"
+      },
+      {
+        id: "advanced-theory",
+        name: "Lý luận chuyên sâu",
+        category: "thesis",
+        quantityValue: 1,
+        icon: "Search",
+        description: "Nghiên cứu sâu sắc lý luận kinh tế chính trị, triết học và các học thuyết vĩ mô.",
+        color: "from-blue-600 to-cyan-700"
       }
     ],
     antithesisCards: [
       {
         id: "parttime-job",
-        name: "Công việc Part-time",
+        name: "Công việc Part-time (Kiếm sống)",
         category: "antithesis",
         quantityValue: 2,
         icon: "Briefcase",
@@ -92,17 +83,8 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         color: "from-amber-500 to-orange-600"
       },
       {
-        id: "soft-skills",
-        name: "Kỹ năng mềm thực chiến",
-        category: "antithesis",
-        quantityValue: 4,
-        icon: "MessageSquare",
-        description: "Giao tiếp khách hàng, đàm phán, xử lý khủng hoảng thực tế.",
-        color: "from-red-500 to-orange-500"
-      },
-      {
         id: "networking",
-        name: "Mạng lưới xã hội",
+        name: "Mạng lưới kết nối",
         category: "antithesis",
         quantityValue: 5,
         icon: "Users",
@@ -110,13 +92,31 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         color: "from-yellow-500 to-amber-600"
       },
       {
-        id: "startup-project",
-        name: "Dự án khởi nghiệp",
+        id: "freelancer-work",
+        name: "Sức cạnh tranh Tự do (Freelance)",
         category: "antithesis",
         quantityValue: 3,
-        icon: "Zap",
-        description: "Thử sức tự doanh hoặc chạy dự án khởi nghiệp nhỏ cùng bạn bè.",
-        color: "from-orange-500 to-red-600"
+        icon: "Activity",
+        description: "Nhận dự án ngoài tự do, tự quản lý thời gian và thu nhập.",
+        color: "from-orange-600 to-red-700"
+      },
+      {
+        id: "volunteer-leader",
+        name: "Hoạt động đại chúng (Tình nguyện)",
+        category: "antithesis",
+        quantityValue: 4,
+        icon: "HeartHandshake",
+        description: "Tổ chức hoạt động cộng đồng, rèn luyện kỹ năng quản lý đội nhóm.",
+        color: "from-red-600 to-amber-700"
+      },
+      {
+        id: "technical-projects",
+        name: "Dự án thực chiến",
+        category: "antithesis",
+        quantityValue: 5,
+        icon: "Code2",
+        description: "Xây dựng các sản phẩm thực tế, có người dùng thật ngoài thị trường.",
+        color: "from-amber-700 to-red-800"
       },
       {
         id: "corporate-internship",
@@ -126,33 +126,6 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         icon: "Building2",
         description: "Trải nghiệm thực tế quy trình làm việc chuẩn mực công nghiệp.",
         color: "from-amber-600 to-yellow-600"
-      },
-      {
-        id: "freelancer-work",
-        name: "Làm tự do Freelancer",
-        category: "antithesis",
-        quantityValue: 3,
-        icon: "Activity",
-        description: "Nhận dự án ngoài tự do, tự quản lý thời gian và thu nhập.",
-        color: "from-orange-600 to-red-700"
-      },
-      {
-        id: "volunteer-leader",
-        name: "Thủ lĩnh tình nguyện",
-        category: "antithesis",
-        quantityValue: 4,
-        icon: "HeartHandshake",
-        description: "Tổ chức hoạt động cộng đồng, rèn luyện kỹ năng quản lý đội nhóm.",
-        color: "from-red-600 to-amber-700"
-      },
-      {
-        id: "technical-projects",
-        name: "Dự án thực tế",
-        category: "antithesis",
-        quantityValue: 5,
-        icon: "Code2",
-        description: "Xây dựng các sản phẩm thực tế, có người dùng thật ngoài thị trường.",
-        color: "from-amber-700 to-red-800"
       }
     ],
     synthesisCards: [
@@ -162,15 +135,21 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "theory-knowledge",
         requiredAntithesis: "parttime-job",
         leapThreshold: 4,
-        description: "Sự kết hợp hài hòa giữa kiến thức giảng đường và cọ xát công việc bán thời gian. Bạn phát triển cân bằng và không bị xa rời thực tế."
+        description: "Đây là mâu thuẫn giữa Lý luận thuần túy và Thực tiễn sinh tồn cơ bản.",
+        struggleDetail: "Hai phe này triệt tiêu thời gian của nhau khủng khiếp. Cày bài tập lớn trên trường thì mất giờ làm part-time kiếm tiền; đi làm ca tối về thì mệt rũ rượi, không thể nạp nổi kiến thức hàn lâm.",
+        unityDetail: "Kiến thức giảng đường giúp nâng cấp tư duy để sinh viên không phải làm lao động chân tay giá rẻ mãi mãi. Ngược lại, áp lực kiếm sống ở công việc part-time tạo ra động lực thực tế để sinh viên hiểu vì sao mình cần phải học.",
+        outcomeDetail: "Dung hợp được hai mặt này sẽ tạo ra một Sinh viên Toàn diện — vừa vững lý thuyết, vừa biết tự lập tự cường."
       },
       {
         id: "expert-practitioner",
         name: "Chuyên gia Thực chiến",
         requiredThesis: "high-gpa",
-        requiredAntithesis: "soft-skills",
+        requiredAntithesis: "technical-projects",
         leapThreshold: 6,
-        description: "Sự kết hợp giữa học thuật đỉnh cao và kỹ năng thực tế năng động. Lượng tri thức học đường đã chuyển hóa thành Chất năng lực vượt trội!"
+        description: "Mâu thuẫn giữa Khuôn mẫu lý tưởng và Thực tế khốc liệt của thị trường.",
+        struggleDetail: "Để có GPA 3.9/4.0, bạn phải học đều tất cả các môn, tuân thủ tuyệt đối giáo trình và bài thi mang tính khuôn mẫu. Ngược lại, dự án thực chiến tại doanh nghiệp đòi hỏi sự linh hoạt, 'mì ăn liền', đôi khi phải phá vỡ quy tắc sách vở để chạy kịp deadline và tối ưu chi phí. Người ôm cả hai thường bị 'tẩu hỏa nhập ma' vì xung đột tư duy.",
+        unityDetail: "GPA xuất sắc chứng minh tư duy nền tảng cực tốt, giúp giải quyết các bài toán khó trong dự án một cách bài bản thay vì chắp vá. Ngược lại, kinh nghiệm làm dự án thực tế giúp 'thổi sức sống' vào các con số GPA khô khan, biến điểm số thành năng lực thực sự.",
+        outcomeDetail: "Chuyên gia Thực chiến — người có thể hạ cánh xuống bất kỳ doanh nghiệp nào và làm được việc ngay nhờ tư duy nền tảng sâu và kỹ năng thực tế bén."
       },
       {
         id: "innovative-leader",
@@ -178,39 +157,32 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "deep-research",
         requiredAntithesis: "networking",
         leapThreshold: 8,
-        description: "Tầm nhìn nghiên cứu chiều sâu kết hợp mạng lưới quan hệ rộng mở tạo ra Bước nhảy vĩ đại thành một thủ lĩnh dẫn dắt xu hướng mới."
+        description: "Mâu thuẫn giữa Sự cô độc tập trung và Sự quảng giao đại chúng.",
+        struggleDetail: "Nghiên cứu khoa học bắt buộc bạn phải 'giam mình' trong phòng thí nghiệm, đối diện với hàng trăm tài liệu, đòi hỏi sự tĩnh lặng tuyệt đối. Ngược lại, xây dựng mạng lưới xã hội (Networking) đòi hỏi bạn phải liên tục đi sự kiện, giao lưu, nói chuyện và hướng ngoại. Hai trạng thái tâm lý này loại trừ nhau trực tiếp.",
+        unityDetail: "Nếu chỉ nghiên cứu cô độc, sản phẩm khoa học sẽ bị 'trùm mền' trong kho vì không ai biết tới. Nếu chỉ đi ngoại giao bề nổi mà không có chiều sâu tri thức, các mối quan hệ sẽ rỗng tuếch. Mạng lưới xã hội giúp đưa nghiên cứu khoa học ra ánh sáng, và nghiên cứu khoa học làm nên uy tín cho các mối quan hệ.",
+        outcomeDetail: "Thủ lĩnh Đổi mới Sáng tạo — người vừa có bộ não xuất chúng để tạo ra công nghệ, vừa có khả năng tập hợp lực lượng và tài nguyên để hiện thực hóa công nghệ đó."
       },
       {
-        id: "dialectical-entrepreneur",
-        name: "Doanh nhân Biện chứng",
-        requiredThesis: "scientific-publications",
-        requiredAntithesis: "startup-project",
-        leapThreshold: 6,
-        description: "Sự kết hợp giữa tư duy học thuật sắc bén từ công bố khoa học và hành động thực tiễn khởi nghiệp. Tạo bước nhảy biến bạn thành một Founder tri thức dẫn dắt thị trường!"
-      },
-      {
-        id: "professional-expert",
-        name: "Chuyên gia Tư vấn Cao cấp",
-        requiredThesis: "advanced-theory",
-        requiredAntithesis: "corporate-internship",
-        leapThreshold: 2,
-        description: "Sự kết hợp hoàn hảo giữa lý luận vững vàng và kinh nghiệm quy chuẩn tập đoàn lớn. Bước nhảy giúp bạn trở thành chuyên gia tư vấn chiến lược vĩ mô."
-      },
-      {
-        id: "olympian-freelancer",
-        name: "Chiến binh Freelancer Tài năng",
+        id: "academic-leader",
+        name: "Học giả Cộng đồng",
         requiredThesis: "academic-olympiad",
-        requiredAntithesis: "freelancer-work",
-        leapThreshold: 6,
-        description: "Tư duy giải quyết bài toán khó của học sinh giỏi kết hợp với sự linh hoạt của freelancer. Tạo ra năng lực giải quyết dự án độc lập cực mạnh."
-      },
-      {
-        id: "global-citizen",
-        name: "Thủ lĩnh Công dân Toàn cầu",
-        requiredThesis: "foreign-languages",
         requiredAntithesis: "volunteer-leader",
         leapThreshold: 6,
-        description: "Sử dụng ngoại ngữ xuất sắc song hành với vai trò thủ lĩnh tình nguyện. Bước nhảy đưa bạn vươn tầm làm việc trong các tổ chức phi chính phủ quốc tế."
+        description: "Mâu thuẫn giữa Tháp ngà hàn lâm tinh hoa và Đời sống bình dân đại chúng.",
+        struggleDetail: "Phe tinh hoa (Giải thưởng Olympic, nghiên cứu chuyên sâu) hướng tới những điều vĩ mô, phức tạp mà số ít người hiểu được. Phe đại chúng (Tình nguyện, hoạt động xã hội) lại hướng tới sự giản đơn, kết nối con người bằng cảm xúc và hành động thực tế. Người làm học thuật thường xa rời quần chúng, người sa đà vào phong trào thường thiếu chiều sâu học thuật.",
+        unityDetail: "Tri thức tinh hoa nếu không hướng về đại chúng để phục vụ nhân dân thì trở nên vô dụng. Hoạt động cộng đồng nếu không có những cái đầu có tri thức dẫn đường thì dễ mang tính tự phát, phong trào và kém hiệu quả.",
+        outcomeDetail: "Học giả Cộng đồng — người dùng tri thức đỉnh cao của mình để giải quyết các vấn đề nhức nhối của xã hội, được cộng đồng nể phục và yêu mến."
+      },
+      {
+        id: "global-freelancer",
+        name: "Freelancer Toàn cầu",
+        requiredThesis: "foreign-languages",
+        requiredAntithesis: "freelancer-work",
+        leapThreshold: 6,
+        description: "Mâu thuẫn giữa Khuôn mẫu luật chơi toàn cầu và Sự sinh tồn vô kỷ luật.",
+        struggleDetail: "Đạt các chứng chỉ chuẩn quốc tế đòi hỏi bạn phải ép mình vào các bộ quy tắc chuẩn mực khắt khe, có phần gò bó của phương Tây. Trong khi đó, làm Freelancer là thế giới 'vô chính phủ', bạn phải tự bơi, tự cạnh tranh bằng mọi giá, đối mặt với sự bấp bênh và không có tổ chức nào bảo vệ.",
+        unityDetail: "Không có tấm vé 'Tiêu chuẩn quốc tế' (như ngoại ngữ đỉnh cao), bạn không thể tiếp cận các khách hàng nước ngoài trả tiền đô trên Upwork, Fiverr. Ngược lại, nếu chỉ có chứng chỉ mà không có độ 'quái', khả năng tự bơi của Freelance, bạn sẽ chết chìm trước các đối thủ cạnh tranh toàn cầu.",
+        outcomeDetail: "Freelancer Toàn cầu — một cá nhân độc lập, tự do nhưng sở hữu năng lực vận hành chuyên nghiệp theo đúng luật chơi quốc tế."
       },
       {
         id: "global-tech-expert",
@@ -218,7 +190,21 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "scholarship-abroad",
         requiredAntithesis: "technical-projects",
         leapThreshold: 8,
-        description: "Trải nghiệm học tập đỉnh cao tại nước ngoài kết hợp năng lực thực thi dự án thực tế. Tạo ra một kỹ sư công nghệ đẳng cấp quốc tế."
+        description: "Mâu thuẫn giữa Tầm nhìn vĩ mô lý tưởng và Áp lực thực tế địa phương.",
+        struggleDetail: "Học bổng quốc tế dạy bạn công nghệ cốt lõi và kiến trúc hệ thống chuẩn mực. Nhưng khi áp dụng vào dự án thực tế tại thị trường local, khách hàng thường chỉ muốn sản phẩm 'chạy được luôn', giá rẻ và thay đổi liên tục, tạo ra sự dằn vặt giữa 'làm chuẩn chỉnh' và 'làm cho nhanh'.",
+        unityDetail: "Nhờ tư duy chuẩn quốc tế, kỹ sư sẽ xây dựng được hệ thống có tính mở rộng cao, bảo mật tốt chứ không chắp vá. Ngược lại, chính áp lực 'mì ăn liền' local sẽ mài giũa năng lực thích ứng, biến lý thuyết thành vũ khí thực chiến.",
+        outcomeDetail: "Kỹ sư Công nghệ Toàn cầu — một chuyên gia công nghệ sở hữu tư duy hệ thống đẳng cấp quốc tế kết hợp khả năng thích ứng linh hoạt với thị trường nội địa."
+      },
+      {
+        id: "professional-expert",
+        name: "Chuyên gia Tư vấn Cao cấp",
+        requiredThesis: "advanced-theory",
+        requiredAntithesis: "corporate-internship",
+        leapThreshold: 2,
+        description: "Mâu thuẫn giữa Người quan sát toàn cảnh và Bánh răng trong bộ máy.",
+        struggleDetail: "Lý luận chuyên sâu bắt bạn đứng ở trên cao để nhìn nhận toàn bộ bức tranh kinh tế. Nhưng khi thực tập tại các tập đoàn lớn (Big Corp), bạn bị ném vào một vị trí cụ thể với sức ép nghẹt thở từ KPI, quy trình hành chính phức tạp, dễ khiến bạn thấy mớ lý thuyết vĩ mô chẳng giúp ích gì cho việc lặt vặt hiện tại.",
+        unityDetail: "Tập đoàn lớn chính là mô hình thu nhỏ hoàn hảo nhất của các lý thuyết quản trị vĩ mô, đi làm giúp bạn hiểu sâu cách các bánh răng vận hành thực tế. Ngược lại, nhờ có tư duy hệ thống, bạn sẽ không bị lạc lối trong công việc sự vụ mà biết cách tối ưu quy trình để thăng tiến.",
+        outcomeDetail: "Chuyên gia Tư vấn Cao cấp — người vừa am hiểu sâu sắc lý thuyết hệ thống, vừa có kinh nghiệm vận hành thực tế tại các tổ chức quy mô lớn."
       }
     ]
   },
@@ -231,148 +217,130 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
     thesisCards: [
       {
         id: "frugal-living",
-        name: "Lối sống tối giản",
-        category: "thesis",
-        quantityValue: 2,
-        icon: "TrendingDown",
-        description: "Cắt giảm mọi chi phí không cần thiết để tạo quỹ tài chính dự phòng.",
-        color: "from-teal-500 to-emerald-600"
-      },
-      {
-        id: "emergency-fund",
-        name: "Quỹ khẩn cấp 6 tháng",
+        name: "Tối giản khắc khổ (Thắt lưng buộc bụng)",
         category: "thesis",
         quantityValue: 4,
         icon: "Shield",
-        description: "Đảm bảo sự an toàn và độc lập tài chính trước mọi biến động thị trường.",
+        description: "Thắt lưng buộc bụng để tích lũy tài chính tối đa.",
         color: "from-emerald-600 to-teal-700"
       },
       {
-        id: "financial-investing",
-        name: "Đầu tư cổ phiếu & Quỹ",
+        id: "emergency-fund",
+        name: "Quỹ an toàn đóng băng (Tiền chết trong két)",
         category: "thesis",
-        quantityValue: 3,
-        icon: "TrendingUp",
-        description: "Bắt tiền làm việc cho mình qua các kênh đầu tư dài hạn an toàn.",
+        quantityValue: 6,
+        icon: "Lock",
+        description: "Tiền mặt dự phòng đóng băng phòng trường hợp rủi ro.",
         color: "from-emerald-500 to-teal-600"
       },
       {
-        id: "asset-accumulation",
-        name: "Tích lũy tài sản thực",
+        id: "financial-investing",
+        name: "Áp lực đầu tư tài chính (Cày cuốc, căng thẳng)",
         category: "thesis",
-        quantityValue: 5,
-        icon: "Coins",
-        description: "Sở hữu vàng hoặc các tài sản có giá trị lưu giữ cao chống lạm phát.",
+        quantityValue: 6,
+        icon: "TrendingUp",
+        description: "Dành thời gian và công sức cày cuốc, nghiên cứu danh mục đầu tư.",
         color: "from-teal-600 to-emerald-800"
       },
       {
         id: "debt-free",
-        name: "Không nợ nần tiêu dùng",
+        name: "Kỷ luật tài chính (Nói không với phô trương)",
         category: "thesis",
-        quantityValue: 1,
+        quantityValue: 2,
         icon: "CheckSquare",
-        description: "Nói không với các khoản vay trả góp mua sắm tiêu dùng hoang phí.",
+        description: "Nói không với nợ nần và các tiêu sản phô trương bề nổi.",
         color: "from-teal-400 to-emerald-500"
       },
       {
         id: "pension-plan",
-        name: "Kế hoạch hưu trí sớm",
+        name: "Kế hoạch hưu trí sớm (Tích lũy tối đa)",
         category: "thesis",
-        quantityValue: 4,
+        quantityValue: 6,
         icon: "Calendar",
-        description: "Phân bổ tài sản tích lũy dài hạn hướng tới tự do nghỉ hưu sớm.",
+        description: "Cố gắng tích lũy dòng tiền để đạt mục tiêu hưu trí sớm.",
         color: "from-emerald-500 to-teal-800"
       },
       {
         id: "real-estate-saving",
-        name: "Quỹ mua nhà tích lũy",
+        name: "Quỹ mua nhà kiên cố (Sự ràng buộc cố định)",
         category: "thesis",
-        quantityValue: 5,
+        quantityValue: 8,
         icon: "Home",
-        description: "Kiên trì tiết kiệm hướng tới sở hữu bất động sản đầu tiên.",
+        description: "Tích lũy tiền mua bất động sản để an cư lạc nghiệp.",
         color: "from-teal-700 to-emerald-900"
       },
       {
         id: "insurance-security",
-        name: "Bảo hiểm phòng rủi ro",
+        name: "Chi phí bảo hiểm (Phòng rủi ro tương lai)",
         category: "thesis",
-        quantityValue: 3,
+        quantityValue: 6,
         icon: "Heart",
-        description: "Sử dụng các gói bảo hiểm sức khỏe để bảo vệ thành quả tiết kiệm.",
+        description: "Trích một phần ngân sách chi trả cho bảo hiểm phòng trừ rủi ro.",
         color: "from-emerald-400 to-teal-600"
       }
     ],
     antithesisCards: [
       {
         id: "learning-courses",
-        name: "Khóa học nâng cao",
+        name: "Đầu tư tri thức cao cấp (Học phí đắt đỏ)",
         category: "antithesis",
-        quantityValue: 2,
+        quantityValue: 4,
         icon: "GraduationCap",
-        description: "Đầu tư học thêm công nghệ, ngoại ngữ mới để gia tăng giá trị sức lao động.",
+        description: "Chi khoản tiền lớn cho các khóa học, chứng chỉ chuyên sâu.",
         color: "from-pink-500 to-rose-600"
       },
       {
         id: "travel-explore",
-        name: "Du lịch trải nghiệm",
+        name: "Du lịch mạo hiểm (Đốt tiền vào trải nghiệm)",
         category: "antithesis",
-        quantityValue: 4,
+        quantityValue: 6,
         icon: "Compass",
-        description: "Mở rộng thế giới quan, tiếp thu tư duy mới từ các nền văn minh khác nhau.",
+        description: "Đi xa trải nghiệm các vùng đất mới, dấn thân vào thử thách mới.",
         color: "from-rose-600 to-red-700"
       },
       {
         id: "health-wellness",
-        name: "Chăm sóc sức khỏe",
+        name: "Phục hồi thể chất & Trị liệu (Nghỉ ngơi, ngắt kết nối)",
         category: "antithesis",
-        quantityValue: 3,
+        quantityValue: 6,
         icon: "Activity",
-        description: "Tập luyện thể thao chuyên nghiệp và ăn uống lành mạnh để duy trì sức trẻ.",
+        description: "Nghỉ ngơi trị liệu cơ thể, tạm ngắt kết nối với công việc.",
         color: "from-rose-500 to-pink-600"
       },
       {
-        id: "high-tech-tools",
-        name: "Thiết bị công nghệ",
-        category: "antithesis",
-        quantityValue: 5,
-        icon: "Laptop",
-        description: "Đầu tư máy tính cấu hình cao, AI tools để tăng năng suất làm việc lên gấp bội.",
-        color: "from-red-500 to-purple-600"
-      },
-      {
         id: "self-branding",
-        name: "Thương hiệu cá nhân",
+        name: "Đam mê xây dựng hình ảnh (Chi phí ngoại giao, Profile)",
         category: "antithesis",
-        quantityValue: 1,
+        quantityValue: 2,
         icon: "UserCheck",
-        description: "Xây dựng hình ảnh cá nhân uy tín trên môi trường số để tạo cơ hội.",
+        description: "Chi tiền cho các hình ảnh uy tín cá nhân, Profile chuyên nghiệp.",
         color: "from-pink-400 to-rose-500"
       },
       {
         id: "high-quality-networking",
-        name: "Quan hệ chất lượng",
+        name: "Xây dựng quan hệ xa xỉ (Chi phí VIP, hội nhóm)",
         category: "antithesis",
-        quantityValue: 4,
+        quantityValue: 6,
         icon: "UserPlus",
-        description: "Gặp gỡ, giao lưu với các mentor và cộng sự tinh hoa cùng ngành.",
+        description: "Đầu tư chi phí tham gia hội nhóm VIP, tiệc tùng xa xỉ để kết giao.",
         color: "from-rose-500 to-pink-700"
       },
       {
         id: "art-creative-hobby",
-        name: "Đam mê sáng tạo",
+        name: "Đam mê sáng tạo tự do (Bay bổng, phá cách)",
         category: "antithesis",
-        quantityValue: 5,
+        quantityValue: 8,
         icon: "Palette",
-        description: "Đầu tư học nhạc cụ, vẽ tranh, nhiếp ảnh để nuôi dưỡng thế giới nội tâm.",
+        description: "Đầu tư vào các dự án nghệ thuật, bay bổng sáng tạo không giới hạn.",
         color: "from-red-600 to-purple-800"
       },
       {
         id: "gourmet-experience",
-        name: "Ẩm thực tinh hoa",
+        name: "Ẩm thực tinh hoa (Hưởng thụ xa hoa hiện tại)",
         category: "antithesis",
-        quantityValue: 3,
+        quantityValue: 6,
         icon: "Coffee",
-        description: "Thưởng thức ẩm thực cao cấp, mở rộng gu thẩm mỹ và phong cách sống.",
+        description: "Thưởng thức các bữa ăn sang trọng, ẩm thực chuẩn Michelin.",
         color: "from-rose-400 to-red-600"
       }
     ],
@@ -383,7 +351,10 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "frugal-living",
         requiredAntithesis: "learning-courses",
         leapThreshold: 4,
-        description: "Áp dụng lối sống tối giản kết hợp học tập liên tục. Lượng tích lũy tri thức sẽ chuyển hóa thành nguồn thu nhập vượt trội trong tương lai."
+        description: "Mâu thuẫn giữa việc không dám chi tiêu để tích lũy tiền và việc phải chi một khoản lớn cho học thuật.",
+        struggleDetail: "Một bên muốn thắt lưng buộc bụng triệt để để giữ tiền mặt, một bên muốn chi khoản tiền lớn (học phí đắt đỏ) để mua tri thức/khóa học cao cấp.",
+        unityDetail: "Lối sống tối giản cung cấp dòng vốn bệ đỡ vững chắc để nuôi dưỡng tri thức; ngược lại, tri thức giúp phú ông biết cách chi tiêu đúng chỗ và đầu tư sinh lời bền vững.",
+        outcomeDetail: "Tri thức Phú ông — sở hữu cả tài sản tích lũy vững vàng và trí tuệ đầu tư sắc bén."
       },
       {
         id: "safe-adventurer",
@@ -391,23 +362,21 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "emergency-fund",
         requiredAntithesis: "travel-explore",
         leapThreshold: 6,
-        description: "Tự tin đi khắp thế giới nhờ điểm tựa vững chãi từ quỹ khẩn cấp. Bạn tích lũy trải nghiệm văn hóa mà không sợ rủi ro tài chính."
+        description: "Mâu thuẫn giữa Nỗi sợ rủi ro và Khát vọng tự do trải nghiệm.",
+        struggleDetail: "Trận chiến tâm lý giữa Nỗi sợ rủi ro (muốn khóa chặt tiền phòng thân trong két) và Khát vọng tự do (muốn lao đi khám phá thế giới, đốt tiền vào trải nghiệm mạo hiểm).",
+        unityDetail: "Quỹ an toàn đóng vai trò là chiếc 'bảo hiểm tâm lý' vững chãi để bạn tự tin dấn thân khám phá; ngược lại, những chuyến đi giúp đồng tiền tích lũy có giá trị trải nghiệm thực tế thay vì chỉ là những con số chết.",
+        outcomeDetail: "Nhà thám hiểm An toàn — người tự do đi khắp thế gian mà không bao giờ phải lo lắng về biến động tài chính."
       },
       {
         id: "elite-investor",
-        name: "Tự do Tài chính & Thể chất",
+        name: "Tự do Biện chứng",
         requiredThesis: "financial-investing",
         requiredAntithesis: "health-wellness",
         leapThreshold: 6,
-        description: "Đầu tư thông minh song hành cùng sức khỏe tráng kiện. Bước nhảy đưa bạn thành người tự do tài chính đích thực, sống khỏe và thịnh vượng!"
-      },
-      {
-        id: "digital-nomad",
-        name: "Chiến thần Công nghệ Độc lập",
-        requiredThesis: "asset-accumulation",
-        requiredAntithesis: "high-tech-tools",
-        leapThreshold: 8,
-        description: "Sở hữu tài sản tích lũy an toàn cùng công cụ làm việc tối tân. Bước nhảy biến bạn thành một Digital Nomad tự do di chuyển khắp thế giới mà vẫn tạo ra giá trị thặng dư cực lớn."
+        description: "Mâu thuẫn giữa Áp lực cày cuốc tài chính và Nhu cầu phục hồi thể chất.",
+        struggleDetail: "Muốn giàu nhanh phải cày cuốc ngày đêm, căng thẳng đầu óc nghiên cứu thị trường, ngồi lì cày code bào mòn sức khỏe. Đối lập với việc buộc phải buông bỏ công việc, tắt máy tính để nghỉ ngơi trị liệu căng cơ lưng, phục hồi thể chất.",
+        unityDetail: "Lợi nhuận từ đầu tư tài chính giúp chi trả cho các dịch vụ chăm sóc sức khỏe và trị liệu cao cấp; ngược lại, một thể trạng tráng kiện và tinh thần minh mẫn chính là cỗ máy bền bỉ nhất để tiếp tục đầu tư hiệu quả.",
+        outcomeDetail: "Tự do Biện chứng — đạt được sự giàu có về tài chính song hành cùng sức khỏe vàng và sự cân bằng thân-tâm-trí."
       },
       {
         id: "independent-brand",
@@ -415,15 +384,21 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "debt-free",
         requiredAntithesis: "self-branding",
         leapThreshold: 2,
-        description: "Không gánh nặng nợ nần và tự tin làm chủ thương hiệu cá nhân xuất sắc. Tạo điều kiện để bạn tự khởi nghiệp tự do."
+        description: "Mâu thuẫn giữa Kỷ luật tài chính không phô trương và Chi phí xây dựng hình ảnh.",
+        struggleDetail: "Mâu thuẫn giữa kỷ luật tài chính thắt chặt, nói không với phô trương tiêu sản và nhu cầu chi tiền xây dựng hình ảnh uy tín, trang phục, thiết bị để tạo vị thế ngoại giao đắt đỏ.",
+        unityDetail: "Thương hiệu cá nhân uy tín giúp nâng cao năng lực kiếm tiền và mở ra nhiều cơ hội kinh doanh lớn; ngược lại, kỷ luật tài chính nghiêm ngặt đảm bảo thương hiệu của bạn có 'ruột' thực chất chứ không phải một vỏ bọc nợ nần rỗng tuếch.",
+        outcomeDetail: "Thương hiệu Độc lập — sở hữu uy tín cá nhân vượt trội nhưng vẫn duy trì nền tảng tài chính cực kỳ lành mạnh và an toàn."
       },
       {
         id: "lifestyle-entrepreneur",
-        name: "Doanh nhân Phong cách sống",
+        name: "Doanh nhân Phong cách",
         requiredThesis: "pension-plan",
         requiredAntithesis: "high-quality-networking",
         leapThreshold: 6,
-        description: "Mục tiêu hưu trí sớm cộng hưởng với mạng lưới quan hệ chất lượng. Bước nhảy chuyển hóa bạn thành một doanh nhân tự vận hành mô hình kinh doanh tinh gọn."
+        description: "Mâu thuẫn giữa Tích lũy hưu trí tối đa và Đầu tư quan hệ xã hội xa xỉ.",
+        struggleDetail: "Muốn nghỉ hưu sớm buộc bạn phải bóp nghẹt chi tiêu hiện tại để tích lũy tối đa. Ngược lại, muốn có quan hệ với giới tinh hoa, bạn phải chi những khoản tiền lớn tham gia các câu lạc bộ, hội nhóm VIP và tiệc tùng xa xỉ.",
+        unityDetail: "Các mối quan hệ VIP chính là đòn bẩy thông tin và cơ hội giúp rút ngắn thời gian làm việc để nghỉ hưu sớm; ngược lại, mục tiêu hưu trí rõ ràng giúp bạn sàng lọc, chỉ giữ lại những mối quan hệ thực chất thay vì xã giao hào nhoáng.",
+        outcomeDetail: "Doanh nhân Phong cách — tận hưởng mạng lưới quan hệ đẳng cấp nhưng luôn làm chủ thời gian tự do hưu trí của mình."
       },
       {
         id: "creative-homeowner",
@@ -431,15 +406,21 @@ export const CARD_BATTLE_DEBATES: DialecticalDebate[] = [
         requiredThesis: "real-estate-saving",
         requiredAntithesis: "art-creative-hobby",
         leapThreshold: 8,
-        description: "Xây dựng căn nhà mơ ước từ quỹ tích lũy và trang hoàng bằng gu thẩm mỹ nghệ thuật độc bản. Bạn làm chủ hoàn toàn không gian sống chất lượng cao."
+        description: "Mâu thuẫn giữa Ràng buộc bất động sản kiên cố và Sáng tạo tự do bay bổng.",
+        struggleDetail: "Ngôi nhà đại diện cho sự định cư cố định, chôn vốn tài chính lớn và sự ràng buộc không gian. Trong khi đó, đam mê sáng tạo nghệ thuật đòi hỏi tinh thần bay bổng, tự do vô biên, ghét sự tù túng và áp lực tiền bạc đè nặng.",
+        unityDetail: "Một không gian sống kiên cố, ổn định giúp tâm trí người nghệ sĩ an tâm sáng tạo mà không lo bão giông; ngược lại, tư duy nghệ thuật phá cách sẽ thổi hồn vào ngôi nhà, biến hộp bê tông khô khan thành tổ ấm nghệ thuật độc bản.",
+        outcomeDetail: "Gia chủ Nghệ sĩ — sở hữu chốn an cư lý tưởng được cá nhân hóa hoàn hảo bởi tinh thần nghệ thuật bay bổng."
       },
       {
         id: "luxury-epicurean",
-        name: "Chuyên gia Hưởng thụ An toàn",
+        name: "Hưởng thụ An toàn",
         requiredThesis: "insurance-security",
         requiredAntithesis: "gourmet-experience",
         leapThreshold: 6,
-        description: "Thỏa mãn gu thưởng thức ẩm thực cao cấp dưới sự bảo vệ toàn diện của bảo hiểm. Cuộc sống an nhàn, vẹn tròn trải nghiệm."
+        description: "Mâu thuẫn giữa Phòng ngừa rủi ro tương lai và Hưởng thụ ẩm thực tinh hoa hiện tại.",
+        struggleDetail: "Mâu thuẫn giữa việc cắt một khoản tiền thực tế hôm nay cho một thứ chưa chắc đã dùng tới ở tương lai (Bảo hiểm) và việc chi tiền để sướng ngay lập tức ở hiện tại (Ăn ngon, ẩm thực xa hoa).",
+        unityDetail: "Bảo hiểm bảo vệ sức khỏe và tài chính trước các rủi ro phát sinh từ lối sống thụ hưởng; ngược lại, khi đã có bảo hiểm bảo hộ vững chắc, bạn mới có thể thảnh thơi tận hưởng cuộc sống hiện tại một cách trọn vẹn nhất.",
+        outcomeDetail: "Hưởng thụ An toàn — sống hết mình ở hiện tại với những trải nghiệm tinh hoa nhưng luôn có lá chắn bảo vệ vững chắc cho tương lai."
       }
     ]
   }
