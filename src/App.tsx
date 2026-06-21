@@ -44,6 +44,7 @@ import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
 import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
 import { loadCurriculumLessons, type ChapterLessons } from "./lib/curriculum";
+import { askThayNamAI } from "./lib/ai";
 import { ChapterSyllabusPanel } from "./components/ChapterSyllabusPanel";
 import { SectionDetailPanel } from "./components/SectionDetailPanel";
 import { InlineQuizChat } from "./components/InlineQuizChat";
@@ -577,7 +578,23 @@ export default function App() {
     if (!curriculumData) return null;
     const msgLower = message.toLowerCase().trim();
 
-    // Mapping keywords to Chapter IDs
+    // 1. Search in quiz questions for match
+    for (const q of curriculumData.quiz_questions) {
+      if (msgLower.includes(q.question.toLowerCase().trim()) || q.question.toLowerCase().includes(msgLower)) {
+        return {
+          type: "quiz",
+          chapterId: q.chapter,
+          title: `Câu hỏi trắc nghiệm Chương ${q.chapter}`,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          summary: ""
+        };
+      }
+    }
+
+    // 2. Mapping keywords to Chapter IDs
     const keywordMap = [
       {
         chapterId: 3,
@@ -610,9 +627,14 @@ export default function App() {
         const chapter = curriculumData.chapters.find(c => c.id === item.chapterId);
         if (chapter) {
           return {
+            type: "chapter",
             chapterId: chapter.id,
             title: chapter.title,
-            summary: chapter.summary
+            summary: chapter.summary,
+            question: "",
+            options: [] as string[],
+            correctAnswer: 0,
+            explanation: ""
           };
         }
       }
@@ -649,20 +671,25 @@ export default function App() {
       const offlineMatch = findOfflineAnswer(messageText);
       if (offlineMatch) {
         setTimeout(() => {
+          let text = "";
+          if (offlineMatch.type === "quiz") {
+            const correctAnswerChar = String.fromCharCode(65 + offlineMatch.correctAnswer);
+            text = `📖 **[Câu hỏi ôn tập khớp từ hệ thống - Chương ${offlineMatch.chapterId}]**\n\n**Câu hỏi:** ${offlineMatch.question}\n\n` +
+                   offlineMatch.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join("\n") +
+                   `\n\n**Đáp án đúng:** ${correctAnswerChar}. ${offlineMatch.options[offlineMatch.correctAnswer]}` +
+                   `\n\n**Luận giải:** ${offlineMatch.explanation}\n\n---\n*💡 Đồng chí cần hỏi giải thích sâu hơn hoặc khía cạnh ngoài giáo trình? Hãy nhập thêm chi tiết nhé! Thầy Nam AI luôn sẵn sàng.*`;
+          } else {
+            text = `📖 **[Thông tin chính thức từ Giáo trình - Chương ${offlineMatch.chapterId}]**\n\n*${offlineMatch.title}*\n\n${offlineMatch.summary}\n\n---\n*💡 Đồng chí cần hỏi giải thích sâu hơn hoặc khía cạnh ngoài giáo trình? Hãy nhập thêm chi tiết nhé! Thầy Nam AI luôn sẵn sàng.*`;
+          }
           setChatMessages(prev => [...prev, {
             role: "assistant",
-            text: `📖 **[Thông tin chính thức từ Giáo trình - Chương ${offlineMatch.chapterId}]**\n\n*${offlineMatch.title}*\n\n${offlineMatch.summary}\n\n---\n*💡 Đồng chí cần hỏi giải thích sâu hơn hoặc khía cạnh ngoài giáo trình? Hãy nhập thêm chi tiết nhé! Thầy Nam AI luôn sẵn sàng.*`
+            text
           }]);
           setIsAiLoading(false);
         }, 600);
         return;
       }
     }
-
-    // 2. Call API (Google Gemini API or Web2API endpoint)
-    const apiUrl = import.meta.env.VITE_GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-    const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
 
     const curriculumContext = curriculumData
       ? [
@@ -696,45 +723,7 @@ export default function App() {
       : "Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp.";
 
     try {
-      let response;
-      if (isGoogleDirect) {
-        response = await fetch(`${apiUrl}?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            systemInstruction: {
-              parts: [{ text: systemInstructionText }]
-            }
-          })
-        });
-      } else {
-        response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash",
-            messages: [
-              { role: "system", content: systemInstructionText },
-              { role: "user", content: promptText }
-            ]
-          })
-        });
-      }
-
-      if (!response.ok) throw new Error("Failed to connect to AI");
-
-      const resData = await response.json();
-      let aiResponse = "";
-      if (isGoogleDirect) {
-        aiResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Mác AI đang suy ngẫm, vui lòng thử lại nhé đồng chí!";
-      } else {
-        aiResponse = resData.choices?.[0]?.message?.content || resData.candidates?.[0]?.content?.parts?.[0]?.text || "Mác AI đang suy ngẫm, vui lòng thử lại nhé đồng chí!";
-      }
-
+      const aiResponse = await askThayNamAI(promptText, systemInstructionText);
       setChatMessages(prev => [...prev, { role: "assistant", text: aiResponse }]);
     } catch (err) {
       console.error(err);

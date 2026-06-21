@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Send, Bot } from "lucide-react";
+import { askThayNamAI } from "../lib/ai";
 
 interface InlineQuizChatProps {
   question: string;
@@ -38,10 +39,6 @@ export const InlineQuizChat: React.FC<InlineQuizChatProps> = ({
     setIsLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-      const isGoogleDirect = apiUrl.includes("generativelanguage.googleapis.com");
-
       // Scoped context: only this question, options, correct answer and explanation.
       const promptContext = `
 Câu hỏi: "${question}"
@@ -60,43 +57,7 @@ Chương học: Chương ${chapterId}
 Giải đáp thắc mắc của sinh viên xoay quanh câu hỏi trắc nghiệm được cung cấp và lý thuyết liên quan đến Chương ${chapterId} đó.
 Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chuẩn mực để giúp học viên ôn luyện tốt.`;
 
-      let response;
-      if (isGoogleDirect) {
-        response = await fetch(`${apiUrl}?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            systemInstruction: {
-              parts: [{ text: systemInstructionText }]
-            }
-          })
-        });
-      } else {
-        response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash",
-            messages: [
-              { role: "system", content: systemInstructionText },
-              { role: "user", content: promptText }
-            ]
-          })
-        });
-      }
-
-      if (!response.ok) throw new Error("Failed to connect to Gemini AI");
-      const resData = await response.json();
-      let aiResponse = "";
-      if (isGoogleDirect) {
-        aiResponse = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Tôi đang suy ngẫm, đồng chí hỏi lại nhé!";
-      } else {
-        aiResponse = resData.choices?.[0]?.message?.content || resData.candidates?.[0]?.content?.parts?.[0]?.text || "Tôi đang suy ngẫm, đồng chí hỏi lại nhé!";
-      }
+      const aiResponse = await askThayNamAI(promptText, systemInstructionText);
 
       setMessages(prev => [...prev, { role: "assistant", text: aiResponse }]);
     } catch (error) {

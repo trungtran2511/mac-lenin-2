@@ -18,6 +18,77 @@ class AiRequestError extends Error {
 
 const quotaCooldownByKey = new Map<string, number>();
 
+interface CacheEntry {
+  response: string;
+  timestamp: number;
+}
+const MEMORY_CACHE = new Map<string, CacheEntry>();
+const CACHE_PREFIX = "thay_nam_ai_cache_";
+const MAX_CACHE_ENTRIES = 50;
+
+function getCacheKey(prompt: string, systemInstruction: string): string {
+  const combined = `${systemInstruction}|||${prompt}`;
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    const chr = combined.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0;
+  }
+  return `${CACHE_PREFIX}${hash}`;
+}
+
+function getCachedResponse(prompt: string, systemInstruction: string): string | null {
+  const key = getCacheKey(prompt, systemInstruction);
+  const memEntry = MEMORY_CACHE.get(key);
+  if (memEntry) {
+    return memEntry.response;
+  }
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const entry: CacheEntry = JSON.parse(raw);
+      if (Date.now() - entry.timestamp < 86_400_000) {
+        MEMORY_CACHE.set(key, entry);
+        return entry.response;
+      } else {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch {}
+  return null;
+}
+
+function saveResponseToCache(prompt: string, systemInstruction: string, response: string) {
+  const key = getCacheKey(prompt, systemInstruction);
+  const entry: CacheEntry = { response, timestamp: Date.now() };
+  MEMORY_CACHE.set(key, entry);
+  try {
+    localStorage.setItem(key, JSON.stringify(entry));
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(CACHE_PREFIX)) {
+        keys.push(k);
+      }
+    }
+    if (keys.length > MAX_CACHE_ENTRIES) {
+      const parsedKeys = keys.map(k => {
+        try {
+          const item = JSON.parse(localStorage.getItem(k) || "");
+          return { key: k, timestamp: item.timestamp || 0 };
+        } catch {
+          return { key: k, timestamp: 0 };
+        }
+      });
+      parsedKeys.sort((a, b) => a.timestamp - b.timestamp);
+      const toRemove = parsedKeys.slice(0, parsedKeys.length - MAX_CACHE_ENTRIES);
+      for (const item of toRemove) {
+        localStorage.removeItem(item.key);
+      }
+    }
+  } catch {}
+}
+
 const parseRetryDelayMs = (value: unknown): number | undefined => {
   if (typeof value !== "string") return undefined;
   const seconds = Number.parseFloat(value.replace(/s$/i, ""));
@@ -29,6 +100,32 @@ const isFallbackEligible = (error: unknown) => {
   if (error.status === undefined) return true;
   return error.status === 401 || error.status === 403 || error.status === 404 || error.status === 429 || error.status >= 500;
 };
+
+async function executeServerProxyRequest(prompt: string, systemInstruction: string): Promise<string> {
+  const model = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Server returned error ${response.status}`);
+  }
+
+  const data = await response.json();
+  const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!result) {
+    throw new Error("No valid content returned from server proxy");
+  }
+  return result;
+}
 
 async function executeGeminiRequest(apiKey: string, prompt: string, systemInstruction: string): Promise<string> {
   const model = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
@@ -72,6 +169,19 @@ async function executeGeminiRequest(apiKey: string, prompt: string, systemInstru
 }
 
 export async function askThayNamAI(prompt: string, systemInstruction: string): Promise<string> {
+  const cached = getCachedResponse(prompt, systemInstruction);
+  if (cached !== null) {
+    return cached;
+  }
+
+  try {
+    const result = await executeServerProxyRequest(prompt, systemInstruction);
+    saveResponseToCache(prompt, systemInstruction, result);
+    return result;
+  } catch (serverError) {
+    console.warn("Server proxy failed, falling back to direct client rotation", serverError);
+  }
+
   const keys = [
     String(import.meta.env.VITE_GEMINI_API_KEY || "").trim(),
     String(import.meta.env.VITE_GEMINI_API_KEY1 || "").trim(),
@@ -91,7 +201,9 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   let latestError: unknown;
   for (const key of availableKeys) {
     try {
-      return await executeGeminiRequest(key, prompt, systemInstruction);
+      const result = await executeGeminiRequest(key, prompt, systemInstruction);
+      saveResponseToCache(prompt, systemInstruction, result);
+      return result;
     } catch (error) {
       latestError = error;
       if (error instanceof AiRequestError && error.status === 429) {
