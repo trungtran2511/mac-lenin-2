@@ -1,3 +1,7 @@
+export const config = {
+  runtime: "edge"
+};
+
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
 const isLocalApiUrl = (url) =>
@@ -8,36 +12,6 @@ const getGeminiErrorMessage = (payload) => {
     || payload?.details?.error?.message
     || (typeof payload?.error === "string" ? payload.error : "")
     || "Gemini API request failed";
-};
-
-const getSdkErrorDetails = (error) => {
-  if (!error || typeof error !== "object") {
-    return {};
-  }
-
-  return {
-    status: typeof error.status === "number" ? error.status : 500,
-    message: typeof error.message === "string" ? error.message : "Chat API failed",
-    details: error.details || error.errorDetails || null
-  };
-};
-
-const getJsonBody = async (req) => {
-  if (req.body && typeof req.body === "object") {
-    return req.body;
-  }
-
-  if (typeof req.body === "string") {
-    return JSON.parse(req.body || "{}");
-  }
-
-  const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
-
-  const rawBody = Buffer.concat(chunks).toString("utf8");
-  return rawBody ? JSON.parse(rawBody) : {};
 };
 
 const cooldownsByKey = new Map();
@@ -54,10 +28,12 @@ const getRetryDelay = (payload) => {
   return 60000;
 };
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method not allowed" });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json", "Allow": "POST" }
+    });
   }
 
   const apiKeys = [
@@ -70,17 +46,23 @@ export default async function handler(req, res) {
   const uniqueKeys = [...new Set(apiKeys)];
 
   if (uniqueKeys.length === 0) {
-    return res.status(500).json({
+    return new Response(JSON.stringify({
       error: "Missing GEMINI_API_KEY server environment variable"
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
     });
   }
 
   const externalApiUrl = (process.env.GEMINI_API_URL || "").trim();
 
   if (externalApiUrl && isLocalApiUrl(externalApiUrl)) {
-    return res.status(500).json({
+    return new Response(JSON.stringify({
       error: "Invalid GEMINI_API_URL",
       message: "Vercel cannot reach localhost/127.0.0.1 web2api endpoints. Use a public HTTPS endpoint, or remove GEMINI_API_URL and set GEMINI_API_KEY to a Google AI Studio key."
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
     });
   }
 
@@ -88,17 +70,23 @@ export default async function handler(req, res) {
   const availableKeys = uniqueKeys.filter(key => (cooldownsByKey.get(key) || 0) <= now);
 
   if (availableKeys.length === 0) {
-    return res.status(429).json({
+    return new Response(JSON.stringify({
       error: "All server keys are in cooldown state",
       message: "Vui lòng đợi ít phút trước khi thử lại."
+    }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" }
     });
   }
 
   let body;
   try {
-    body = await getJsonBody(req);
+    body = await req.json();
   } catch (err) {
-    return res.status(400).json({ error: "Invalid JSON body" });
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   const model = body.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
@@ -112,7 +100,10 @@ export default async function handler(req, res) {
   const promptText = userMessages.join("\n\n").trim();
 
   if (!promptText) {
-    return res.status(400).json({ error: "Missing user message" });
+    return new Response(JSON.stringify({ error: "Missing user message" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   let latestError = null;
@@ -152,14 +143,20 @@ export default async function handler(req, res) {
             continue;
           }
 
-          return res.status(externalResponse.status).json({
+          return new Response(JSON.stringify({
             error: "External AI endpoint request failed",
             message: getGeminiErrorMessage(externalJson),
             details: externalJson
+          }), {
+            status: externalResponse.status,
+            headers: { "Content-Type": "application/json" }
           });
         }
 
-        return res.status(200).json(externalJson);
+        return new Response(JSON.stringify(externalJson), {
+          status: 200,
+          headers: { "Content-Type": "application/json" }
+        });
       }
 
       if (!(apiKey.startsWith("AIza") || apiKey.startsWith("AQ."))) {
@@ -185,7 +182,10 @@ export default async function handler(req, res) {
             contents: [{ parts: [{ text: promptText }] }],
             ...(systemMessage
               ? { systemInstruction: { parts: [{ text: systemMessage }] } }
-              : {})
+              : {}),
+            generationConfig: {
+              maxOutputTokens: 800
+            }
           })
         }
       );
@@ -213,18 +213,24 @@ export default async function handler(req, res) {
           continue;
         }
 
-        return res.status(geminiResponse.status).json({
+        return new Response(JSON.stringify({
           error: "Gemini API request failed",
           message: getGeminiErrorMessage(responseJson),
           details: responseJson
+        }), {
+          status: geminiResponse.status,
+          headers: { "Content-Type": "application/json" }
         });
       }
 
       const text = responseJson.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-      return res.status(200).json({
+      return new Response(JSON.stringify({
         choices: [{ message: { role: "assistant", content: text } }],
         candidates: responseJson.candidates
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
       });
 
     } catch (error) {
@@ -240,8 +246,14 @@ export default async function handler(req, res) {
   }
 
   if (latestError) {
-    return res.status(latestError.status).json(latestError.data);
+    return new Response(JSON.stringify(latestError.data), {
+      status: latestError.status,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
-  return res.status(500).json({ error: "Failed to process request with available keys" });
+  return new Response(JSON.stringify({ error: "Failed to process request with available keys" }), {
+    status: 500,
+    headers: { "Content-Type": "application/json" }
+  });
 }

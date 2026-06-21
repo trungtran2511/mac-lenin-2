@@ -138,7 +138,10 @@ async function executeGeminiRequest(apiKey: string, prompt: string, systemInstru
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemInstruction }] },
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: 800
+        }
       })
     });
   } catch {
@@ -174,48 +177,43 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
     return cached;
   }
 
-  try {
-    const result = await executeServerProxyRequest(prompt, systemInstruction);
-    saveResponseToCache(prompt, systemInstruction, result);
-    return result;
-  } catch (serverError) {
-    console.warn("Server proxy failed, falling back to direct client rotation", serverError);
-  }
-
   const keys = [
     String(import.meta.env.VITE_GEMINI_API_KEY || "").trim(),
     String(import.meta.env.VITE_GEMINI_API_KEY1 || "").trim(),
     String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim()
   ].filter((key, index, allKeys) => key && allKeys.indexOf(key) === index);
 
-  if (keys.length === 0) {
-    throw new AiRequestError("Chưa cấu hình Gemini API key.");
-  }
-
   const now = Date.now();
   const availableKeys = keys.filter(key => (quotaCooldownByKey.get(key) || 0) <= now);
-  if (availableKeys.length === 0) {
-    throw new AiRequestError("Các Gemini API key đang trong thời gian chờ quota.", 429);
-  }
 
-  let latestError: unknown;
-  for (const key of availableKeys) {
-    try {
-      const result = await executeGeminiRequest(key, prompt, systemInstruction);
-      saveResponseToCache(prompt, systemInstruction, result);
-      return result;
-    } catch (error) {
-      latestError = error;
-      if (error instanceof AiRequestError && error.status === 429) {
-        quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
+  // 1. Nếu có key client, ưu tiên gọi trực tiếp từ client trước (không qua Server Proxy để tránh độ trễ)
+  if (availableKeys.length > 0) {
+    let latestError: unknown;
+    for (const key of availableKeys) {
+      try {
+        const result = await executeGeminiRequest(key, prompt, systemInstruction);
+        saveResponseToCache(prompt, systemInstruction, result);
+        return result;
+      } catch (error) {
+        latestError = error;
+        if (error instanceof AiRequestError && error.status === 429) {
+          quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
+        }
+        if (!isFallbackEligible(error)) throw error;
       }
-      if (!isFallbackEligible(error)) throw error;
     }
   }
 
-  throw latestError instanceof Error
-    ? latestError
-    : new AiRequestError("Không thể gọi Gemini bằng các API key đã cấu hình.");
+  // 2. Nếu không có key client hoặc gọi client lỗi, chuyển sang gọi Server Proxy trên Vercel
+  try {
+    const result = await executeServerProxyRequest(prompt, systemInstruction);
+    saveResponseToCache(prompt, systemInstruction, result);
+    return result;
+  } catch (serverError) {
+    console.warn("Server proxy failed, no client-side keys available or client-side failed too", serverError);
+  }
+
+  throw new AiRequestError("Không thể kết nối tới Thầy Nam AI bằng bất kỳ key hay phương thức nào.");
 }
 
 export function parseAiJson<T>(value: string): T | null {
