@@ -55,7 +55,7 @@ Chương học: Chương ${chapterId}
       const promptText = `Người dùng hỏi: "${userText}" liên quan đến câu hỏi trắc nghiệm sau:\n${promptContext}`;
       const systemInstructionText = `Bạn là Thầy Nam AI - Giảng viên Kinh tế chính trị học Mác - Lênin.
 Giải đáp thắc mắc của sinh viên xoay quanh câu hỏi trắc nghiệm được cung cấp và lý thuyết liên quan đến Chương ${chapterId} đó.
-Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chuẩn mực để giúp học viên ôn luyện tốt.`;
+Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chuẩn mực để giúp học viên ôn luyện tốt. Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`;
 
       const aiResponse = await askThayNamAI(promptText, systemInstructionText);
 

@@ -26,7 +26,8 @@ export const SynthesisResult: React.FC<SynthesisResultProps> = ({
     async function getAiCommentary() {
       const systemInstruction = `Bạn là Thầy Nam AI, giảng viên Kinh tế chính trị Mác - Lênin. 
 Hãy bình luận ngắn gọn (2-3 câu), dí dỏm về sự phủ định biện chứng và sự dung hợp giữa hai yếu tố đối lập để tạo ra chất mới (sự phát triển). 
-Sử dụng ngôn ngữ Gen Z thân thiện, hài hước, chèn emoji để kích thích tư duy sáng tạo của sinh viên.`;
+Sử dụng ngôn ngữ Gen Z thân thiện, hài hước, chèn emoji để kích thích tư duy sáng tạo của sinh viên. 
+Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`;
 
       const prompt = `Hai mặt đối lập:
 - Đề xuất (Thesis): "${thesisName}"

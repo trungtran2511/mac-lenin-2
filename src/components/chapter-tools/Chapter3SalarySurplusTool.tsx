@@ -187,7 +187,7 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
   "plainExplanation": "giải thích dễ hiểu bằng tiếng Việt về giá trị thặng dư và lương tối thiểu của nghề này dưới góc nhìn Mác - Lênin"
 }`;
 
-    const systemInstruction = "Bạn là chuyên gia kinh tế chính trị Mác - Lênin. Phân loại nghề nghiệp của sinh viên đi làm thêm và đưa ra lời bình luận học thuật mang tính giáo dục tích cực. Trả về định dạng JSON chuẩn.";
+    const systemInstruction = "Bạn là chuyên gia kinh tế chính trị Mác - Lênin. Phân loại nghề nghiệp của sinh viên đi làm thêm và đưa ra lời bình luận học thuật mang tính giáo dục tích cực. Trả về định dạng JSON chuẩn. Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như ** hoặc #) bên trong các trường văn bản của JSON.";
 
     try {
       // Import helper dynamically to prevent circular dependencies

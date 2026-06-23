@@ -109,7 +109,8 @@ export default function SimEconCity() {
     const systemInstruction = `Bạn là Thầy Nam AI, giảng viên Kinh tế chính trị Mác - Lênin. 
 Hãy đưa ra một nhận định định tính sâu sắc, khoảng 3 câu về tỷ trọng GDP hiện tại. 
 Phân tích xem cơ cấu này có đảm bảo định hướng xã hội chủ nghĩa hay không (đặc biệt là vai trò chủ đạo của Kinh tế Nhà nước - tối thiểu phải đủ sức giữ các ngành then chốt).
-Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng phần trăm tăng trưởng hoặc GDP mới nào ngoài các số liệu đã được cung cấp.`;
+Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng phần trăm tăng trưởng hoặc GDP mới nào ngoài các số liệu đã được cung cấp.
+Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`;
 
     const prompt = `Cơ cấu đóng góp GDP hiện tại:
 - Kinh tế Nhà nước: ${Math.round(contributions.state)}%
