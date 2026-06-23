@@ -120,7 +120,7 @@ async function executeServerProxyRequest(prompt: string, systemInstruction: stri
   }
 
   const data = await response.json();
-  const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("").trim();
   if (!result) {
     throw new Error("No valid content returned from server proxy");
   }
@@ -188,14 +188,12 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
 
   // 1. Nếu có key client, ưu tiên gọi trực tiếp từ client trước (không qua Server Proxy để tránh độ trễ)
   if (availableKeys.length > 0) {
-    let latestError: unknown;
     for (const key of availableKeys) {
       try {
         const result = await executeGeminiRequest(key, prompt, systemInstruction);
         saveResponseToCache(prompt, systemInstruction, result);
         return result;
       } catch (error) {
-        latestError = error;
         if (error instanceof AiRequestError && error.status === 429) {
           quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
         }

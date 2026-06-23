@@ -190,8 +190,7 @@ Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng ph�
               </button>
             </div>
 
-            {/* AI Speech Bubble */}
-            <div className="bg-black/40 rounded-2xl p-4 border border-white/5 min-h-[90px] flex items-center justify-center relative">
+            <div className={`bg-black/40 rounded-2xl p-4 border border-white/5 min-h-[90px] max-h-[280px] overflow-y-auto scrollbar-thin relative ${isAiLoading ? "flex items-center justify-center" : ""}`}>
               {isAiLoading ? (
                 <div className="flex items-center gap-1.5 py-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -199,7 +198,7 @@ Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng ph�
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               ) : (
-                <div className="text-sm md:text-base text-neutral-200 leading-relaxed font-light w-full">
+                <div className="text-sm md:text-base text-neutral-200 leading-relaxed font-light w-full text-left whitespace-pre-line">
                   {forecast}
                 </div>
               )}

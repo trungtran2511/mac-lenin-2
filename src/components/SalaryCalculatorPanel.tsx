@@ -156,7 +156,7 @@ const getAiText = async (prompt: string) => {
 
   if (!response.ok) throw new Error(`AI endpoint lỗi ${response.status}`);
   const data = await response.json();
-  return data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("").trim() || "";
 };
 
 export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelProps) {

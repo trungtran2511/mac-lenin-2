@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Sparkles, HelpCircle } from "lucide-react";
+import { Sparkles, HelpCircle } from "lucide-react";
 import { CARD_BATTLE_DEBATES } from "../../lib/cardBattleData";
 import type { DialecticalCard, SynthesisCard } from "../../lib/cardBattleTypes";
-import { DialecticalCardItem } from "./DialecticalCardItem";
+
 import { BattlefieldPanel } from "./BattlefieldPanel";
 import { LeapAnimation } from "./LeapAnimation";
 import { SynthesisResult } from "./SynthesisResult";
@@ -17,9 +17,7 @@ export default function CardBattleArena() {
   const [thesisQuantity, setThesisQuantity] = useState(0);
   const [antithesisQuantity, setAntithesisQuantity] = useState(0);
 
-  const [chartData, setChartData] = useState<{ step: string; thesisQ: number; antithesisQ: number }[]>([
-    { step: "Bắt đầu", thesisQ: 0, antithesisQ: 0 }
-  ]);
+
 
   const [showLeapAnimation, setShowLeapAnimation] = useState(false);
   const [showSynthesisResult, setShowSynthesisResult] = useState(false);
@@ -37,7 +35,7 @@ export default function CardBattleArena() {
     setAntithesisField([]);
     setThesisQuantity(0);
     setAntithesisQuantity(0);
-    setChartData([{ step: "Bắt đầu", thesisQ: 0, antithesisQ: 0 }]);
+
     setShowLeapAnimation(false);
     setShowSynthesisResult(false);
     setAchievedSynthesis(null);
@@ -61,12 +59,7 @@ export default function CardBattleArena() {
       setAntithesisQuantity(newAntithesisQ);
     }
 
-    // Append to chart history
-    const stepName = `Tải ${thesisField.length + antithesisField.length + 1}`;
-    setChartData((prev) => [
-      ...prev,
-      { step: stepName, thesisQ: newThesisQ, antithesisQ: newAntithesisQ }
-    ]);
+
 
     // Check for Synthesis/Leap
     checkSynthesis(card, target, newThesisQ, newAntithesisQ);

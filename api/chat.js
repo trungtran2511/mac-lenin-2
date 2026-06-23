@@ -223,7 +223,10 @@ export default async function handler(req) {
         });
       }
 
-      const text = responseJson.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const text = responseJson.candidates?.[0]?.content?.parts
+        ?.map(part => part.text || "")
+        .join("")
+        .trim() || "";
 
       return new Response(JSON.stringify({
         choices: [{ message: { role: "assistant", content: text } }],

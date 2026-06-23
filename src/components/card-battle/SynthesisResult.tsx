@@ -104,7 +104,7 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
           <span className="text-sm font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
         </div>
 
-        <div className="bg-black/30 rounded-2xl p-4 border border-white/5 min-h-[80px] flex items-center justify-center">
+        <div className={`bg-black/30 rounded-2xl p-4 border border-white/5 min-h-[80px] max-h-[280px] overflow-y-auto scrollbar-thin ${isLoading ? "flex items-center justify-center" : ""}`}>
           {isLoading ? (
             <div className="flex items-center gap-1.5 py-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0ms" }} />
