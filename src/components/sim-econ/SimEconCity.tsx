@@ -21,6 +21,7 @@ export default function SimEconCity() {
   // AI Forecast State
   const [forecast, setForecast] = useState<string>("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const rebuildGrid = (stateC: number, privateC: number, _fdiC: number): GridCell[] => {
     const cells: GridCell[] = [];
@@ -118,8 +119,10 @@ Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng ph�
     try {
       const result = await askThayNamAI(prompt, systemInstruction);
       setForecast(result);
+      setIsModalOpen(true);
     } catch (err) {
       setForecast("Hệ thống dự báo AI tạm thời gián đoạn. Nhìn chung, hãy giữ Kinh tế Nhà nước ở mức phù hợp để làm công cụ định hướng vĩ mô.");
+      setIsModalOpen(true);
     } finally {
       setIsAiLoading(false);
     }
@@ -180,14 +183,24 @@ Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng ph�
                 Đánh giá cấu trúc & Dự báo vĩ mô
               </span>
 
-              <button
-                onClick={getAiForecast}
-                disabled={isAiLoading}
-                className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-xs font-bold transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 shadow-md shadow-blue-900/20"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                {isAiLoading ? "Đang phân tích..." : "Dự báo vĩ mô AI"}
-              </button>
+              <div className="flex items-center gap-2">
+                {forecast && !isAiLoading && forecast !== "Nhấn nút 'Dự báo vĩ mô AI' để nhận phân tích học thuật từ Thầy Nam về cơ cấu GDP này." && (
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-3 py-1.5 rounded-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold transition-all border border-blue-500/20 cursor-pointer"
+                  >
+                    Phóng to 🔎
+                  </button>
+                )}
+                <button
+                  onClick={getAiForecast}
+                  disabled={isAiLoading}
+                  className="px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-xs font-bold transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 shadow-md shadow-blue-900/20 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {isAiLoading ? "Đang phân tích..." : "Dự báo vĩ mô AI"}
+                </button>
+              </div>
             </div>
 
             <div className={`bg-black/40 rounded-2xl p-4 border border-white/5 min-h-[90px] max-h-[280px] overflow-y-auto scrollbar-thin relative ${isAiLoading ? "flex items-center justify-center" : ""}`}>
@@ -216,6 +229,72 @@ Tuyệt đối KHÔNG tự bịa ra bất kỳ số liệu định lượng ph�
           </div>
         </div>
       </div>
+
+      {/* Central Pop-up Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in pointer-events-auto">
+          <div className="w-full max-w-lg bg-neutral-950 border border-white/10 rounded-3xl p-6 relative overflow-hidden flex flex-col gap-4 text-left shadow-2xl max-h-[85vh] animate-fade-rise">
+            {/* Modal header */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <BrainCircuit className="w-5 h-5 text-blue-400" />
+                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
+                  Dự báo vĩ mô từ Thầy Nam AI
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="overflow-y-auto scrollbar-thin pr-1 space-y-4 flex-1">
+              <div className="p-4 bg-black/40 border border-white/5 rounded-2xl">
+                <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-light whitespace-pre-line">
+                  {forecast}
+                </p>
+              </div>
+
+              {/* Summary metadata */}
+              <div className="p-4 bg-neutral-900/50 rounded-2xl border border-white/5 space-y-2 text-xs text-neutral-400">
+                <div className="flex justify-between">
+                  <span>Kinh tế Nhà nước:</span>
+                  <span className="font-bold text-white">{Math.round(contributions.state)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Kinh tế Tư nhân:</span>
+                  <span className="font-bold text-white">{Math.round(contributions.private)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Kinh tế FDI:</span>
+                  <span className="font-bold text-white">{Math.round(contributions.fdi)}%</span>
+                </div>
+                <div className="border-t border-white/5 pt-2 flex items-center gap-1.5 text-neutral-300">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>
+                    {contributions.state >= 25
+                      ? "Kinh tế Nhà nước đủ tỷ trọng để giữ vai trò chủ đạo."
+                      : "Cảnh báo: Tỷ trọng Kinh tế Nhà nước dưới 25%, có nguy cơ mất vai trò định hướng vĩ mô."}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal footer */}
+            <div className="border-t border-white/10 pt-3 flex justify-end">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ export const SynthesisResult: React.FC<SynthesisResultProps> = ({
 }) => {
   const [commentary, setCommentary] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -37,11 +38,13 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
         if (active) {
           setCommentary(response);
           setIsLoading(false);
+          setIsModalOpen(true);
         }
       } catch (err) {
         if (active) {
           setCommentary("Chất mới đã được hình thành! Thầy Nam AI đang bận chấm bài thi, nhưng chúc mừng bạn đã thực hiện Bước Nhảy biện chứng thành công!");
           setIsLoading(false);
+          setIsModalOpen(true);
         }
       }
     }
@@ -99,9 +102,19 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
 
       {/* AI Commentary Bubble */}
       <div className="mt-8 w-full border-t border-white/10 pt-5">
-        <div className="flex items-center gap-2 mb-3 text-neutral-400">
-          <MessageSquareCode className="w-4 h-4 text-blue-400" />
-          <span className="text-sm font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
+        <div className="flex items-center justify-between mb-3 text-neutral-400">
+          <div className="flex items-center gap-2">
+            <MessageSquareCode className="w-4 h-4 text-blue-400" />
+            <span className="text-sm font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
+          </div>
+          {!isLoading && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors px-2.5 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 cursor-pointer"
+            >
+              Phóng to 🔎
+            </button>
+          )}
         </div>
 
         <div className={`bg-black/30 rounded-2xl p-4 border border-white/5 min-h-[80px] max-h-[280px] overflow-y-auto scrollbar-thin ${isLoading ? "flex items-center justify-center" : ""}`}>
@@ -147,11 +160,79 @@ Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesis
 
       <button
         onClick={onReset}
-        className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95"
+        className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer"
       >
         <RefreshCw className="w-3.5 h-3.5" />
         Vòng biện chứng mới
       </button>
+
+      {/* Central Pop-up Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in pointer-events-auto">
+          <div className="w-full max-w-lg bg-neutral-950 border border-white/10 rounded-3xl p-6 relative overflow-hidden flex flex-col gap-4 text-left shadow-2xl max-h-[85vh] animate-fade-rise">
+            {/* Modal header */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
+                  Lời bình từ Thầy Nam AI
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-neutral-400 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="overflow-y-auto scrollbar-thin pr-1 space-y-4 flex-1">
+              <div className="p-4 bg-black/40 border border-white/5 rounded-2xl">
+                <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-normal whitespace-pre-line">
+                  {commentary}
+                </p>
+              </div>
+
+              {/* Detailed Dialectical Breakdown inside Modal */}
+              {synthesisCard.struggleDetail && (
+                <div className="space-y-3 pt-3 border-t border-white/10 text-xs md:text-sm text-neutral-300">
+                  <h4 className="font-extrabold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider text-xs">
+                    🍀 Phân Tích Bản Chất Biện Chứng
+                  </h4>
+                  
+                  <div className="space-y-3 bg-neutral-900/50 p-4.5 rounded-2xl border border-white/5">
+                    <div>
+                      <span className="font-extrabold text-red-400 text-[10px] tracking-wider block mb-1">🔥 MẶT ĐẤU TRANH (MÂU THUẪN):</span>
+                      <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.struggleDetail}</p>
+                    </div>
+                    
+                    <div className="border-t border-white/5 pt-3">
+                      <span className="font-extrabold text-blue-400 text-[10px] tracking-wider block mb-1">🤝 MẶT THỐNG NHẤT (ĐỒNG HÀNH):</span>
+                      <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.unityDetail}</p>
+                    </div>
+                    
+                    <div className="border-t border-white/5 pt-3">
+                      <span className="font-extrabold text-emerald-400 text-[10px] tracking-wider block mb-1">⚡ KẾT QUẢ (CHẤT MỚI):</span>
+                      <p className="text-neutral-200 text-xs font-medium leading-relaxed">{synthesisCard.outcomeDetail}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal footer */}
+            <div className="border-t border-white/10 pt-3 flex justify-end">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
