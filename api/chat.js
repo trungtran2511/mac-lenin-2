@@ -184,7 +184,7 @@ export default async function handler(req) {
               ? { systemInstruction: { parts: [{ text: systemMessage }] } }
               : {}),
             generationConfig: {
-              maxOutputTokens: 800
+              maxOutputTokens: 4000
             }
           })
         }

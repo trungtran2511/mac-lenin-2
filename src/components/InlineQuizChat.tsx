@@ -69,7 +69,7 @@ Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chu
   };
 
   return (
-    <div className="mt-4 border border-white/10 rounded-2xl bg-neutral-950/60 overflow-hidden flex flex-col h-[280px]">
+    <div className="mt-4 border border-white/10 rounded-2xl bg-neutral-950/60 overflow-hidden flex flex-col h-[420px]">
       {/* Header */}
       <div className="px-4 py-2 bg-white/5 border-b border-white/10 flex items-center gap-2">
         <Bot className="w-4 h-4 text-emerald-400 animate-pulse" />

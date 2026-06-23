@@ -140,7 +140,7 @@ async function executeGeminiRequest(apiKey: string, prompt: string, systemInstru
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: 800
+          maxOutputTokens: 4000
         }
       })
     });
