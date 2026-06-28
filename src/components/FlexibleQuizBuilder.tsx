@@ -124,10 +124,10 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
       <section className="rounded-[24px] border border-white/10 bg-neutral-950/85 p-4 md:p-6">
         <div className="grid gap-4 border-b border-white/10 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">Ôn luyện tự chọn</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-white/45 font-mono">Ôn luyện tự chọn</div>
             <h3 className="mt-2 text-xl font-bold text-white md:text-2xl">Tạo bộ câu hỏi</h3>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/65">
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-base text-white/65">
             Có sẵn <strong className="text-white">{availableQuestionsCount}</strong> câu
           </div>
         </div>
@@ -135,11 +135,11 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <label className="text-[10px] uppercase tracking-[0.16em] text-white/45 font-mono">Chọn chương</label>
+              <label className="text-xs uppercase tracking-[0.16em] text-white/45 font-mono">Chọn chương</label>
               <button
                 type="button"
                 onClick={selectAllChapters}
-                className="text-xs font-semibold text-emerald-300 hover:text-emerald-200"
+                className="text-sm font-semibold text-emerald-300 hover:text-emerald-200"
               >
                 Chọn tất cả
               </button>
@@ -153,7 +153,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                     key={chapterId}
                     type="button"
                     onClick={() => handleToggleChapter(chapterId)}
-                    className={`rounded-xl border px-4 py-3 text-left text-sm font-bold transition-colors ${
+                    className={`rounded-xl border px-4 py-3 text-left text-base font-bold transition-colors ${
                       isSelected
                         ? "border-white bg-white text-black"
                         : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07] hover:text-white"
@@ -167,14 +167,14 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] uppercase tracking-[0.16em] text-white/45 font-mono">Số câu</label>
+            <label className="text-xs uppercase tracking-[0.16em] text-white/45 font-mono">Số câu</label>
             <div className="grid grid-cols-2 gap-2">
               {QUESTION_COUNTS.map(count => (
                 <button
                   key={count}
                   type="button"
                   onClick={() => setQuestionCountMode(count)}
-                  className={`rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                  className={`rounded-xl border px-4 py-3 text-base font-bold transition-colors ${
                     questionCountMode === count
                       ? "border-white bg-white text-black"
                       : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07]"
@@ -188,7 +188,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
               <button
                 type="button"
                 onClick={() => setQuestionCountMode("custom")}
-                className={`rounded-xl border px-4 py-3 text-sm font-bold transition-colors ${
+                className={`rounded-xl border px-4 py-3 text-base font-bold transition-colors ${
                   questionCountMode === "custom"
                     ? "border-white bg-white text-black"
                     : "border-white/10 bg-white/[0.035] text-white/70 hover:bg-white/[0.07]"
@@ -204,7 +204,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   setQuestionCountMode("custom");
                   setCustomCountInput(event.target.value);
                 }}
-                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-neutral-950/70 px-4 py-3 text-sm font-semibold text-white outline-none focus:border-white/25"
+                className="min-w-0 flex-1 rounded-xl border border-white/10 bg-neutral-950/70 px-4 py-3 text-base font-semibold text-white outline-none focus:border-white/25"
                 placeholder="Số câu"
               />
             </div>
@@ -216,7 +216,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
             <button
               type="button"
               onClick={onBackToSyllabus}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-bold text-white/75 transition-colors hover:bg-white/[0.08] hover:text-white"
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-base font-bold text-white/75 transition-colors hover:bg-white/[0.08] hover:text-white"
             >
               Về tóm tắt
             </button>
@@ -225,7 +225,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
             type="button"
             onClick={handleStartQuiz}
             disabled={availableQuestionsCount === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-base font-bold text-black transition-colors hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Bắt đầu <ArrowRight className="h-4 w-4" />
           </button>
@@ -289,7 +289,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
 
       <section className="rounded-[24px] border border-white/10 bg-neutral-950/85 p-4 md:p-6">
         <div className="space-y-3 border-b border-white/10 pb-5">
-          <div className="flex items-center justify-between gap-3 text-[11px] text-white/50 font-mono">
+          <div className="flex items-center justify-between gap-3 text-sm text-white/50 font-mono">
             <span>Câu {currentIndex + 1}/{quizQuestions.length}</span>
             <span>Đúng {score}</span>
           </div>
@@ -300,10 +300,10 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
 
         <div className="mt-5 space-y-5">
           <div>
-            <span className="rounded-md border border-white/15 bg-white/10 px-2 py-1 text-[10px] font-bold uppercase text-white/80">
+            <span className="rounded-md border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-bold uppercase text-white/80">
               Chương {currentQ.chapterId}
             </span>
-            <h4 className="mt-3 text-lg font-bold leading-relaxed text-white md:text-xl">{currentQ.prompt}</h4>
+            <h4 className="mt-3 text-xl font-bold leading-relaxed text-white md:text-2xl">{currentQ.prompt}</h4>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -325,9 +325,9 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   type="button"
                   onClick={() => handleSelectOption(option.id)}
                   disabled={isAnswered}
-                  className={`min-h-[88px] rounded-xl border p-5 text-left text-base font-medium transition-colors ${optionStyle}`}
+                  className={`min-h-[88px] rounded-xl border p-5 text-left text-lg font-medium leading-relaxed transition-colors ${optionStyle}`}
                 >
-                  <span className="mr-2 font-mono text-sm font-bold">{option.id}.</span>
+                  <span className="mr-2 font-mono text-lg font-bold">{option.id}.</span>
                   <span className="leading-relaxed">{option.text}</span>
                 </button>
               );
@@ -336,7 +336,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
 
           {isAnswered && (
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 md:p-5">
-              <div className="flex items-center gap-2 text-sm font-bold">
+              <div className="flex items-center gap-2 text-base font-bold">
                 {selectedOptionId === currentQ.correctOptionId ? (
                   <span className="inline-flex items-center gap-2 text-emerald-300">
                     <CheckCircle2 className="h-4 w-4" /> Đúng
@@ -347,11 +347,11 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   </span>
                 )}
               </div>
-              <p className="mt-3 text-base leading-relaxed text-white/75">{currentQ.explanation}</p>
+              <p className="mt-3 text-lg leading-relaxed text-white/75">{currentQ.explanation}</p>
               {currentQ.contextExcerpt && (
                 <details className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
-                  <summary className="cursor-pointer text-sm font-bold text-white/60">Ngữ cảnh giáo trình</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-white/60">{currentQ.contextExcerpt}</p>
+                  <summary className="cursor-pointer text-base font-bold text-white/60">Ngữ cảnh giáo trình</summary>
+                  <p className="mt-3 text-base leading-relaxed text-white/60">{currentQ.contextExcerpt}</p>
                 </details>
               )}
             </div>
@@ -362,7 +362,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-colors hover:bg-neutral-200"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-base font-bold text-black transition-colors hover:bg-neutral-200"
               >
                 {currentIndex < quizQuestions.length - 1 ? "Câu tiếp" : "Xem kết quả"} <ArrowRight className="h-4 w-4" />
               </button>

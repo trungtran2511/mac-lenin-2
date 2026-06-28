@@ -1321,7 +1321,7 @@ export default function App() {
                     >
                       <option value="all">Tất cả các chương</option>
                       {curriculumData?.chapters.map(ch => (
-                        <option key={ch.id} value={ch.id}>Chương {ch.id}: {ch.title.substring(0, 40)}...</option>
+                        <option key={ch.id} value={ch.id}>{ch.title.substring(0, 50)}...</option>
                       ))}
                     </select>
                   </div>
