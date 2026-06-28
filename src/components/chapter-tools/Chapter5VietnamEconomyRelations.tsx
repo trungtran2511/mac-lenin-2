@@ -88,8 +88,8 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Bản Đồ Quan Hệ Lợi Ích Kinh Tế Việt Nam
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
-          Học thuyết Mác - Lênin vạch rõ: Kinh tế thực chất là tổng hòa các quan hệ lợi ích vật chất. Chọn một chính sách điều tiết vĩ mô bên dưới để xem sự phân phối lợi ích và chi phí giữa các chủ thể trong nền kinh tế Việt Nam.
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-normal">
+          Bản Đồ Quan Hệ Lợi Ích Kinh Tế Việt Nam
         </p>
       </div>
 
@@ -100,13 +100,13 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
         <div className="space-y-4">
           <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+              <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
                 1. Chọn tình huống vĩ mô
               </span>
               <select
                 value={selectedScenarioId}
                 onChange={handleScenarioChange}
-                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-white/30"
+                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white/30"
               >
                 {scenarios.map(s => (
                   <option key={s.id} value={s.id} className="bg-background text-white">
@@ -116,14 +116,14 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
               </select>
             </div>
 
-            <p className="text-xs text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
+            <p className="text-sm text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
               {currentScenario.description}
             </p>
           </div>
 
           {/* Actor Selector buttons */}
           <div className="space-y-2">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono px-2">
+            <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono px-2">
               2. Click chọn chủ thể kinh tế
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -135,7 +135,7 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
                     key={actorId}
                     type="button"
                     onClick={() => setActiveActorId(actorId)}
-                    className={`p-3 text-left rounded-xl border text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                    className={`p-3 text-left rounded-xl border text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer ${
                       isSelected
                         ? "bg-white border-white text-black shadow-lg shadow-white/5"
                         : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"
@@ -162,7 +162,7 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
                   <ActiveActorIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Vai trò trong kịch bản</span>
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Vai trò trong kịch bản</span>
                   <h4 className="text-lg font-bold text-white mt-0.5">{ACTOR_LABELS[activeActorId].label}</h4>
                 </div>
               </div>
@@ -170,8 +170,8 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
 
             {/* Role / Duty */}
             <div className="space-y-1.5">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-wider font-mono block">Vai trò thực tiễn:</span>
-              <p className="text-xs md:text-sm text-white/90 leading-relaxed font-light">
+              <span className="text-xs font-bold text-white/30 uppercase tracking-wider font-mono block">Vai trò thực tiễn:</span>
+              <p className="text-sm md:text-base text-white/90 leading-relaxed font-normal">
                 {activeActorData.role}
               </p>
             </div>
@@ -179,14 +179,14 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
             {/* Benefits vs Costs grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-5 space-y-2">
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider font-mono block">Lợi ích đạt được (+):</span>
-                <p className="text-xs text-white/70 leading-relaxed font-light">
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono block">Lợi ích đạt được (+):</span>
+                <p className="text-sm text-white/70 leading-relaxed font-normal">
                   {activeActorData.benefit}
                 </p>
               </div>
               <div className="bg-rose-500/5 border border-rose-500/10 rounded-2xl p-5 space-y-2">
-                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider font-mono block">Chi phí / Rủi ro chịu đựng (-):</span>
-                <p className="text-xs text-white/70 leading-relaxed font-light">
+                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono block">Chi phí / Rủi ro chịu đựng (-):</span>
+                <p className="text-sm text-white/70 leading-relaxed font-normal">
                   {activeActorData.cost}
                 </p>
               </div>
@@ -194,8 +194,8 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
 
             {/* State Regulation Conclusion */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-2">
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">Vai trò điều tiết vĩ mô của Nhà nước:</span>
-              <p className="text-xs text-white/80 leading-relaxed font-light">
+              <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Vai trò điều tiết vĩ mô của Nhà nước:</span>
+              <p className="text-sm text-white/80 leading-relaxed font-normal">
                 {currentScenario.conclusion}
               </p>
             </div>
@@ -204,30 +204,30 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
             <div className="border-t border-white/5 pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
               </div>
-              <h5 className="text-xs md:text-sm font-bold text-white leading-relaxed">
+              <h5 className="text-sm md:text-base font-bold text-white leading-relaxed">
                 Tại sao các quan hệ lợi ích kinh tế trong kịch bản này vừa thống nhất vừa mâu thuẫn với nhau?
               </h5>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(true)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Giải thích biện chứng
                 </button>
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(false)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Mâu thuẫn triệt tiêu
                 </button>
               </div>
 
               {reflectionAnswered !== null && (
-                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-xs leading-relaxed space-y-2 animate-fade-rise">
+                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-sm leading-relaxed space-y-2 animate-fade-rise">
                   <div className="flex items-center gap-1.5 font-bold">
                     {reflectionAnswered === true ? (
                       <span className="text-emerald-400 flex items-center gap-1">
@@ -237,7 +237,7 @@ Khía cạnh đang xem kỹ: Vai trò, lợi ích và chi phí của chủ thể
                       <span className="text-rose-400">Chưa chính xác!</span>
                     )}
                   </div>
-                  <p className="text-white/60 font-light">
+                  <p className="text-white/60 font-normal">
                     Các quan hệ lợi ích luôn có tính hai mặt. Thống nhất ở chỗ các chủ thể phụ thuộc nhau để cùng vận hành sản xuất xã hội (Ví dụ: FDI cần lao động, lao động cần lương). Mâu thuẫn ở chỗ tỷ lệ chia sẻ lợi nhuận/quỹ phúc lợi là giới hạn, đòi hỏi sự điều tiết thống nhất của Nhà nước định hướng XHCN để bảo vệ người yếu thế.
                   </p>
                 </div>

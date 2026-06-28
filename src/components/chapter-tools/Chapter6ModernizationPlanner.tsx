@@ -131,13 +131,13 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
     <div className="w-full space-y-8 animate-fade-rise">
       {/* Header */}
       <div className="liquid-glass border border-white/10 rounded-3xl p-6 md:p-8 space-y-4">
-        <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
+        <span className="px-2.5 py-1 text-xs font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
           Công cụ Chương 6
         </span>
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Planner Công Nghiệp Hóa, Hiện Đại Hóa & Hội Nhập
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-normal">
           Xác định tương lai nghề nghiệp của bản thân trong tiến trình phát triển đất nước. Thiết lập các thông số nghề nghiệp để xem cơ hội, rủi ro và nhận phản ánh định hướng nâng cao chất lượng sức lao động.
         </p>
       </div>
@@ -148,12 +148,12 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
         {/* Left Inputs */}
         <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-5 h-fit">
           <div className="border-b border-white/5 pb-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Tham số định hướng nghề</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Tham số định hướng nghề</h4>
           </div>
 
           {/* Preset selector */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">1. Chọn ngành nghề:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">1. Chọn ngành nghề:</label>
             <select
               value={careerKey}
               onChange={e => {
@@ -161,7 +161,7 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
                 setAiReflection("");
                 setReflectionAnswered(null);
               }}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white/30"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-white/30"
             >
               <option value="it">Lập trình viên / Công nghệ phần mềm</option>
               <option value="agri">Nông nghiệp công nghệ cao</option>
@@ -174,7 +174,7 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
           {/* Custom Input if selected */}
           {isCustom && (
             <div className="space-y-1.5 animate-fade-rise">
-              <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider font-mono">Tên ngành nghề tự nhập:</label>
+              <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Tên ngành nghề tự nhập:</label>
               <input
                 type="text"
                 value={customCareer}
@@ -183,21 +183,21 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
                   setAiReflection("");
                 }}
                 placeholder="Nhập tên ngành..."
-                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none"
               />
             </div>
           )}
 
           {/* Tech level */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">2. Trình độ công nghệ hiện tại:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">2. Trình độ công nghệ hiện tại:</label>
             <select
               value={techLevel}
               onChange={e => {
                 setTechLevel(e.target.value);
                 setAiReflection("");
               }}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none"
             >
               <option value="manual">Thủ công dã chiến (Nhỏ lẻ)</option>
               <option value="semi">Cơ giới hóa / Bán tự động</option>
@@ -207,14 +207,14 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
 
           {/* Skill target */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">3. Mục tiêu năng lực kỹ năng:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">3. Mục tiêu năng lực kỹ năng:</label>
             <select
               value={skillTarget}
               onChange={e => {
                 setSkillTarget(e.target.value);
                 setAiReflection("");
               }}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none"
             >
               <option value="basic">Kỹ năng thực thi cơ bản</option>
               <option value="specialist">Chuyên gia thiết kế lõi</option>
@@ -224,14 +224,14 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
 
           {/* Integration level */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">4. Mức độ hội nhập quốc tế:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">4. Mức độ hội nhập quốc tế:</label>
             <select
               value={integrationLevel}
               onChange={e => {
                 setIntegrationLevel(e.target.value);
                 setAiReflection("");
               }}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none"
             >
               <option value="domestic">Thị trường nội địa</option>
               <option value="regional">Hợp tác khu vực ASEAN</option>
@@ -245,7 +245,7 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
               type="button"
               disabled={isAiLoading || (isCustom && !customCareer.trim())}
               onClick={handleGenerateReflection}
-              className="w-full py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-none disabled:opacity-40 disabled:bg-white/40 cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-sm transition-all flex items-center justify-center gap-1.5 border-none disabled:opacity-40 disabled:bg-white/40 cursor-pointer"
             >
               {isAiLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-black" />
@@ -264,7 +264,7 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
             
             {/* Header info */}
             <div className="border-b border-white/5 pb-4">
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Bản đồ phân tích cơ hội nghề</span>
+              <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Bản đồ phân tích cơ hội nghề</span>
               <h4 className="text-lg font-bold text-white mt-1">{activePreset.title}</h4>
             </div>
 
@@ -272,16 +272,16 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
             <div className="space-y-4">
               {/* Link to Industrialization */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">Liên kết Công nghiệp hóa, Hiện đại hóa:</span>
-                <p className="text-xs md:text-sm text-white/90 leading-relaxed font-light">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Liên kết Công nghiệp hóa, Hiện đại hóa:</span>
+                <p className="text-sm md:text-base text-white/90 leading-relaxed font-normal">
                   {activePreset.modernizationLink}
                 </p>
               </div>
 
               {/* Skills to learn */}
               <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 space-y-1">
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">Kiến thức / Kỹ năng cần tập trung học tập:</span>
-                <p className="text-xs text-white/80 leading-relaxed font-light">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Kiến thức / Kỹ năng cần tập trung học tập:</span>
+                <p className="text-sm text-white/80 leading-relaxed font-normal">
                   {activePreset.skillsNeeded}
                 </p>
               </div>
@@ -289,14 +289,14 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
               {/* Opportunities vs Risks */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4 space-y-1">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider font-mono block">Cơ hội hội nhập quốc tế (+):</span>
-                  <p className="text-xs text-white/70 leading-relaxed font-light">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono block">Cơ hội hội nhập quốc tế (+):</span>
+                  <p className="text-sm text-white/70 leading-relaxed font-normal">
                     {activePreset.opportunities}
                   </p>
                 </div>
                 <div className="bg-rose-500/5 border border-rose-500/10 rounded-xl p-4 space-y-1">
-                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider font-mono block">Nguy cơ tụt hậu / Đào thải (-):</span>
-                  <p className="text-xs text-white/70 leading-relaxed font-light">
+                  <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono block">Nguy cơ tụt hậu / Đào thải (-):</span>
+                  <p className="text-sm text-white/70 leading-relaxed font-normal">
                     {activePreset.risks}
                   </p>
                 </div>
@@ -306,11 +306,11 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
             {/* AI Reflection draft output */}
             {aiReflection && (
               <div className="bg-emerald-500/5 border border-emerald-500/10 text-emerald-300 p-5 rounded-2xl space-y-2 animate-fade-rise">
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider font-mono block">Bản Phản Ánh Học Tập Đề Xuất (AI gợi ý):</span>
-                <p className="text-xs leading-relaxed font-light whitespace-pre-line">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Bản Phản Ánh Học Tập Đề Xuất (AI gợi ý):</span>
+                <p className="text-sm leading-relaxed font-normal whitespace-pre-line">
                   {aiReflection}
                 </p>
-                <span className="text-[9px] text-white/30 block font-mono">
+                <span className="text-[10px] text-white/30 block font-mono">
                   *Bản viết trên chỉ là gợi ý tham khảo phục vụ quá trình tự học tập tư duy phản biện của học viên.
                 </span>
               </div>
@@ -320,30 +320,30 @@ Bắt đầu bằng câu: "[Gợi ý học tập đính kèm]"`;
             <div className="border-t border-white/5 pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
               </div>
-              <h5 className="text-xs md:text-sm font-bold text-white leading-relaxed">
+              <h5 className="text-sm md:text-base font-bold text-white leading-relaxed">
                 Tại sao nâng cấp chất lượng sức lao động lại là chìa khóa để giành lợi thế trong hội nhập kinh tế quốc tế?
               </h5>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(true)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Nâng cao giá trị sức lao động
                 </button>
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(false)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Tăng số giờ làm việc
                 </button>
               </div>
 
               {reflectionAnswered !== null && (
-                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-xs leading-relaxed space-y-2 animate-fade-rise">
+                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-sm leading-relaxed space-y-2 animate-fade-rise">
                   <div className="flex items-center gap-1.5 font-bold">
                     {reflectionAnswered === true ? (
                       <span className="text-emerald-400 flex items-center gap-1">

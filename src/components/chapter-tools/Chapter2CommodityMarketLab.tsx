@@ -99,7 +99,7 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Lab Mô Phỏng: Giá Trị vs Giá Cả Thị Trường
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-normal">
           Hiểu rõ cách Quy luật Giá trị vận động trong thực tế. Sử dụng các thanh trượt Cung - Cầu bên dưới để quan sát giá cả thị trường biến động xung quanh giá trị (hao phí lao động xã hội cần thiết) của hàng hóa.
         </p>
       </div>
@@ -109,13 +109,13 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
         {/* Sliders & Configuration */}
         <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-6">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+            <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
               1. Chọn đối tượng kịch bản
             </span>
             <select
               value={selectedScenarioId}
               onChange={handleScenarioChange}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-white/30"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white/30"
             >
               {scenarios.map(s => (
                 <option key={s.id} value={s.id} className="bg-background text-white">
@@ -125,7 +125,7 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
             </select>
           </div>
 
-          <div className="space-y-1 text-xs text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
+          <div className="space-y-1 text-sm text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
             {currentScenario.description}
           </div>
 
@@ -169,7 +169,7 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
                   setDemand(currentScenario.baseDemand);
                   setReflectionAnswered(null);
                 }}
-                className="w-full py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm font-bold flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RefreshCcw className="w-3.5 h-3.5" /> Thiết lập lại kịch bản
               </button>
@@ -219,9 +219,9 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
 
             {/* Verdict Explanation Box */}
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Giải thích học luận</h4>
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Giải thích học luận</h4>
               
-              <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 text-xs md:text-sm text-white/80 leading-relaxed font-light space-y-3">
+              <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 text-sm md:text-base text-white/85 leading-relaxed font-normal space-y-3">
                 {priceDeviation === 0 ? (
                   <p>
                     <strong>Cung bằng Cầu:</strong> Khi cung cầu cân bằng, giá cả thị trường trùng khớp hoàn toàn với giá trị của hàng hóa ({formatMoney(valueOfCommodity)}). Đây là trạng thái lý tưởng của quy luật giá trị nhưng hiếm khi xảy ra ổn định trong thực tế.
@@ -236,7 +236,7 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
                   </p>
                 )}
 
-                <div className="bg-neutral-900/60 p-4 rounded-xl flex items-start gap-2 text-xs border border-white/5 text-white/60">
+                <div className="bg-neutral-900/60 p-4 rounded-xl flex items-start gap-2 text-sm border border-white/5 text-white/60">
                   <Info className="w-4 h-4 shrink-0 text-white/40 mt-0.5" />
                   <span>
                     Sự tự phát tăng giảm này giúp điều tiết lực lượng lao động xã hội tự động chảy từ ngành thừa sang ngành thiếu - chính là chức năng điều tiết của Quy luật Giá trị.
@@ -249,30 +249,30 @@ Giá cả thị trường tính toán: ${formatMoney(marketPrice)}
             <div className="border-t border-white/5 pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Suy ngẫm học thuật</span>
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Suy ngẫm học thuật</span>
               </div>
-              <h5 className="text-xs md:text-sm font-bold text-white leading-relaxed">
+              <h5 className="text-sm md:text-base font-bold text-white leading-relaxed">
                 Biến động giá cả tự phát này có mâu thuẫn hay bác bỏ Quy luật giá trị không?
               </h5>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(true)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === true ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Có mâu thuẫn
                 </button>
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(false)}
-                  className={`px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === false ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   Không mâu thuẫn
                 </button>
               </div>
 
               {reflectionAnswered !== null && (
-                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-xs leading-relaxed space-y-2 animate-fade-rise">
+                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-sm leading-relaxed space-y-2 animate-fade-rise">
                   <div className="flex items-center gap-1.5 font-bold">
                     {reflectionAnswered === false ? (
                       <span className="text-emerald-400 flex items-center gap-1">

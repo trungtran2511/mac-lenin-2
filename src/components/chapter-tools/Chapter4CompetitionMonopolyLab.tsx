@@ -110,7 +110,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Lab Tương Tác: Cạnh Tranh & Độc Quyền Thị Trường
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-normal">
           Khám phá quy luật phát triển từ cạnh tranh tự do lên độc quyền. Điều chỉnh cấu trúc doanh nghiệp và rào cản gia nhập để mô phỏng sự dịch chuyển của quyền lực định giá cả, ảnh hưởng đến xã hội.
         </p>
       </div>
@@ -121,7 +121,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
         {/* Left Control Panel */}
         <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-6 h-fit">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+            <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
               1. Lựa chọn cấu trúc thị trường
             </span>
             <div className="flex flex-col gap-2">
@@ -130,7 +130,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
                   key={m.id}
                   type="button"
                   onClick={() => handleStructureChange(m.id)}
-                  className={`w-full text-left p-3.5 rounded-xl border text-xs font-semibold transition-all flex flex-col gap-1.5 cursor-pointer ${
+                  className={`w-full text-left p-3.5 rounded-xl border text-sm font-semibold transition-all flex flex-col gap-1.5 cursor-pointer ${
                     selectedStructureId === m.id
                       ? "bg-white border-white text-black shadow-lg shadow-white/5"
                       : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"
@@ -142,14 +142,14 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             </div>
           </div>
 
-          <div className="space-y-1 text-xs text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
+          <div className="space-y-1 text-sm text-white/50 leading-relaxed italic border-l-2 border-white/10 pl-3">
             {MARKET_STRUCTURES.find(m => m.id === selectedStructureId)?.description}
           </div>
 
           {/* Sliders */}
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] font-mono text-white/50">
+              <div className="flex justify-between text-xs font-mono text-white/50">
                 <span>SỐ DOANH NGHIỆP:</span>
                 <span className="text-white font-bold">{firmsCount} DN</span>
               </div>
@@ -167,7 +167,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] font-mono text-white/50">
+              <div className="flex justify-between text-xs font-mono text-white/50">
                 <span>RÀO CẢN GIA NHẬP:</span>
                 <span className="text-white font-bold">{entryBarriers}%</span>
               </div>
@@ -185,7 +185,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] font-mono text-white/50">
+              <div className="flex justify-between text-xs font-mono text-white/50">
                 <span>QUYỀN LỰC ĐỊNH GIÁ:</span>
                 <span className="text-white font-bold">{pricingPower}%</span>
               </div>
@@ -211,30 +211,30 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             {/* Visual Indicators */}
             <div className="grid grid-cols-2 gap-4 border-b border-white/5 pb-6">
               <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-center space-y-1">
-                <span className="text-[10px] text-white/40 uppercase font-mono block">Chỉ số cạnh tranh</span>
+                <span className="text-xs text-white/40 uppercase font-mono block">Chỉ số cạnh tranh</span>
                 <div className="text-2xl md:text-3xl font-bold font-mono text-white">{competitionLevel}%</div>
               </div>
               <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-center space-y-1">
-                <span className="text-[10px] text-white/40 uppercase font-mono block">Nguy cơ độc quyền</span>
+                <span className="text-xs text-white/40 uppercase font-mono block">Nguy cơ độc quyền</span>
                 <div className="text-2xl md:text-3xl font-bold font-mono text-rose-400">{monopolyRisk}%</div>
               </div>
             </div>
 
             {/* Impact Outputs */}
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Tác động đối với các thực thể xã hội:</h4>
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Tác động đối với các thực thể xã hội:</h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Consumer impact card */}
                 <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 text-white text-xs font-bold font-mono uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-white text-sm font-bold font-mono uppercase tracking-wider">
                     <Users className="w-4 h-4 text-blue-400" />
                     <span>Người tiêu dùng</span>
                   </div>
                   <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                     <div className="bg-blue-400 h-full" style={{ width: `${consumerImpact}%` }} />
                   </div>
-                  <p className="text-[11px] text-white/50 leading-relaxed font-light">
+                  <p className="text-xs text-white/50 leading-relaxed font-normal">
                     {consumerImpact > 70
                       ? "Bị ép mua sản phẩm thiết yếu với giá cả độc quyền cực cao, quyền lợi bị bóc lột gián tiếp."
                       : consumerImpact > 30
@@ -245,14 +245,14 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
 
                 {/* Worker impact card */}
                 <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center gap-2 text-white text-xs font-bold font-mono uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-white text-sm font-bold font-mono uppercase tracking-wider">
                     <UserCheck className="w-4 h-4 text-amber-400" />
                     <span>Người lao động làm thuê</span>
                   </div>
                   <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                     <div className="bg-amber-400 h-full" style={{ width: `${workerImpact}%` }} />
                   </div>
-                  <p className="text-[11px] text-white/50 leading-relaxed font-light">
+                  <p className="text-xs text-white/50 leading-relaxed font-normal">
                     {workerImpact > 70
                       ? "DN độc quyền kiểm soát đầu vào sức lao động, nguy cơ ép lương thấp dưới giá trị thực tế."
                       : workerImpact > 30
@@ -267,8 +267,8 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             <div className="bg-rose-500/5 border border-rose-500/10 text-rose-200 p-5 rounded-2xl flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider font-mono block">Mối liên hệ học thuyết:</span>
-                <p className="text-xs text-white/70 leading-relaxed font-light">
+                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider font-mono block">Mối liên hệ học thuyết:</span>
+                <p className="text-sm text-white/70 leading-relaxed font-normal">
                   Khi độc quyền chi phối ({monopolyRisk}% &gt; 70%), các tổ chức độc quyền thu <strong>Lợi nhuận độc quyền cao</strong> vượt xa tỷ suất lợi nhuận trung bình bằng cách áp đặt <strong>Giá cả độc quyền</strong>. Đây là nguyên nhân kìm hãm sự tiến bộ kỹ thuật tự nhiên nếu không có luật cạnh tranh điều tiết của Nhà nước.
                 </p>
               </div>
@@ -278,30 +278,30 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
             <div className="border-t border-white/5 pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Đánh giá nhanh</span>
               </div>
-              <h5 className="text-xs md:text-sm font-bold text-white leading-relaxed">
+              <h5 className="text-sm md:text-base font-bold text-white leading-relaxed">
                 Độc quyền xuất hiện có xóa bỏ hoàn toàn sự cạnh tranh trên thị trường hay không?
               </h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(1)}
-                  className={`p-3.5 text-left rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === 1 ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`p-3.5 text-left rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === 1 ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   A. Xóa bỏ hoàn toàn cạnh tranh tự do.
                 </button>
                 <button
                   type="button"
                   onClick={() => setReflectionAnswered(2)}
-                  className={`p-3.5 text-left rounded-xl border text-xs font-semibold transition-all cursor-pointer ${reflectionAnswered === 2 ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
+                  className={`p-3.5 text-left rounded-xl border text-sm font-semibold transition-all cursor-pointer ${reflectionAnswered === 2 ? "bg-white border-white text-black" : "bg-neutral-900/40 border-white/5 text-white/70 hover:bg-white/5"}`}
                 >
                   B. Không xóa bỏ, cạnh tranh trở nên gay gắt hơn.
                 </button>
               </div>
 
               {reflectionAnswered !== null && (
-                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-xs leading-relaxed space-y-2 animate-fade-rise">
+                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-sm leading-relaxed space-y-2 animate-fade-rise">
                   <div className="flex items-center gap-1.5 font-bold">
                     {reflectionAnswered === 2 ? (
                       <span className="text-emerald-400 flex items-center gap-1">
@@ -311,7 +311,7 @@ Rủi ro chèn ép Người lao động: ${workerImpact}`;
                       <span className="text-rose-400 font-bold">Chưa chính xác!</span>
                     )}
                   </div>
-                  <p className="text-white/60 font-light">
+                  <p className="text-white/60 font-normal">
                     Độc quyền sinh ra từ cạnh tranh tự do, nhưng nó <strong>không thủ tiêu cạnh tranh</strong>. Trái lại, độc quyền làm cho cạnh tranh trở nên gay gắt, khốc liệt hơn (cạnh tranh giữa các tổ chức độc quyền với nhau, cạnh tranh giữa độc quyền với DN ngoài độc quyền).
                   </p>
                 </div>

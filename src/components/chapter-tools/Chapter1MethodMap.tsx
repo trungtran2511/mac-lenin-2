@@ -227,7 +227,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Bản Đồ Phương Pháp & Chức Năng Kinh Tế Chính Trị
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-normal">
           Chương 1 là cánh cửa tri thức dẫn dắt bạn hiểu về thế giới quan khoa học của Mác - Lênin. Click vào từng khái niệm cốt lõi ở cột bên trái để khám phá bản chất lý luận, ví dụ thực tế và làm bài kiểm tra nhanh.
         </p>
       </div>
@@ -236,7 +236,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Concept Selector */}
         <div className="space-y-3">
-          <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono px-2">
+          <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono px-2">
             Mục lục Khái niệm chính
           </span>
           <div className="flex flex-col gap-2.5">
@@ -259,7 +259,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
                         isActive ? "bg-black" : "bg-white/20"
                       }`}
                     />
-                    <span className="text-xs md:text-sm font-bold tracking-tight">{node.title}</span>
+                    <span className="text-sm md:text-base font-bold tracking-tight">{node.title}</span>
                   </div>
                   <ChevronRight className={`w-4 h-4 ${isActive ? "text-black" : "text-white/20"}`} />
                 </button>
@@ -273,14 +273,14 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
           <div className="liquid-glass border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
             {/* Title */}
             <div className="border-b border-white/5 pb-4">
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Chi tiết khái niệm</span>
+              <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Chi tiết khái niệm</span>
               <h4 className="text-lg font-bold text-white mt-1">{activeNode.title}</h4>
             </div>
 
             {/* Plain explanation */}
             <div className="space-y-2">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-wider font-mono block">Giải thích dễ hiểu:</span>
-              <p className="text-xs md:text-sm text-white/80 leading-relaxed font-light">
+              <span className="text-xs font-bold text-white/30 uppercase tracking-wider font-mono block">Giải thích dễ hiểu:</span>
+              <p className="text-sm md:text-base text-white/80 leading-relaxed font-normal">
                 {activeNode.shortExplain}
               </p>
             </div>
@@ -289,8 +289,8 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
             <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4 flex items-start gap-3">
               <Lightbulb className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider font-mono block">Ví dụ đời thường:</span>
-                <p className="text-xs text-white/70 leading-relaxed font-light">
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono block">Ví dụ đời thường:</span>
+                <p className="text-sm text-white/70 leading-relaxed font-normal">
                   {activeNode.example}
                 </p>
               </div>
@@ -301,7 +301,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
               <button
                 type="button"
                 onClick={() => setShowAcademicText(!showAcademicText)}
-                className="text-[11px] font-bold text-white/50 hover:text-white transition-all flex items-center gap-1 cursor-pointer bg-transparent border-none outline-none"
+                className="text-xs font-bold text-white/50 hover:text-white transition-all flex items-center gap-1 cursor-pointer bg-transparent border-none outline-none"
               >
                 <span>{showAcademicText ? "▲ Ẩn" : "▼ Xem"} chi tiết học thuật gốc từ Giáo trình</span>
               </button>
@@ -313,7 +313,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="bg-black/25 border border-white/5 rounded-xl p-4 text-xs text-white/60 leading-relaxed font-mono font-light">
+                    <div className="bg-black/25 border border-white/5 rounded-xl p-4 text-sm text-white/60 leading-relaxed font-mono font-normal">
                       {activeCurriculumDetails}
                     </div>
                   </motion.div>
@@ -325,10 +325,10 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
             <div className="border-t border-white/5 pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-white/40" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Ôn tập nhanh</span>
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Ôn tập nhanh</span>
               </div>
               
-              <h5 className="text-xs md:text-sm font-bold text-white leading-relaxed">
+              <h5 className="text-sm md:text-base font-bold text-white leading-relaxed">
                 {activeNode.miniQuiz.question}
               </h5>
 
@@ -355,9 +355,9 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
                       type="button"
                       onClick={() => handleSelectAnswer(idx)}
                       disabled={userAnswerIndex !== null}
-                      className={`w-full text-left p-3.5 rounded-xl border text-xs font-medium transition-all flex items-start gap-2.5 cursor-pointer ${optClass}`}
+                      className={`w-full text-left p-3.5 rounded-xl border text-sm font-medium transition-all flex items-start gap-2.5 cursor-pointer ${optClass}`}
                     >
-                      <span className="font-mono text-[10px] font-bold shrink-0 mt-0.5">
+                      <span className="font-mono text-xs font-bold shrink-0 mt-0.5">
                         {String.fromCharCode(65 + idx)}.
                       </span>
                       <span className="leading-relaxed">{option}</span>
@@ -367,7 +367,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
               </div>
 
               {userAnswerIndex !== null && (
-                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-xs leading-relaxed space-y-2 animate-fade-rise">
+                <div className="bg-white/[0.01] border border-white/5 rounded-xl p-4 text-sm leading-relaxed space-y-2 animate-fade-rise">
                   <div className="flex items-center gap-1.5 font-bold">
                     {userAnswerIndex === activeNode.miniQuiz.correctIndex ? (
                       <span className="text-emerald-400 flex items-center gap-1">
@@ -377,7 +377,7 @@ Học viên đã trả lời câu hỏi ôn nhanh: ${
                       <span className="text-rose-400">Chưa chính xác!</span>
                     )}
                   </div>
-                  <p className="text-white/60 font-light">{activeNode.miniQuiz.explanation}</p>
+                  <p className="text-white/60 font-normal">{activeNode.miniQuiz.explanation}</p>
                 </div>
               )}
             </div>
