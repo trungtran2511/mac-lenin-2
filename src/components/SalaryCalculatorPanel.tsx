@@ -401,19 +401,35 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     setAiError("");
 
     const prompt = [
-      "Phân loại công việc và đánh giá mức lương theo Kinh tế chính trị Mác - Lênin.",
-      "Trả về JSON thuần, không markdown.",
-      `Công việc: ${jobTitle}`,
+      "Bạn là một chuyên gia kinh tế chính trị Mác - Lênin. Hãy phân tích số liệu việc làm và thu nhập dưới đây, đối chiếu với các quy định pháp luật hiện hành và số liệu thực nghiệm.",
+      "",
+      "Yêu cầu phân tích và trả về JSON thuần (không bọc trong tag ```json, không markdown):",
+      "Schema JSON yêu cầu:",
+      JSON.stringify({
+        jobCategory: "Nhóm ngành nghề phân loại (VD: Dịch vụ ăn uống / bán lẻ, Công nghệ, Lao động phổ thông...)",
+        suggestedHourlyRange: [25000, 35000], // Khoảng lương giờ phổ biến trên thị trường cho nhóm ngành này (2 số nguyên)
+        verdict: "Đánh giá ngắn (VD: Bị bóc lột nặng, Lương khá tốt, Tạm ổn, Vi phạm luật lao động...)",
+        summary: "Đoạn phân tích chi tiết (2-3 câu), so sánh cụ thể giữa lương giờ/tháng của user với mức tối thiểu của Nghị định 74/2024/NĐ-CP và mức chi phí sống tối thiểu/trung bình của tỉnh/thành phố đó, nhận xét xem có vi phạm pháp luật hay không, nguồn thặng dư bị bòn rút thế nào.",
+        advice: "Lời khuyên thực tiễn (1-2 câu) giúp user cải thiện thu nhập, đòi hỏi quyền lợi lao động hoặc nâng cấp kỹ năng nghề nghiệp."
+      }, null, 2),
+      "",
+      "--- DỮ LIỆU ĐẦU VÀO ---",
+      `Tên công việc: ${jobTitle}`,
       `Lương tháng: ${monthlySalary} VND`,
-      `Giờ làm/ngày: ${hoursPerDay}`,
-      `Ngày làm/tháng: ${workingDays}`,
-      `Lương giờ: ${Math.round(hourlyWage)} VND/giờ`,
-      `Tỉnh/thành: ${province.name}`,
-      `Vùng lương app suy ra: ${region.name}`,
-      `Sàn tham chiếu: ${region.minHourlyWage} VND/giờ`,
-      `Chi phí sống: ${livingCost} VND/tháng`,
-      `Trợ cấp gia đình: ${familySupport} VND/tháng`,
-      "Schema: {\"jobCategory\":\"...\",\"suggestedHourlyRange\":[min,max],\"verdict\":\"...\",\"summary\":\"...\",\"advice\":\"...\"}"
+      `Giờ làm việc mỗi ngày: ${hoursPerDay} giờ`,
+      `Số ngày làm mỗi tháng: ${workingDays} ngày`,
+      `Tổng số giờ làm mỗi tháng: ${totalHoursMonth} giờ`,
+      `Lương giờ thực tế của người dùng: ${Math.round(hourlyWage)} VND/giờ`,
+      `Tỉnh/Thành phố: ${province.name}`,
+      `Lương tối thiểu tháng quy định (Nghị định 74/2024/NĐ-CP): ${province.minMonthlyWage} VND/tháng`,
+      `Lương tối thiểu giờ quy định (Nghị định 74/2024/NĐ-CP): ${province.minHourlyWage} VND/giờ`,
+      `Mức sống tối thiểu khảo sát tại tỉnh: ${province.defaultLivingCost} VND/tháng`,
+      `Mức sống trung bình khảo sát tại tỉnh: ${province.averageLivingCost} VND/tháng`,
+      `Chi phí sống thực tế tự nhập của người dùng: ${livingCost} VND/tháng`,
+      `Trợ cấp gia đình/phụ cấp thêm: ${familySupport} VND/tháng`,
+      `Tổng thu nhập (Lương + Trợ cấp): ${totalIncome} VND/tháng`,
+      `Mức chênh lệch thu nhập so với chi phí sống: ${totalIncomeGap} VND/tháng`,
+      ""
     ].join("\n");
 
     try {
