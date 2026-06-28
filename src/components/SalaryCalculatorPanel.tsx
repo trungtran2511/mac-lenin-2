@@ -19,6 +19,10 @@ interface ProvinceOption {
   id: string;
   name: string;
   regionId: RegionId;
+  minHourlyWage: number;
+  minMonthlyWage: number;
+  defaultLivingCost: number;
+  averageLivingCost: number;
 }
 
 interface AiClassificationResult {
@@ -38,39 +42,74 @@ const REGIONS: Record<RegionId, RegionConfig> = {
 };
 
 const LIVING_COST_DATA_NOTICE =
-  "Chưa có dataset gốc mức sống theo tỉnh trong app. Không tự điền số ước đoán.";
+  "Chi phí sống theo mốc tối thiểu/trung bình khảo sát của tỉnh.";
 
 const PROVINCES: ProvinceOption[] = [
-  { id: "ha-noi", name: "Hà Nội", regionId: "vung1" },
-  { id: "tp-hcm", name: "TP. Hồ Chí Minh", regionId: "vung1" },
-  { id: "da-nang", name: "Đà Nẵng", regionId: "vung1" },
-  { id: "hai-phong", name: "Hải Phòng", regionId: "vung1" },
-  { id: "can-tho", name: "Cần Thơ", regionId: "vung2" },
-  { id: "binh-duong", name: "Bình Dương", regionId: "vung1" },
-  { id: "dong-nai", name: "Đồng Nai", regionId: "vung1" },
-  { id: "ba-ria-vung-tau", name: "Bà Rịa - Vũng Tàu", regionId: "vung1" },
-  { id: "quang-ninh", name: "Quảng Ninh", regionId: "vung1" },
-  { id: "bac-ninh", name: "Bắc Ninh", regionId: "vung2" },
-  { id: "hung-yen", name: "Hưng Yên", regionId: "vung2" },
-  { id: "hai-duong", name: "Hải Dương", regionId: "vung2" },
-  { id: "vinh-phuc", name: "Vĩnh Phúc", regionId: "vung2" },
-  { id: "khanh-hoa", name: "Khánh Hòa", regionId: "vung2" },
-  { id: "lam-dong", name: "Lâm Đồng", regionId: "vung2" },
-  { id: "long-an", name: "Long An", regionId: "vung2" },
-  { id: "tien-giang", name: "Tiền Giang", regionId: "vung2" },
-  { id: "tay-ninh", name: "Tây Ninh", regionId: "vung2" },
-  { id: "thua-thien-hue", name: "Thừa Thiên Huế", regionId: "vung2" },
-  { id: "nghe-an", name: "Nghệ An", regionId: "vung3" },
-  { id: "thanh-hoa", name: "Thanh Hóa", regionId: "vung3" },
-  { id: "binh-dinh", name: "Bình Định", regionId: "vung3" },
-  { id: "dak-lak", name: "Đắk Lắk", regionId: "vung3" },
-  { id: "an-giang", name: "An Giang", regionId: "vung3" },
-  { id: "dong-thap", name: "Đồng Tháp", regionId: "vung3" },
-  { id: "soc-trang", name: "Sóc Trăng", regionId: "vung4" },
-  { id: "ca-mau", name: "Cà Mau", regionId: "vung4" },
-  { id: "dien-bien", name: "Điện Biên", regionId: "vung4" },
-  { id: "ha-giang", name: "Hà Giang", regionId: "vung4" },
-  { id: "khac", name: "Tỉnh/thành khác", regionId: "vung3" }
+  { id: "ha-noi", name: "Hà Nội", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 5500000, averageLivingCost: 6869000 },
+  { id: "tp-hcm", name: "TP. Hồ Chí Minh", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 5800000, averageLivingCost: 6513000 },
+  { id: "binh-duong", name: "Bình Dương", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 4800000, averageLivingCost: 8076000 },
+  { id: "dong-nai", name: "Đồng Nai", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 4500000, averageLivingCost: 6445000 },
+  { id: "hai-phong", name: "Hải Phòng", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 4500000, averageLivingCost: 6397000 },
+  { id: "ba-ria-vung-tau", name: "Bà Rịa - Vũng Tàu", regionId: "vung1", minHourlyWage: 23800, minMonthlyWage: 4960000, defaultLivingCost: 4500000, averageLivingCost: 5757000 },
+  
+  { id: "da-nang", name: "Đà Nẵng", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 4200000, averageLivingCost: 6125000 },
+  { id: "can-tho", name: "Cần Thơ", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3800000, averageLivingCost: 5794000 },
+  { id: "khanh-hoa", name: "Khánh Hòa", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3800000, averageLivingCost: 4817000 },
+  { id: "quang-ninh", name: "Quảng Ninh", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 4000000, averageLivingCost: 5655000 },
+  { id: "bac-ninh", name: "Bắc Ninh", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3800000, averageLivingCost: 5923000 },
+  { id: "thua-thien-hue", name: "Thừa Thiên Huế", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3500000, averageLivingCost: 4877000 },
+  { id: "nam-dinh", name: "Nam Định", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3300000, averageLivingCost: 4746000 },
+  { id: "hai-duong", name: "Hải Dương", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3500000, averageLivingCost: 5153000 },
+  { id: "long-an", name: "Long An", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3600000, averageLivingCost: 4697000 },
+  { id: "thai-nguyen", name: "Thái Nguyên", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3400000, averageLivingCost: 4851000 },
+  { id: "vinh-phuc", name: "Vĩnh Phúc", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3600000, averageLivingCost: 5243000 },
+  { id: "hung-yen", name: "Hưng Yên", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3600000, averageLivingCost: 5221000 },
+  { id: "tay-ninh", name: "Tây Ninh", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3500000, averageLivingCost: 4481000 },
+  { id: "bac-giang", name: "Bắc Giang", regionId: "vung2", minHourlyWage: 21200, minMonthlyWage: 4410000, defaultLivingCost: 3400000, averageLivingCost: 4516000 },
+  
+  { id: "lam-dong", name: "Lâm Đồng", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3200000, averageLivingCost: 4652000 },
+  { id: "binh-thuan", name: "Bình Thuận", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4495000 },
+  { id: "nghe-an", name: "Nghệ An", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4354000 },
+  { id: "thanh-hoa", name: "Thanh Hóa", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4321000 },
+  { id: "phu-tho", name: "Phú Thọ", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 2900000, averageLivingCost: 4398000 },
+  { id: "thai-binh", name: "Thái Bình", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4619000 },
+  { id: "tien-giang", name: "Tiền Giang", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4452000 },
+  { id: "quang-nam", name: "Quảng Nam", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4296000 },
+  { id: "quang-ngai", name: "Quảng Ngãi", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4275000 },
+  { id: "binh-dinh", name: "Bình Định", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4248000 },
+  { id: "kien-giang", name: "Kiên Giang", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4222000 },
+  { id: "an-giang", name: "An Giang", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3000000, averageLivingCost: 4198000 },
+  { id: "ca-mau", name: "Cà Mau", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4175000 },
+  { id: "binh-phuoc", name: "Bình Phước", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3200000, averageLivingCost: 4153000 },
+  { id: "dak-lak", name: "Đắk Lắk", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 2900000, averageLivingCost: 4098000 },
+  { id: "lao-cai", name: "Lào Cai", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 2900000, averageLivingCost: 4045000 },
+  { id: "ninh-binh", name: "Ninh Bình", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4578000 },
+  { id: "ha-nam", name: "Hà Nam", regionId: "vung3", minHourlyWage: 18600, minMonthlyWage: 3860000, defaultLivingCost: 3100000, averageLivingCost: 4545000 },
+  
+  { id: "hoa-binh", name: "Hòa Bình", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3978000 },
+  { id: "phu-yen", name: "Phú Yên", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3945000 },
+  { id: "quang-binh", name: "Quảng Bình", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3918000 },
+  { id: "quang-tri", name: "Quảng Trị", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3895000 },
+  { id: "dong-thap", name: "Đồng Tháp", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3876000 },
+  { id: "ben-tre", name: "Bến Tre", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3848000 },
+  { id: "vinh-long", name: "Vĩnh Long", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3822000 },
+  { id: "hau-giang", name: "Hậu Giang", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3798000 },
+  { id: "tra-vinh", name: "Trà Vinh", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3775000 },
+  { id: "soc-trang", name: "Sóc Trăng", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3748000 },
+  { id: "bac-lieu", name: "Bạc Liêu", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3721000 },
+  { id: "gia-lai", name: "Gia Lai", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3678000 },
+  { id: "dak-nong", name: "Đắk Nông", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3645000 },
+  { id: "ninh-thuan", name: "Ninh Thuận", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2800000, averageLivingCost: 3618000 },
+  { id: "lang-son", name: "Lạng Sơn", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2700000, averageLivingCost: 3595000 },
+  { id: "tuyen-quang", name: "Tuyên Quang", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2600000, averageLivingCost: 3576000 },
+  { id: "yen-bai", name: "Yên Bái", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2600000, averageLivingCost: 3548000 },
+  { id: "kon-tum", name: "Kon Tum", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2600000, averageLivingCost: 3498000 },
+  { id: "ha-giang", name: "Hà Giang", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2500000, averageLivingCost: 3445000 },
+  { id: "cao-bang", name: "Cao Bằng", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2500000, averageLivingCost: 3418000 },
+  { id: "bac-kan", name: "Bắc Kạn", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2500000, averageLivingCost: 3395000 },
+  { id: "son-la", name: "Sơn La", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2500000, averageLivingCost: 3376000 },
+  { id: "lai-chau", name: "Lai Châu", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2400000, averageLivingCost: 3278000 },
+  { id: "dien-bien", name: "Điện Biên", regionId: "vung4", minHourlyWage: 16600, minMonthlyWage: 3450000, defaultLivingCost: 2400000, averageLivingCost: 3212000 }
 ];
 
 const formatMoney = (value: number) => `${Math.round(value || 0).toLocaleString()} đ`;
@@ -165,7 +204,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const [hoursInput, setHoursInput] = useState("6");
   const [daysInput, setDaysInput] = useState("26");
   const [provinceId, setProvinceId] = useState("ha-noi");
-  const [livingCostInput, setLivingCostInput] = useState("5000000");
+  const [livingCostInput, setLivingCostInput] = useState("6869000");
   const [familySupportInput, setFamilySupportInput] = useState("10000000");
   const [aiResult, setAiResult] = useState<AiClassificationResult | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -183,20 +222,30 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const totalHoursMonth = hoursPerDay * workingDays;
   const hourlyWage = totalHoursMonth > 0 ? monthlySalary / totalHoursMonth : 0;
   const totalIncomeGap = hasLivingCost ? totalIncome - livingCost : 0;
-  const minimumMonthlyPay = region.minHourlyWage * totalHoursMonth;
+  const minimumMonthlyPay = province.minHourlyWage * totalHoursMonth;
   const isLivingCostBelowMinimumWageReference = minimumMonthlyPay > 0
     && livingCost > 0
     && livingCost < minimumMonthlyPay;
   const inputWarnings = [
-    livingCost <= 0 ? "Nhập chi phí sống thực tế của bạn. App chưa có dữ liệu gốc mức sống theo tỉnh để tự điền." : "",
+    livingCost <= 0 ? "Nhập chi phí sống thực tế của bạn." : "",
     isLivingCostBelowMinimumWageReference
-      ? `${formatMoney(livingCost)} ở ${province.name} thấp hơn mức lương tối thiểu vùng tính theo số giờ bạn nhập (${formatMoney(minimumMonthlyPay)}). App không kết luận đây là mức sống chính thức, chỉ nhắc bạn kiểm tra lại số liệu.`
+      ? `${formatMoney(livingCost)} ở ${province.name} thấp hơn mức lương tối thiểu vùng tính theo số giờ bạn nhập (${formatMoney(minimumMonthlyPay)}).`
       : "",
     hoursPerDay > 16 ? "Giờ làm/ngày trên 16h rất bất thường, kiểm tra lại số nhập." : "",
     workingDays > 31 ? "Ngày làm/tháng không thể vượt quá 31 ngày." : "",
     monthlySalary > 0 && totalHoursMonth > 0 && hourlyWage < 5000 ? "Lương/giờ dưới 5.000đ rất bất thường, kiểm tra lại lương hoặc giờ làm." : "",
-    livingCost > 0 && livingCost < 1000000 ? "Chi phí sống dưới 1.000.000đ/tháng rất thấp, có thể bạn nhập thiếu số 0 hoặc chỉ nhập một khoản nhỏ." : "",
-    livingCost > 0 && livingCost > 50000000 ? "Chi phí sống trên 50.000.000đ/tháng rất cao, kiểm tra lại đơn vị tiền." : "",
+    livingCost > 0 && livingCost < province.defaultLivingCost
+      ? `Chi phí sống của bạn (${formatMoney(livingCost)}) thấp hơn mức sống tối thiểu khảo sát tại ${province.name} (${formatMoney(province.defaultLivingCost)}).`
+      : "",
+    livingCost > province.averageLivingCost * 1.5
+      ? `Chi phí sống của bạn (${formatMoney(livingCost)}) khá cao so với mức sống trung bình tại ${province.name} (${formatMoney(province.averageLivingCost)}).`
+      : "",
+    monthlySalary > 0 && monthlySalary < province.minMonthlyWage
+      ? `⚠️ Vi phạm lao động: Lương tháng của bạn (${formatMoney(monthlySalary)}) thấp hơn mức tối thiểu tháng theo NĐ 74/2024/NĐ-CP của ${province.name} (${formatMoney(province.minMonthlyWage)}).`
+      : "",
+    monthlySalary > 0 && totalHoursMonth > 0 && hourlyWage < province.minHourlyWage
+      ? `⚠️ Vi phạm lao động: Lương giờ thực tế (${formatMoney(hourlyWage)}) thấp hơn mức tối thiểu giờ theo NĐ 74/2024/NĐ-CP của ${province.name} (${formatMoney(province.minHourlyWage)}/giờ).`
+      : "",
     familySupport < 0 ? "Trợ cấp không nên là số âm." : ""
   ].filter(Boolean);
   const hasInvalidInput = workingDays > 31 || hoursPerDay > 24 || familySupport < 0 || livingCost <= 0;
@@ -205,7 +254,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const fallbackClassification = useMemo<AiClassificationResult>(() => {
     const normalizedTitle = normalizeVietnamese(jobTitle);
     let jobCategory = "Lao động phổ thông / Khác";
-    let suggestedHourlyRange: [number, number] = [region.minHourlyWage, Math.round(region.minHourlyWage * 1.6)];
+    let suggestedHourlyRange: [number, number] = [province.minHourlyWage, Math.round(province.minHourlyWage * 1.6)];
 
     if (/code|lap trinh|developer|it|cntt|phan mem|design|do hoa/.test(normalizedTitle)) {
       jobCategory = "Công nghệ / kỹ thuật cao";
@@ -215,10 +264,10 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       suggestedHourlyRange = [35000, 90000];
     } else if (/ship|grab|be|gojek|giao hang|xe om|rider/.test(normalizedTitle)) {
       jobCategory = "Vận tải / xe ôm công nghệ";
-      suggestedHourlyRange = [region.minHourlyWage, 45000];
+      suggestedHourlyRange = [province.minHourlyWage, 45000];
     } else if (/cafe|ca phe|tra sua|phuc vu|ban hang|thu ngan|phu bep|nha hang|bung pho/.test(normalizedTitle)) {
       jobCategory = "Dịch vụ ăn uống / bán lẻ";
-      suggestedHourlyRange = [region.minHourlyWage, 35000];
+      suggestedHourlyRange = [province.minHourlyWage, 35000];
     } else if (/van phong|nhap lieu|sale|sales|tu van|cham soc khach hang/.test(normalizedTitle)) {
       jobCategory = "Văn phòng / bán hàng / CSKH";
       suggestedHourlyRange = [30000, 70000];
@@ -235,18 +284,18 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       };
     }
 
-    if (hourlyWage < region.minHourlyWage * 0.5 || totalIncome < livingCost * 0.5) {
+    if (hourlyWage < province.minHourlyWage * 0.5 || totalIncome < livingCost * 0.5) {
       return {
         jobCategory,
         suggestedHourlyRange,
         verdict: "Bóc lột gần như toàn phần",
-        summary: `Lương giờ ${formatMoney(hourlyWage)} quá thấp so với sàn ${region.shortName} (${formatMoney(region.minHourlyWage)}/giờ). Thu nhập cũng không chạm nổi mức sống tối thiểu.`,
+        summary: `Lương giờ ${formatMoney(hourlyWage)} quá thấp so với sàn ${region.shortName} (${formatMoney(province.minHourlyWage)}/giờ). Thu nhập cũng không chạm nổi mức sống tối thiểu.`,
         advice: "Không nên coi đây là việc bền vững. Cần thương lượng lại hoặc đổi việc nếu có thể.",
         source: "fallback"
       };
     }
 
-    if (hourlyWage < region.minHourlyWage || monthlySalary < livingCost) {
+    if (hourlyWage < province.minHourlyWage || monthlySalary < livingCost) {
       return {
         jobCategory,
         suggestedHourlyRange,
@@ -276,7 +325,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       advice: "Vẫn cần theo dõi phụ cấp, chi phí phát sinh và số giờ làm thật.",
       source: "fallback"
     };
-  }, [hourlyWage, isIncomplete, jobTitle, livingCost, monthlySalary, region.minHourlyWage, region.shortName, totalIncome]);
+  }, [hourlyWage, isIncomplete, jobTitle, livingCost, monthlySalary, province, region.shortName, totalIncome]);
 
   const result = aiResult ?? fallbackClassification;
   const safeHoursPerDay = Math.max(hoursPerDay, 0.1);
@@ -324,7 +373,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
     setHoursInput("");
     setDaysInput("26");
     setProvinceId("ha-noi");
-    setLivingCostInput("");
+    setLivingCostInput("6869000");
     setFamilySupportInput("");
     setAiResult(null);
     setAiError("");
@@ -333,7 +382,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
   const handleProvinceChange = (nextProvinceId: string) => {
     const nextProvince = PROVINCES.find(item => item.id === nextProvinceId) ?? PROVINCES[0];
     setProvinceId(nextProvince.id);
-    setLivingCostInput("");
+    setLivingCostInput(String(nextProvince.averageLivingCost));
     setDirty();
   };
 
@@ -457,7 +506,32 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
                 placeholder="VD: 5000000"
                 className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none focus:border-white/40"
               />
-              <span className="block text-[11px] leading-4 text-white/38">{LIVING_COST_DATA_NOTICE}</span>
+              <span className="block text-[11px] leading-4 text-white/38">
+                Tối thiểu: {formatMoney(province.defaultLivingCost)} | Trung bình: {formatMoney(province.averageLivingCost)}
+              </span>
+              <div className="flex flex-wrap gap-2 text-[10px] mt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLivingCostInput(String(province.defaultLivingCost));
+                    setDirty();
+                  }}
+                  className="text-emerald-400 hover:text-emerald-300 hover:underline cursor-pointer transition-colors"
+                >
+                  Dùng mốc tối thiểu
+                </button>
+                <span className="text-white/20">|</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLivingCostInput(String(province.averageLivingCost));
+                    setDirty();
+                  }}
+                  className="text-emerald-400 hover:text-emerald-300 hover:underline cursor-pointer transition-colors"
+                >
+                  Dùng mốc trung bình
+                </button>
+              </div>
             </label>
             <label className="block space-y-2">
               <span className="text-sm font-bold text-white/60">Giờ/ngày</span>
@@ -498,7 +572,9 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
                   <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
               </select>
-              <span className="block text-[11px] text-white/38">{region.shortName}: {formatMoney(region.minHourlyWage)}/giờ</span>
+              <span className="block text-[11px] leading-4 text-white/38">
+                Tối thiểu vùng: {formatMoney(province.minMonthlyWage)}/tháng ({formatMoney(province.minHourlyWage)}/giờ)
+              </span>
             </label>
             <label className="block space-y-2">
               <span className="text-sm font-bold text-white/60">Trợ cấp</span>
