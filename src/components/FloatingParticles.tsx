@@ -63,7 +63,7 @@ export default function FloatingParticles() {
       const particles = particlesRef.current;
 
       if (particles.length === 0) {
-        particlesRef.current = Array.from({ length: targetCount }, () => createParticle("initial"));
+        particlesRef.current = Array.from({ length: targetCount }, () => createParticle("screen"));
         return;
       }
 
