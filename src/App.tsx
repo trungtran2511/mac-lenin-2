@@ -1297,7 +1297,7 @@ export default function App() {
                 {/* Chapter details content panel (60% width) */}
                 <div className="md:col-span-6 space-y-3">
                   <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono px-2">Chi tiết chương học</span>
-                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-start relative pb-28 md:pb-32">
+                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-start">
                     <ChapterSyllabusPanel
                       activeChapterId={selectedChapterDetails}
                       chapters={curriculumData?.chapters || []}
@@ -1305,11 +1305,6 @@ export default function App() {
                       selectedSectionIndex={selectedSectionIndex}
                       setSelectedSectionIndex={setSelectedSectionIndex}
                     />
-
-                    {/* Small Chibi Teacher Mascot inside the right column */}
-                    <div className="absolute bottom-4 right-4 w-20 h-24 md:w-24 md:h-28 z-20 pointer-events-none">
-                      <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]" />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1972,48 +1967,50 @@ export default function App() {
         </AnimatePresence>
 
         {/* Draggable Chibi Mascot Sticker - Magnified & Borderless */}
-        <motion.div
-          drag
-          dragConstraints={dragConstraintsRef}
-          dragMomentum={false}
-          dragElastic={0.05}
-          whileDrag={{ scale: 1.05, cursor: "grabbing" }}
-          className="pointer-events-auto fixed z-50 w-40 h-52 md:w-48 md:h-60 cursor-grab"
-          style={{ right: 16, bottom: 24 }}
-          onTap={() => setIsFloatingChatOpen(prev => !prev)}
-          onMouseEnter={handleMascotMouseEnter}
-          onMouseLeave={() => setIsMascotHovered(false)}
-        >
-          <div className="relative w-full h-full group">
-            {/* Speech Bubble */}
-            <AnimatePresence>
-              {isMascotHovered && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-3 rounded-2xl bg-neutral-950/90 border border-white/20 text-white text-[11px] font-medium text-center shadow-2xl pointer-events-none"
-                  style={{ backdropFilter: "blur(12px)" }}
-                >
-                  {mascotBubbleText}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 rotate-45 bg-neutral-950/90 border-r border-b border-white/20"></div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+        {activeView === "home" && (
+          <motion.div
+            drag
+            dragConstraints={dragConstraintsRef}
+            dragMomentum={false}
+            dragElastic={0.05}
+            whileDrag={{ scale: 1.05, cursor: "grabbing" }}
+            className="pointer-events-auto fixed z-50 w-40 h-52 md:w-48 md:h-60 cursor-grab"
+            style={{ right: 16, bottom: 24 }}
+            onTap={() => setIsFloatingChatOpen(prev => !prev)}
+            onMouseEnter={handleMascotMouseEnter}
+            onMouseLeave={() => setIsMascotHovered(false)}
+          >
+            <div className="relative w-full h-full group">
+              {/* Speech Bubble */}
+              <AnimatePresence>
+                {isMascotHovered && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-3 rounded-2xl bg-neutral-950/90 border border-white/20 text-white text-[11px] font-medium text-center shadow-2xl pointer-events-none"
+                    style={{ backdropFilter: "blur(12px)" }}
+                  >
+                    {mascotBubbleText}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 rotate-45 bg-neutral-950/90 border-r border-b border-white/20"></div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            {/* Chibi character sticker container - completely borderless with high-detail drop shadow */}
-            <div className="relative w-full h-full overflow-visible flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
-              <img
-                src={chibiTeacher}
-                alt="Thầy Nam Chibi"
-                className="w-full h-full object-contain select-none pointer-events-none transform group-hover:scale-105 transition-transform"
-              />
+              {/* Chibi character sticker container - completely borderless with high-detail drop shadow */}
+              <div className="relative w-full h-full overflow-visible flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
+                <img
+                  src={chibiTeacher}
+                  alt="Thầy Nam Chibi"
+                  className="w-full h-full object-contain select-none pointer-events-none transform group-hover:scale-105 transition-transform"
+                />
+              </div>
+              
+              {/* Green circular indicator dot integrated directly above the character's right shoulder area */}
+              <span className="absolute top-2 right-4 w-4 h-4 bg-emerald-400 border-2 border-background rounded-full shadow-md animate-pulse z-10"></span>
             </div>
-            
-            {/* Green circular indicator dot integrated directly above the character's right shoulder area */}
-            <span className="absolute top-2 right-4 w-4 h-4 bg-emerald-400 border-2 border-background rounded-full shadow-md animate-pulse z-10"></span>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
       </div>
 
