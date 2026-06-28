@@ -1689,7 +1689,7 @@ export default function App() {
                       return (
                         <div className="flex flex-col items-center gap-6 max-w-4xl w-full mx-auto">
                           {/* Progress Bar & Counter */}
-                          <div className="w-full flex items-center justify-between text-xs text-white/50 font-mono">
+                          <div className="w-full flex items-center justify-between text-sm text-white/75 font-semibold font-mono">
                             <span>Câu {flashcardIndex + 1} / {questionsList.length}</span>
                             <span className="flex items-center gap-1.5">
                               <span className={`w-2 h-2 rounded-full ${isFlashcardFlipped ? "bg-emerald-500" : "bg-blue-400"} animate-pulse`} />
@@ -1706,13 +1706,13 @@ export default function App() {
                           {/* 3D Flip Card Container */}
                           <div className="perspective-1000 w-full h-[500px] sm:h-[450px] md:h-[420px]">
                             <div
-                              className={`w-full h-full duration-500 preserve-3d relative cursor-pointer ${
+                              className={`w-full h-full duration-500 preserve-3d relative cursor-pointer transition-transform duration-300 hover:scale-[1.02] transform-gpu ${
                                 isFlashcardFlipped ? "rotate-y-180" : ""
                               }`}
                               onClick={() => setIsFlashcardFlipped(!isFlashcardFlipped)}
                             >
                               {/* Front Side */}
-                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-neutral-900/90 via-neutral-950/95 to-neutral-900/90 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto scrollbar-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent)] before:pointer-events-none hover:scale-[1.005] hover:border-white/20 transition-all duration-300">
+                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-neutral-900/90 via-neutral-950/95 to-neutral-900/90 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto scrollbar-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent)] before:pointer-events-none hover:border-white/20 transition-all duration-300">
                                 <div className="space-y-4">
                                   <div className="flex items-center justify-between">
                                     <span className="rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase text-white/80 font-mono tracking-wider">
@@ -1738,13 +1738,13 @@ export default function App() {
                                   </div>
                                 </div>
 
-                                <div className="text-center text-[10px] text-white/30 font-mono pt-4 border-t border-white/5 mt-4 tracking-wider uppercase">
+                                <div className="text-center text-xs text-white/60 font-semibold font-mono pt-4 border-t border-white/10 mt-4 tracking-wider uppercase">
                                   💡 Nhấn vào thẻ hoặc nhấn [Phím Cách] để lật xem đáp án
                                 </div>
                               </div>
 
                               {/* Back Side */}
-                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-emerald-950/20 via-neutral-950/98 to-neutral-900/95 border border-emerald-500/20 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl rotate-y-180 overflow-y-auto scrollbar-none font-sans before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent)] before:pointer-events-none hover:scale-[1.005] transition-all duration-300">
+                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-emerald-950/20 via-neutral-950/98 to-neutral-900/95 border border-emerald-500/20 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl rotate-y-180 overflow-y-auto scrollbar-none font-sans before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent)] before:pointer-events-none transition-all duration-300">
                                 <div className="space-y-4">
                                   <div className="flex items-center justify-between">
                                     <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase text-emerald-300 font-mono tracking-wider">
@@ -1753,25 +1753,25 @@ export default function App() {
                                     <span className="text-[10px] text-emerald-400/60 uppercase tracking-widest font-mono">Mặt sau [A]</span>
                                   </div>
 
-                                  <h4 className="text-[16px] md:text-[18px] font-bold leading-normal text-white/80 select-text font-serif" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                                  <h4 className="text-[18px] md:text-[20px] font-bold leading-snug text-white select-text font-serif" style={{ fontFamily: "'Instrument Serif', serif" }}>
                                     {qObj.question}
                                   </h4>
 
-                                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 px-4 text-emerald-300 text-xs md:text-sm font-bold font-mono shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4.5 px-5 text-emerald-300 text-sm md:text-base font-bold font-mono shadow-[0_0_15px_rgba(16,185,129,0.05)]">
                                     ✅ {String.fromCharCode(65 + qObj.correctAnswer)}. {qObj.options[qObj.correctAnswer]}
                                   </div>
 
                                   <div className="space-y-1">
-                                    <div className="text-[10px] font-bold font-mono uppercase tracking-wider text-white/40">
+                                    <div className="text-xs font-bold font-mono uppercase tracking-wider text-white/50">
                                       Luận giải học thuật:
                                     </div>
-                                    <p className="text-white/70 text-xs md:text-sm leading-relaxed font-normal select-text">
+                                    <p className="text-white/85 text-sm md:text-[15px] leading-relaxed font-normal select-text">
                                       {qObj.explanation}
                                     </p>
                                   </div>
                                 </div>
 
-                                <div className="text-center text-[10px] text-white/30 font-mono pt-4 border-t border-white/5 mt-4 tracking-wider uppercase">
+                                <div className="text-center text-xs text-white/60 font-semibold font-mono pt-4 border-t border-white/10 mt-4 tracking-wider uppercase">
                                   💡 Nhấn vào thẻ hoặc nhấn [Phím Cách] để lật lại câu hỏi
                                 </div>
                               </div>
