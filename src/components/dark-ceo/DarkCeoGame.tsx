@@ -36,6 +36,19 @@ export default function DarkCeoGame() {
   const [gameOverReason, setGameOverReason] = useState("");
   const [gameWon, setGameWon] = useState(false);
 
+  // Answer key password protection states
+  const [answerKeyPassword, setAnswerKeyPassword] = useState("");
+  const [isAnswerKeyUnlocked, setIsAnswerKeyUnlocked] = useState(false);
+  const [isAnswerKeyDropdownOpen, setIsAnswerKeyDropdownOpen] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
+  // Close dropdown and clear password field on turn transition
+  useEffect(() => {
+    setIsAnswerKeyDropdownOpen(false);
+    setAnswerKeyPassword("");
+    setPasswordError("");
+  }, [currentTurn]);
+
   // Initialize first turn
   useEffect(() => {
     startGame();
@@ -334,6 +347,106 @@ export default function DarkCeoGame() {
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                   Yêu cầu quyết định khẩn cấp
                 </span>
+
+                {/* Password-protected Answer Key Dropdown */}
+                <div className="border border-white/10 rounded-xl bg-black/40 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setIsAnswerKeyDropdownOpen(!isAnswerKeyDropdownOpen)}
+                    className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      {isAnswerKeyUnlocked ? "🔓" : "🔒"} Xem nhanh tác động đáp án {isAnswerKeyDropdownOpen ? "(Đóng)" : "(Yêu cầu mật khẩu)"}
+                    </span>
+                    <span className="text-[10px] opacity-70">
+                      {isAnswerKeyDropdownOpen ? "▲" : "▼"}
+                    </span>
+                  </button>
+
+                  {isAnswerKeyDropdownOpen && (
+                    <div className="p-3 border-t border-white/5 bg-neutral-950/40 space-y-2">
+                      {!isAnswerKeyUnlocked ? (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-2 items-center w-full">
+                            <input
+                              type="password"
+                              placeholder="Nhập mật khẩu..."
+                              value={answerKeyPassword}
+                              onChange={(e) => {
+                                setAnswerKeyPassword(e.target.value);
+                                setPasswordError("");
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  if (answerKeyPassword === "abc123123.jj@A") {
+                                    setIsAnswerKeyUnlocked(true);
+                                    setPasswordError("");
+                                  } else {
+                                    setPasswordError("Mật khẩu không chính xác!");
+                                  }
+                                }
+                              }}
+                              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white placeholder-white/30 focus:outline-none focus:border-emerald-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (answerKeyPassword === "abc123123.jj@A") {
+                                  setIsAnswerKeyUnlocked(true);
+                                  setPasswordError("");
+                                } else {
+                                  setPasswordError("Mật khẩu không chính xác!");
+                                }
+                              }}
+                              className="px-3 py-1 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-bold transition-all cursor-pointer shrink-0"
+                            >
+                              Xác nhận
+                            </button>
+                          </div>
+                          {passwordError && (
+                            <p className="text-[10px] text-rose-400 font-mono">{passwordError}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-xs space-y-2.5 font-sans divide-y divide-white/5">
+                          {currentCrisis.choices.map((choice, index) => {
+                            const choiceLetter = String.fromCharCode(65 + index); // A, B, C...
+                            return (
+                              <div key={choice.id} className={`${index > 0 ? "pt-2.5" : ""} space-y-1`}>
+                                <div className="font-bold text-white flex items-center gap-1.5">
+                                  <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-white/10 text-[10px] text-neutral-300 font-mono shrink-0">
+                                    {choiceLetter}
+                                  </span>
+                                  <span className="truncate max-w-[200px] sm:max-w-xs">{choice.text}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-neutral-400 font-mono pl-5">
+                                  <span className={choice.immediateImpact.profit >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                    Lợi nhuận: {choice.immediateImpact.profit >= 0 ? "+" : ""}{choice.immediateImpact.profit}%
+                                  </span>
+                                  <span className={choice.immediateImpact.competitiveness >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                    Cạnh tranh: {choice.immediateImpact.competitiveness >= 0 ? "+" : ""}{choice.immediateImpact.competitiveness}%
+                                  </span>
+                                  <span className={choice.immediateImpact.socialResponsibility >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                    Trách nhiệm XH: {choice.immediateImpact.socialResponsibility >= 0 ? "+" : ""}{choice.immediateImpact.socialResponsibility}%
+                                  </span>
+                                  <span className={choice.immediateImpact.workerMorale >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                    Tinh thần: {choice.immediateImpact.workerMorale >= 0 ? "+" : ""}{choice.immediateImpact.workerMorale}%
+                                  </span>
+                                </div>
+                                {choice.karmaEvent && (
+                                  <div className="pl-5 text-[9px] text-amber-400 leading-normal border-l border-amber-500/20 ml-1.5 mt-0.5 font-mono">
+                                    ⚠️ Karma (sau {currentCrisis.karmaDelay} lượt): {choice.karmaEvent.text}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-1 gap-3.5 mt-2 flex-1 justify-center">
                   {currentCrisis.choices.map((choice) => (
