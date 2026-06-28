@@ -72,7 +72,7 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
       {/* Content body */}
       <div className="p-6 space-y-5">
         {/* Summary text */}
-        <p className="text-base text-white/90 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
+        <p className="text-[21px] text-white/90 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
           {point.text}
         </p>
 
@@ -82,7 +82,7 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
             <span className="text-xs font-bold uppercase tracking-widest text-white/30 font-mono">
               Nội dung chi tiết từ giáo trình
             </span>
-            <div className="text-base text-white/85 leading-relaxed space-y-3 font-normal select-text">
+            <div className="text-[21px] text-white/85 leading-relaxed space-y-3 font-normal select-text">
               {point.details.map((p, idx) => (
                 <p key={idx} className="pl-4 border-l border-white/[0.06]">{p}</p>
               ))}
