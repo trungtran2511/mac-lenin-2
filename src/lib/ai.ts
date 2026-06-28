@@ -32,7 +32,7 @@ function setKeyCooldown(key: string, durationMs: number) {
     const cooldowns = getKeyCooldowns();
     cooldowns[key] = Date.now() + durationMs;
     localStorage.setItem(COOLDOWN_LS_KEY, JSON.stringify(cooldowns));
-  } catch {}
+  } catch { }
 }
 
 function isKeyOnCooldown(key: string): boolean {
@@ -129,7 +129,7 @@ const isFallbackEligible = (error: unknown) => {
   return error.status === 401 || error.status === 403 || error.status === 404 || error.status === 429 || error.status >= 500;
 };
 
-async function executeServerProxyRequest(prompt: string, systemInstruction: string, model: string): Promise<string> {
+async function executeServerProxyRequest(prompt: string, systemInstruction: string, model: string, cooldownKeys?: string[]): Promise<string> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);
 
@@ -143,25 +143,29 @@ async function executeServerProxyRequest(prompt: string, systemInstruction: stri
         messages: [
           { role: "system", content: systemInstruction },
           { role: "user", content: prompt }
-        ]
+        ],
+        cooldownKeys
       })
     });
 
     if (!response.ok) {
-      throw new Error(`Server returned error ${response.status}`);
+      throw new AiRequestError(`Server returned error ${response.status}`, response.status);
     }
 
     const data = await response.json();
     const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("").trim();
     if (!result) {
-      throw new Error("No valid content returned from server proxy");
+      throw new AiRequestError("No valid content returned from server proxy");
     }
     return result;
   } catch (err: any) {
     if (err.name === "AbortError") {
-      throw new Error("Yêu cầu tới Server Proxy bị quá thời gian (Timeout).");
+      throw new AiRequestError("Yêu cầu tới Server Proxy bị quá thời gian (Timeout).", 408);
     }
-    throw err;
+    if (err instanceof AiRequestError) {
+      throw err;
+    }
+    throw new AiRequestError(err.message || "Không thể kết nối tới Server Proxy.");
   } finally {
     clearTimeout(timeoutId);
   }
@@ -266,15 +270,15 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   }
 
   // 2. Nếu không có key client hoặc gọi client lỗi, chuyển sang gọi Server Proxy trên Vercel
-  for (const model of models) {
-    try {
-      const result = await executeServerProxyRequest(prompt, systemInstruction, model);
-      saveResponseToCache(prompt, systemInstruction, result);
-      return result;
-    } catch (serverError) {
-      lastError = serverError;
-      console.warn(`Server proxy failed for model ${model}`, serverError);
-    }
+  // Chỉ gọi Server Proxy một lần duy nhất với model cấu hình để tránh gửi các request dư thừa không cần thiết lên server khi các key đã bị rate limit
+  const activeCooldownKeys = keys.filter(key => isKeyOnCooldown(key));
+  try {
+    const result = await executeServerProxyRequest(prompt, systemInstruction, configModel, activeCooldownKeys);
+    saveResponseToCache(prompt, systemInstruction, result);
+    return result;
+  } catch (serverError) {
+    lastError = serverError;
+    console.warn(`Server proxy failed`, serverError);
   }
 
   throw lastError || new AiRequestError("Không thể kết nối tới Thầy Nam AI bằng bất kỳ key hay phương thức nào.");

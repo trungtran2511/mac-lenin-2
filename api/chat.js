@@ -66,8 +66,22 @@ export default async function handler(req) {
     });
   }
 
+  let body;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
   const now = Date.now();
-  const availableKeys = uniqueKeys.filter(key => (cooldownsByKey.get(key) || 0) <= now);
+  const clientCooldownKeys = Array.isArray(body?.cooldownKeys) ? body.cooldownKeys : [];
+  const availableKeys = uniqueKeys.filter(key => {
+    if (clientCooldownKeys.includes(key)) return false;
+    return (cooldownsByKey.get(key) || 0) <= now;
+  });
 
   if (availableKeys.length === 0) {
     return new Response(JSON.stringify({
@@ -75,16 +89,6 @@ export default async function handler(req) {
       message: "Vui lòng đợi ít phút trước khi thử lại."
     }), {
       status: 429,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
-  let body;
-  try {
-    body = await req.json();
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
-      status: 400,
       headers: { "Content-Type": "application/json" }
     });
   }
