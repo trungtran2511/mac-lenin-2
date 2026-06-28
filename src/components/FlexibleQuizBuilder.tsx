@@ -303,7 +303,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
             <span className="rounded-md border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-bold uppercase text-white/80">
               Chương {currentQ.chapterId}
             </span>
-            <h4 className="mt-3 text-xl font-bold leading-relaxed text-white md:text-2xl">{currentQ.prompt}</h4>
+            <h4 className="mt-3 text-[21px] font-bold leading-relaxed text-white md:text-[24px]">{currentQ.prompt}</h4>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -325,9 +325,9 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   type="button"
                   onClick={() => handleSelectOption(option.id)}
                   disabled={isAnswered}
-                  className={`min-h-[88px] rounded-xl border p-5 text-left text-lg font-medium leading-relaxed transition-colors ${optionStyle}`}
+                  className={`min-h-[88px] rounded-xl border p-5 text-left text-[21px] font-medium leading-relaxed transition-colors ${optionStyle}`}
                 >
-                  <span className="mr-2 font-mono text-lg font-bold">{option.id}.</span>
+                  <span className="mr-2 font-mono text-[21px] font-bold">{option.id}.</span>
                   <span className="leading-relaxed">{option.text}</span>
                 </button>
               );
