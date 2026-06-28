@@ -248,6 +248,7 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   const models = [configModel, ...fallbackModels.filter(m => m !== configModel)];
 
   const availableKeys = keys.filter(key => !isKeyOnCooldown(key));
+  console.log(`[Thầy Nam AI] Khởi chạy request. Tổng số key trong hệ thống: ${keys.length}, Số key sẵn sàng hoạt động (không bị cooldown): ${availableKeys.length}`);
 
   let lastError: unknown = null;
 
