@@ -332,6 +332,7 @@ const FALLBACK_DATA: EconomyData = {
 
 export default function App() {
   const dragConstraintsRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const floatingChatDragControls = useDragControls();
   // const [economyData, setEconomyData] = useState<EconomyData>(FALLBACK_DATA);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -571,6 +572,56 @@ export default function App() {
     window.addEventListener("resize", handleWindowResize);
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
+
+  // Preload and seamless loop for Hero Video Background
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    let hasStarted = false;
+
+    // Force browser to play video immediately upon mount/activation
+    const forcePlay = () => {
+      if (hasStarted) return;
+      video.play()
+        .then(() => {
+          hasStarted = true;
+        })
+        .catch(err => {
+          console.warn("Hero video autoplay failed:", err);
+        });
+    };
+
+    if (video.readyState >= 3) {
+      forcePlay();
+    } else {
+      video.addEventListener("canplay", forcePlay);
+      video.addEventListener("loadedmetadata", forcePlay);
+    }
+
+    // Seamless loop implementation: reset current time slightly before the file ends
+    // to bypass native browser EOF decoder buffering lag/flicker.
+    const handleTimeUpdate = () => {
+      const duration = video.duration;
+      const currentTime = video.currentTime;
+      if (duration && duration > 0.5 && currentTime > 0) {
+        if (currentTime >= duration - 0.15) {
+          video.currentTime = 0;
+          video.play().catch(() => {});
+        }
+      }
+    };
+
+    video.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      if (video) {
+        video.removeEventListener("canplay", forcePlay);
+        video.removeEventListener("loadedmetadata", forcePlay);
+        video.removeEventListener("timeupdate", handleTimeUpdate);
+      }
+    };
+  }, [activeView]);
 
   // Load data from public folder
   useEffect(() => {
@@ -859,13 +910,18 @@ export default function App() {
         <header id="theory" className="relative min-h-screen flex flex-col justify-between overflow-hidden">
           {/* Fullscreen Video Background */}
           <video
+            ref={heroVideoRef}
             muted
             autoPlay
             loop
             playsInline
             preload="auto"
             className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-            style={{ objectPosition: "center 80%" }}
+            style={{ objectPosition: "center 80%", willChange: "transform" }}
+            onEnded={(e) => {
+              e.currentTarget.currentTime = 0;
+              e.currentTarget.play().catch(() => {});
+            }}
           >
             <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4" />
           </video>
