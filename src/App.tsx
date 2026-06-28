@@ -1289,7 +1289,7 @@ export default function App() {
                       <span className={`text-xs font-bold uppercase tracking-wider font-mono ${selectedChapterDetails === chapter.id ? "text-neutral-500" : "text-white/40"}`}>
                         Chương {chapter.id}
                       </span>
-                      <h4 className="text-sm font-bold leading-snug">{chapter.title}</h4>
+                      <h4 className="text-base font-bold leading-snug">{chapter.title}</h4>
                     </button>
                   ))}
                 </div>
