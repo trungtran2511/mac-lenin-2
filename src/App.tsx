@@ -1411,7 +1411,7 @@ export default function App() {
 
                       return (
                         <div className="space-y-4">
-                          <h3 className="text-[30px] font-bold text-white leading-[40px] select-text">
+                          <h3 className="text-[25px] font-bold text-white leading-[34px] select-text">
                             {qObj.question}
                           </h3>
                           
@@ -1444,7 +1444,7 @@ export default function App() {
                                     }
                                   }}
                                   disabled={hasAnswered}
-                                  className={`text-left p-4 rounded-2xl border text-[30px] font-medium leading-[40px] transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
+                                  className={`text-left p-4 rounded-2xl border text-[25px] font-medium leading-[34px] transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
                                 >
                                   <div className="flex min-w-0 gap-2.5">
                                     <span className="font-mono font-bold opacity-50">{String.fromCharCode(65 + idx)}.</span>
