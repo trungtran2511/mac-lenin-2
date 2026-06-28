@@ -410,38 +410,90 @@ export default function DarkCeoGame() {
                         </div>
                       ) : (
                         <div className="text-xs space-y-2.5 font-sans divide-y divide-white/5">
-                          {currentCrisis.choices.map((choice, index) => {
-                            const choiceLetter = String.fromCharCode(65 + index); // A, B, C...
-                            return (
-                              <div key={choice.id} className={`${index > 0 ? "pt-2.5" : ""} space-y-1`}>
-                                <div className="font-bold text-white flex items-center gap-1.5">
-                                  <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-white/10 text-[10px] text-neutral-300 font-mono shrink-0">
-                                    {choiceLetter}
-                                  </span>
-                                  <span className="truncate max-w-[200px] sm:max-w-xs">{choice.text}</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-neutral-400 font-mono pl-5">
-                                  <span className={choice.immediateImpact.profit >= 0 ? "text-emerald-400" : "text-rose-400"}>
-                                    Lợi nhuận: {choice.immediateImpact.profit >= 0 ? "+" : ""}{choice.immediateImpact.profit}%
-                                  </span>
-                                  <span className={choice.immediateImpact.competitiveness >= 0 ? "text-emerald-400" : "text-rose-400"}>
-                                    Cạnh tranh: {choice.immediateImpact.competitiveness >= 0 ? "+" : ""}{choice.immediateImpact.competitiveness}%
-                                  </span>
-                                  <span className={choice.immediateImpact.socialResponsibility >= 0 ? "text-emerald-400" : "text-rose-400"}>
-                                    Trách nhiệm XH: {choice.immediateImpact.socialResponsibility >= 0 ? "+" : ""}{choice.immediateImpact.socialResponsibility}%
-                                  </span>
-                                  <span className={choice.immediateImpact.workerMorale >= 0 ? "text-emerald-400" : "text-rose-400"}>
-                                    Tinh thần: {choice.immediateImpact.workerMorale >= 0 ? "+" : ""}{choice.immediateImpact.workerMorale}%
-                                  </span>
-                                </div>
-                                {choice.karmaEvent && (
-                                  <div className="pl-5 text-[9px] text-amber-400 leading-normal border-l border-amber-500/20 ml-1.5 mt-0.5 font-mono">
-                                    ⚠️ Karma (sau {currentCrisis.karmaDelay} lượt): {choice.karmaEvent.text}
+                          {(() => {
+                            // Analyze each choice to find the best recommendation
+                            let bestChoiceId = "";
+                            const choiceAnalyses = currentCrisis.choices.map((c) => {
+                              const nextProfit = scores.profit + c.immediateImpact.profit;
+                              const nextComp = scores.competitiveness + c.immediateImpact.competitiveness;
+                              const nextSocial = scores.socialResponsibility + c.immediateImpact.socialResponsibility;
+                              const nextMorale = scores.workerMorale + c.immediateImpact.workerMorale;
+                              
+                              const willCauseGameOver = 
+                                nextProfit <= 5 || nextProfit >= 95 ||
+                                nextComp <= 5 || nextComp >= 95 ||
+                                nextSocial <= 5 || nextSocial >= 95 ||
+                                nextMorale <= 5 || nextMorale >= 95;
+                                
+                              const deviation = 
+                                Math.abs(nextProfit - 50) + 
+                                Math.abs(nextComp - 50) + 
+                                Math.abs(nextSocial - 50) + 
+                                Math.abs(nextMorale - 50);
+                                
+                              return {
+                                id: c.id,
+                                willCauseGameOver,
+                                deviation
+                              };
+                            });
+                            
+                            const safeAnalyses = choiceAnalyses.filter(a => !a.willCauseGameOver);
+                            if (safeAnalyses.length > 0) {
+                              safeAnalyses.sort((a, b) => a.deviation - b.deviation);
+                              bestChoiceId = safeAnalyses[0].id;
+                            } else {
+                              const sortedAll = [...choiceAnalyses].sort((a, b) => a.deviation - b.deviation);
+                              bestChoiceId = sortedAll[0]?.id || "";
+                            }
+
+                            return currentCrisis.choices.map((choice, index) => {
+                              const choiceLetter = String.fromCharCode(65 + index); // A, B, C...
+                              const analysis = choiceAnalyses.find(a => a.id === choice.id);
+                              const isRecommended = choice.id === bestChoiceId;
+                              const isDangerous = analysis?.willCauseGameOver;
+
+                              return (
+                                <div key={choice.id} className={`${index > 0 ? "pt-2.5" : ""} space-y-1`}>
+                                  <div className="font-bold text-white flex items-center gap-1.5 flex-wrap">
+                                    <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-white/10 text-[10px] text-neutral-300 font-mono shrink-0">
+                                      {choiceLetter}
+                                    </span>
+                                    <span className="truncate max-w-[150px] sm:max-w-xs">{choice.text}</span>
+                                    {isRecommended && (
+                                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[8px] uppercase tracking-wider font-extrabold animate-pulse">
+                                        ⭐ Khuyên chọn
+                                      </span>
+                                    )}
+                                    {isDangerous && (
+                                      <span className="px-1.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[8px] uppercase tracking-wider font-extrabold">
+                                        🚨 Nguy cấp
+                                      </span>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-neutral-400 font-mono pl-5">
+                                    <span className={choice.immediateImpact.profit >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                      Lợi nhuận: {choice.immediateImpact.profit >= 0 ? "+" : ""}{choice.immediateImpact.profit}%
+                                    </span>
+                                    <span className={choice.immediateImpact.competitiveness >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                      Cạnh tranh: {choice.immediateImpact.competitiveness >= 0 ? "+" : ""}{choice.immediateImpact.competitiveness}%
+                                    </span>
+                                    <span className={choice.immediateImpact.socialResponsibility >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                      Trách nhiệm XH: {choice.immediateImpact.socialResponsibility >= 0 ? "+" : ""}{choice.immediateImpact.socialResponsibility}%
+                                    </span>
+                                    <span className={choice.immediateImpact.workerMorale >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                                      Tinh thần: {choice.immediateImpact.workerMorale >= 0 ? "+" : ""}{choice.immediateImpact.workerMorale}%
+                                    </span>
+                                  </div>
+                                  {choice.karmaEvent && (
+                                    <div className="pl-5 text-[9px] text-amber-400 leading-normal border-l border-amber-500/20 ml-1.5 mt-0.5 font-mono">
+                                      ⚠️ Karma (sau {currentCrisis.karmaDelay} lượt): {choice.karmaEvent.text}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
                         </div>
                       )}
                     </div>
