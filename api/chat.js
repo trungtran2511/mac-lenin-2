@@ -37,9 +37,9 @@ export default async function handler(req) {
   }
 
   const apiKeys = [
-    process.env.GEMINI_API_KEY,
-    process.env.GEMINI_API_KEY1,
     process.env.GEMINI_API_KEY2,
+    process.env.GEMINI_API_KEY1,
+    process.env.GEMINI_API_KEY,
     process.env.GOOGLE_API_KEY
   ].map(k => (k || "").trim()).filter(Boolean);
 
@@ -174,25 +174,45 @@ export default async function handler(req) {
           continue;
         }
 
-        const geminiResponse = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: promptText }] }],
-              ...(systemMessage
-                ? { systemInstruction: { parts: [{ text: systemMessage }] } }
-                : {}),
-              generationConfig: {
-                maxOutputTokens: 4000
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        let geminiResponse;
+        try {
+          geminiResponse = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: promptText }] }],
+                ...(systemMessage
+                  ? { systemInstruction: { parts: [{ text: systemMessage }] } }
+                  : {}),
+                generationConfig: {
+                  maxOutputTokens: 4000
+                }
+              })
+            }
+          );
+        } catch (fetchErr) {
+          if (fetchErr.name === "AbortError") {
+            latestError = {
+              status: 408,
+              data: {
+                error: "Gemini request timeout",
+                message: "Kết nối tới Gemini bị quá thời gian (Timeout)."
               }
-            })
+            };
+            break;
           }
-        );
+          throw fetchErr;
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         const responseText = await geminiResponse.text();
         let responseJson = {};
@@ -214,7 +234,7 @@ export default async function handler(req) {
                 details: responseJson
               }
             };
-            continue;
+            break;
           }
 
           return new Response(JSON.stringify({

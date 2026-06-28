@@ -16,7 +16,34 @@ class AiRequestError extends Error {
   }
 }
 
-const quotaCooldownByKey = new Map<string, number>();
+const COOLDOWN_LS_KEY = "thay_nam_ai_key_cooldowns";
+
+function getKeyCooldowns(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(COOLDOWN_LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setKeyCooldown(key: string, durationMs: number) {
+  try {
+    const cooldowns = getKeyCooldowns();
+    cooldowns[key] = Date.now() + durationMs;
+    localStorage.setItem(COOLDOWN_LS_KEY, JSON.stringify(cooldowns));
+  } catch {}
+}
+
+function isKeyOnCooldown(key: string): boolean {
+  try {
+    const cooldowns = getKeyCooldowns();
+    const cooldownTime = cooldowns[key] || 0;
+    return Date.now() < cooldownTime;
+  } catch {
+    return false;
+  }
+}
 
 interface CacheEntry {
   response: string;
@@ -55,7 +82,7 @@ function getCachedResponse(prompt: string, systemInstruction: string): string | 
         localStorage.removeItem(key);
       }
     }
-  } catch {}
+  } catch { }
   return null;
 }
 
@@ -87,7 +114,7 @@ function saveResponseToCache(prompt: string, systemInstruction: string, response
         localStorage.removeItem(item.key);
       }
     }
-  } catch {}
+  } catch { }
 }
 
 const parseRetryDelayMs = (value: unknown): number | undefined => {
@@ -103,38 +130,54 @@ const isFallbackEligible = (error: unknown) => {
 };
 
 async function executeServerProxyRequest(prompt: string, systemInstruction: string, model: string): Promise<string> {
-  const response = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: "system", content: systemInstruction },
-        { role: "user", content: prompt }
-      ]
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-  if (!response.ok) {
-    throw new Error(`Server returned error ${response.status}`);
-  }
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: systemInstruction },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
 
-  const data = await response.json();
-  const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("").trim();
-  if (!result) {
-    throw new Error("No valid content returned from server proxy");
+    if (!response.ok) {
+      throw new Error(`Server returned error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.choices?.[0]?.message?.content || data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || "").join("").trim();
+    if (!result) {
+      throw new Error("No valid content returned from server proxy");
+    }
+    return result;
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      throw new Error("Yêu cầu tới Server Proxy bị quá thời gian (Timeout).");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return result;
 }
 
 async function executeGeminiRequest(apiKey: string, prompt: string, systemInstruction: string, model: string): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
 
   let response: Response;
   try {
     response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -143,8 +186,13 @@ async function executeGeminiRequest(apiKey: string, prompt: string, systemInstru
         }
       })
     });
-  } catch {
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      throw new AiRequestError("Kết nối tới Gemini bị quá thời gian (Timeout).", 408);
+    }
     throw new AiRequestError("Không thể kết nối tới Gemini.");
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (!response.ok) {
@@ -176,18 +224,18 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
     return cached;
   }
 
+  // Gọi theo thứ tự: Key 3 (VITE_GEMINI_API_KEY2) -> Key 2 (VITE_GEMINI_API_KEY1) -> Key 1 (VITE_GEMINI_API_KEY)
   const keys = [
-    String(import.meta.env.VITE_GEMINI_API_KEY || "").trim(),
+    String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim(),
     String(import.meta.env.VITE_GEMINI_API_KEY1 || "").trim(),
-    String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim()
+    String(import.meta.env.VITE_GEMINI_API_KEY || "").trim()
   ].filter((key, index, allKeys) => key && allKeys.indexOf(key) === index);
 
   const configModel = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
   const fallbackModels = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
   const models = [configModel, ...fallbackModels.filter(m => m !== configModel)];
 
-  const now = Date.now();
-  const availableKeys = keys.filter(key => (quotaCooldownByKey.get(key) || 0) <= now);
+  const availableKeys = keys.filter(key => !isKeyOnCooldown(key));
 
   let lastError: unknown = null;
 
@@ -202,7 +250,14 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
         } catch (error) {
           lastError = error;
           if (error instanceof AiRequestError && error.status === 429) {
-            quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
+            setKeyCooldown(key, error.retryAfterMs || 60_000);
+            // Break model loop to immediately try the next key, saving waiting time
+            break;
+          }
+          if (error instanceof AiRequestError && error.status === 408) {
+            // Also cooldown key on request timeout to avoid using unstable key
+            setKeyCooldown(key, 30_000);
+            break;
           }
           if (!isFallbackEligible(error)) throw error;
         }
