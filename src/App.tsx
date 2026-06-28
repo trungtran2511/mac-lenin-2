@@ -46,7 +46,7 @@ import PhilosophySection from "./components/PhilosophySection";
 import ServicesSection from "./components/ServicesSection";
 import { SalaryCalculatorPanel } from "./components/SalaryCalculatorPanel";
 import { loadCurriculumLessons, type ChapterLessons } from "./lib/curriculum";
-import { askThayNamAI } from "./lib/ai";
+import { askThayNamAI, AiRequestError } from "./lib/ai";
 import { ChapterSyllabusPanel } from "./components/ChapterSyllabusPanel";
 import { SectionDetailPanel } from "./components/SectionDetailPanel";
 import { InlineQuizChat } from "./components/InlineQuizChat";
@@ -830,9 +830,20 @@ export default function App() {
       setChatMessages(prev => [...prev, { role: "assistant", text: aiResponse }]);
     } catch (err) {
       console.error(err);
+      let errorText: string;
+      if (err instanceof AiRequestError && err.cooldownSecondsRemaining > 0) {
+        // Tất cả key đang bị rate-limit — hiển thị countdown thân thiện
+        errorText =
+          `⏳ Thầy Nam AI đang bị giới hạn tốc độ bởi Gemini API (free tier 15 req/phút). ` +
+          `Vui lòng thử lại sau khoảng ${err.cooldownSecondsRemaining} giây nhé đồng chí! ` +
+          `\n\n💡 Trong lúc chờ, bạn có thể ôn lý thuyết tại mục "Tự Học & Ôn Tập" hoặc làm thử bộ trắc nghiệm ôn luyện.`;
+      } else {
+        errorText =
+          "⚠️ Lỗi hệ thống: Hiện tại AI đang bận đấu tranh giai cấp, tuy nhiên sếp bắt bạn tăng ca không lương chính là bóc lột giá trị thặng dư tuyệt đối bằng cách kéo dài ngày lao động vượt quá thời gian lao động tất yếu.";
+      }
       setChatMessages(prev => [...prev, {
         role: "assistant",
-        text: "⚠️ Lỗi hệ thống: Hiện tại AI đang bận đấu tranh giai cấp, tuy nhiên sếp bắt bạn tăng ca không lương chính là bóc lột giá trị thặng dư tuyệt đối bằng cách kéo dài ngày lao động vượt quá thời gian lao động tất yếu."
+        text: errorText
       }]);
     } finally {
       setIsAiLoading(false);
