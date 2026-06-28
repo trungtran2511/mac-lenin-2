@@ -40,6 +40,7 @@ const COOLDOWN_LS_KEY = "thay_nam_ai_key_cooldowns";
 /** Initialise in-memory registry from env + persisted cooldowns */
 function buildKeyRegistry(): ApiKeyStatus[] {
   const rawKeys = [
+    { key: String(import.meta.env.VITE_GEMINI_API_KEY3 || "").trim(), label: "Key 4 (VITE_GEMINI_API_KEY3)" },
     { key: String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim(), label: "Key 3 (VITE_GEMINI_API_KEY2)" },
     { key: String(import.meta.env.VITE_GEMINI_API_KEY1 || "").trim(), label: "Key 2 (VITE_GEMINI_API_KEY1)" },
     { key: String(import.meta.env.VITE_GEMINI_API_KEY  || "").trim(), label: "Key 1 (VITE_GEMINI_API_KEY)"  },
@@ -182,15 +183,12 @@ async function executeGeminiRequest(
   model: string
 ): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12_000);
 
   let response: Response;
   try {
     response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -198,10 +196,7 @@ async function executeGeminiRequest(
       }),
     });
   } catch (err: any) {
-    if (err.name === "AbortError") throw new AiRequestError("Kết nối tới Gemini bị quá thời gian (Timeout).", 408);
     throw new AiRequestError("Không thể kết nối tới Gemini.");
-  } finally {
-    clearTimeout(timeoutId);
   }
 
   if (!response.ok) {
@@ -287,12 +282,7 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
               blockKey(current, cooldownMs);
               break; // thoát vòng model, for..of tự chuyển sang key tiếp theo
             }
-            if (error.status === 408) {
-              console.warn(`[Thầy Nam AI] Key ${current.label} timeout. Block 30s — chuyển key.`);
-              blockKey(current, 30_000);
-              break;
-            }
-            // 503, 404, 5xx khác → thử model tiếp theo trên cùng key
+            // 503, 404, 5xx khác hoặc lỗi kết nối → thử model tiếp theo trên cùng key
           }
         }
       }
@@ -302,18 +292,33 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   }
 
   // ── Step 1: Thử tất cả key đang free ngay lập tức
+  // Ghi nhận số key có sẵn TRƯỚC khi Step 1 chạy để quyết định có nên auto-wait không
+  const availableBeforeStep1 = KEY_REGISTRY.filter(
+    k => !k.isBlocked || Date.now() > k.blockedUntil
+  ).length;
+
   const result1 = await tryAllAvailableKeys("initial");
   if (result1 !== null) return result1;
 
-  // ── Step 2: Tất cả key đang bị block
-  // Nếu thời gian chờ ≤ AUTO_WAIT_LIMIT_S, tự động chờ rồi retry TẤT CẢ key vừa unblock
+  // ── Step 2: Auto-wait + retry
+  // CHỈ auto-wait nếu keys đã bị block từ TRƯỚC khi request này bắt đầu
+  // (tức là Step 1 không có key nào để thử, hoặc chờ sẽ có ích).
+  // Nếu Step 1 vừa đốt hết cả 3 key → KHÔNG retry (tránh tốn thêm 3 API calls vô nghĩa)
   const AUTO_WAIT_LIMIT_S = 70;
   const waitSec = secondsUntilNextKey();
 
-  if (waitSec > 0 && waitSec <= AUTO_WAIT_LIMIT_S) {
+  const allJustBlocked = availableBeforeStep1 > 0 && waitSec > 0;
+  if (allJustBlocked) {
+    // Step 1 vừa bắn hết quota → throw ngay, không retry
+    console.warn(
+      `[Thầy Nam AI] Tất cả ${KEY_REGISTRY.length} key vừa bị 429 trong lần này. ` +
+      `Không retry để tiết kiệm quota. Thử lại sau ~${waitSec}s.`
+    );
+  } else if (waitSec > 0 && waitSec <= AUTO_WAIT_LIMIT_S) {
+    // Keys đã bị block từ trước → auto-wait rồi retry có ý nghĩa
     const waitMs = waitSec * 1000 + 1_000; // +1s buffer
     console.log(
-      `[Thầy Nam AI] Tất cả key đang block. Tự động chờ ${waitSec}s — retry TẤT CẢ key sau cooldown...`
+      `[Thầy Nam AI] Keys đã blocked từ trước. Tự động chờ ${waitSec}s — retry TẤT CẢ key sau cooldown...`
     );
     await new Promise<void>(resolve => setTimeout(resolve, waitMs));
 
