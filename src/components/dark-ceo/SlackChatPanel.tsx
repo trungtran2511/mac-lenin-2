@@ -69,7 +69,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
                     <span className="text-xs font-black text-red-400 uppercase tracking-wider">PHỦ ĐỊNH</span>
                     <span className="text-[10px] text-neutral-500 font-mono">{entry.timestamp}</span>
                   </div>
-                  <p className="text-base text-red-200 mt-1 leading-relaxed font-semibold">{entry.text}</p>
+                  <p className="text-[18px] text-red-200 mt-1 leading-relaxed font-semibold">{entry.text}</p>
                 </div>
               </div>
             );
@@ -101,7 +101,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
                   </span>
                   <span className="text-xs text-neutral-500 font-mono">{entry.timestamp}</span>
                 </div>
-                <p className="text-base text-neutral-300 mt-1 leading-relaxed font-light whitespace-pre-wrap">
+                <p className="text-[18px] text-neutral-300 mt-1 leading-relaxed font-light whitespace-pre-wrap">
                   {entry.text}
                 </p>
               </div>

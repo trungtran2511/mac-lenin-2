@@ -262,7 +262,7 @@ export default function DarkCeoGame() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
         <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-2">
+          <h2 className="text-3xl md:text-4xl text-white flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
             👔 Giám Đốc Hắc Ám: Biện Chứng Sinh Tồn
           </h2>
         </div>
@@ -284,7 +284,7 @@ export default function DarkCeoGame() {
             <AlertOctagon className="w-8 h-8 text-red-500" />
           </div>
           <h3 className="text-xl font-black text-white uppercase tracking-wider">PHÁ SẢN BIỆN CHỨNG (GAME OVER)</h3>
-          <p className="text-base text-neutral-300 max-w-md leading-relaxed font-light">{gameOverReason}</p>
+          <p className="text-[18px] text-neutral-300 max-w-md leading-relaxed font-light">{gameOverReason}</p>
           <button
             onClick={startGame}
             className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-sm font-bold transition-all hover:scale-105 active:scale-95"
@@ -302,7 +302,7 @@ export default function DarkCeoGame() {
             <CheckCircle2 className="w-8 h-8 text-emerald-500" />
           </div>
           <h3 className="text-xl font-black text-white uppercase tracking-wider">CEO KIỆT XUẤT (VICTORY)</h3>
-          <p className="text-base text-neutral-300 max-w-md leading-relaxed font-light">
+          <p className="text-[18px] text-neutral-300 max-w-md leading-relaxed font-light">
             Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 10 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
           </p>
           <button
@@ -337,7 +337,7 @@ export default function DarkCeoGame() {
                     <button
                       key={choice.id}
                       onClick={() => handleChoice(choice)}
-                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-base font-semibold text-neutral-200 hover:text-white leading-relaxed group flex items-start gap-2.5"
+                      className="w-full text-left p-4 rounded-xl border border-white/5 bg-neutral-950/40 hover:bg-white/5 hover:border-white/15 transition-all text-[18px] font-semibold text-neutral-200 hover:text-white leading-relaxed group flex items-start gap-2.5"
                     >
                       <span className="w-6 h-6 inline-flex items-center justify-center rounded bg-white/5 border border-white/10 text-sm text-neutral-400 group-hover:bg-white/10 group-hover:text-white transition-colors shrink-0">
                         {choice.id.split("-").pop()?.toUpperCase()}

@@ -121,8 +121,8 @@ export default function CardBattleArena() {
           {/* Header Controls */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
             <div>
-              <h2 className="text-2xl font-black text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+              <h2 className="text-3xl md:text-4xl text-white flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                <Sparkles className="w-6 h-6 text-amber-400 animate-pulse" />
                 Biện Chứng Kỳ Đài: Đấu Trường Thẻ Bài
               </h2>
             </div>
@@ -146,12 +146,12 @@ export default function CardBattleArena() {
 
 
           {/* Collapsible Rules Box at the top */}
-          <div className="bg-neutral-900/60 border border-white/5 rounded-2xl p-4 text-xs md:text-sm text-neutral-300 space-y-3">
-            <h4 className="font-bold text-white flex items-center gap-1.5 text-sm uppercase tracking-wide">
-              <HelpCircle className="w-4 h-4 text-emerald-400 animate-pulse" />
+          <div className="bg-neutral-900/60 border border-white/5 rounded-2xl p-4 text-[17px] text-neutral-300 space-y-3">
+            <h4 className="font-bold text-white flex items-center gap-1.5 text-[18px] uppercase tracking-wide">
+              <HelpCircle className="w-5 h-5 text-emerald-400 animate-pulse" />
               Hướng dẫn Luật chơi & cách "Nổ Hũ" (Tạo Hợp Đề):
             </h4>
-            <ul className="list-disc pl-5 space-y-1 text-neutral-400 text-xs">
+            <ul className="list-disc pl-5 space-y-2 text-neutral-400 text-[17px] leading-relaxed">
               <li><strong className="text-white">Bước 1:</strong> Hạ các cặp thẻ đối lập (1 thẻ Đề xuất <span className="text-blue-400 font-semibold">Bên A</span> và 1 thẻ Phản đề <span className="text-orange-400 font-semibold">Bên B</span>) từ tay của từng phe xuống bàn đấu.</li>
               <li><strong className="text-white">Bước 2:</strong> Tích lũy đủ điểm <strong>Lượng</strong> (chỉ số ghi trên thẻ) vượt qua <strong>Ngưỡng của Hợp đề</strong> (Ví dụ: Ngưỡng 4, 6 hoặc 8).</li>
               <li><strong className="text-white">Pro Tip:</strong> Thả thật nhiều thẻ phụ để tích lũy lượng vượt ngưỡng trước, sau đó thả cặp thẻ chính của công thức vào là "nổ hũ" Chất mới ngay lập tức!</li>
@@ -166,7 +166,7 @@ export default function CardBattleArena() {
                 {showRecipes ? "🙈 Ẩn bớt công thức" : "📖 Xem các Công thức Hợp Đề (Nổ Hũ) của Mâu thuẫn này"}
               </button>
               {showRecipes && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 animate-fade-in text-[11px] md:text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 animate-fade-in text-[16px]">
                   {activeDebate.synthesisCards.map((recipe) => {
                     const thesisName = activeDebate.thesisCards.find(c => c.id === recipe.requiredThesis)?.name || "";
                     const antithesisName = activeDebate.antithesisCards.find(c => c.id === recipe.requiredAntithesis)?.name || "";
@@ -218,7 +218,7 @@ export default function CardBattleArena() {
                 </span>
               </div>
               
-              <p className="text-neutral-400 text-xs leading-relaxed font-light">
+              <p className="text-neutral-400 text-[17px] leading-relaxed font-light">
                 Triết lý: <strong>"Sự phát triển là cuộc đấu tranh của các mặt đối lập"</strong>. Lượng đổi chỉ dẫn đến Chất đổi (Nổ hũ) khi bạn kết hợp đúng cặp thẻ tương khắc để giải quyết mâu thuẫn:
               </p>
 
@@ -243,7 +243,7 @@ export default function CardBattleArena() {
                             <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 font-mono">
                               Cặp đôi mâu thuẫn
                             </div>
-                            <div className="text-xs md:text-sm">
+                            <div className="text-[17px]">
                               <span className="font-bold text-blue-400">"{card.name}"</span>
                               <span className="mx-1 text-neutral-400">↔</span>
                               <span className={`font-bold ${isOppositeOnField ? "text-emerald-400" : "text-amber-400 underline decoration-dashed underline-offset-4"}`}>
@@ -291,7 +291,7 @@ export default function CardBattleArena() {
                             <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 font-mono">
                               Cặp đôi mâu thuẫn
                             </div>
-                            <div className="text-xs md:text-sm">
+                            <div className="text-[17px]">
                               <span className="font-bold text-orange-400">"{card.name}"</span>
                               <span className="mx-1 text-neutral-400">↔</span>
                               <span className="font-bold text-blue-400 underline decoration-dashed underline-offset-4">

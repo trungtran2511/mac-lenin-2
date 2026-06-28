@@ -138,7 +138,7 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
         <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-2">
+          <h2 className="text-3xl md:text-4xl text-white flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
             🏙️ Kinh Tế Kỳ Thành: SimEcon Việt Nam 2026
           </h2>
         </div>
@@ -148,7 +148,7 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Grid Board */}
         <div className="lg:col-span-5 flex flex-col gap-3">
-          <span className="text-sm font-bold text-neutral-300 self-center lg:self-start">
+          <span className="text-[17px] font-semibold text-neutral-300 self-center lg:self-start">
             Sa bàn Thành phố GDP (Mỗi ô = 1% tỷ trọng)
           </span>
           <CityGrid grid={grid} onCellClick={handleCellClick} />
@@ -176,8 +176,8 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
           {/* AI Forecast panel */}
           <div className="bg-neutral-900/30 border border-white/5 rounded-2xl p-5 flex flex-col gap-4 text-left">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-bold text-neutral-300 flex items-center gap-1.5">
-                <BrainCircuit className="w-4 h-4 text-blue-400" />
+              <span className="text-[17px] font-bold text-neutral-300 flex items-center gap-1.5">
+                <BrainCircuit className="w-5 h-5 text-blue-400" />
                 Đánh giá cấu trúc & Dự báo vĩ mô
               </span>
 
@@ -209,14 +209,14 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               ) : (
-                <div className="text-sm md:text-base text-neutral-200 leading-relaxed font-light w-full text-left whitespace-pre-line">
+                <div className="text-[18px] text-neutral-200 leading-relaxed font-light w-full text-left whitespace-pre-line">
                   {forecast}
                 </div>
               )}
             </div>
 
             {/* Constitutional compliance check */}
-            <div className="flex items-center gap-2 text-xs md:text-sm text-neutral-400 border-t border-white/5 pt-3">
+            <div className="flex items-center gap-2 text-[17px] text-neutral-400 border-t border-white/5 pt-3">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               <span>
                 {contributions.state >= 25
@@ -251,7 +251,7 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
             {/* Modal body */}
             <div className="overflow-y-auto scrollbar-thin pr-1 space-y-4 flex-1">
               <div className="p-4 bg-black/40 border border-white/5 rounded-2xl">
-                <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-light whitespace-pre-line">
+                <p className="text-[18px] text-neutral-200 leading-relaxed font-light whitespace-pre-line">
                   {forecast}
                 </p>
               </div>

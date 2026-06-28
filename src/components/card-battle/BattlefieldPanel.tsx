@@ -106,12 +106,12 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
         >
           <div>
             <div className="flex justify-between items-center mb-1">
-              <h3 className="text-sm md:text-base font-black text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+              <h3 className="text-[18px] font-black text-blue-300 flex items-center gap-2 uppercase tracking-wider">
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_#60a5fa]" />
                 Mặt Đối Lập A: {sideAName}
               </h3>
             </div>
-            <p className="text-[11px] text-neutral-400 font-light">Thả thẻ hoặc click thẻ ở tay bên dưới để đưa vào bàn đấu.</p>
+            <p className="text-[16px] text-neutral-400 font-light">Thả thẻ hoặc click thẻ ở tay bên dưới để đưa vào bàn đấu.</p>
           </div>
 
           {/* Dropped Cards Area */}
@@ -146,7 +146,7 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
           {/* Hand Cards Area (Deck) */}
           <div className="mt-2 pt-4 border-t border-blue-500/10">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-[11px] font-extrabold text-blue-400 uppercase tracking-wider">Bài trên tay của Bên A ({thesisHand.length})</span>
+              <span className="text-[16px] font-extrabold text-blue-400 uppercase tracking-wider">Bài trên tay của Bên A ({thesisHand.length})</span>
               <span className="text-[10px] text-neutral-500 italic">Nhấp để hạ</span>
             </div>
             <div className="flex flex-wrap gap-2 justify-start content-start min-h-[110px] max-h-[220px] overflow-y-auto pr-1">
@@ -180,12 +180,12 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
         >
           <div>
             <div className="flex justify-between items-center mb-1">
-              <h3 className="text-sm md:text-base font-black text-red-300 flex items-center gap-2 uppercase tracking-wider">
+              <h3 className="text-[18px] font-black text-red-300 flex items-center gap-2 uppercase tracking-wider">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse shadow-[0_0_8px_#f87171]" />
                 Mặt Đối Lập B: {sideBName}
               </h3>
             </div>
-            <p className="text-[11px] text-neutral-400 font-light">Thả thẻ hoặc click thẻ ở tay bên dưới để đưa vào bàn đấu.</p>
+            <p className="text-[16px] text-neutral-400 font-light">Thả thẻ hoặc click thẻ ở tay bên dưới để đưa vào bàn đấu.</p>
           </div>
 
           {/* Dropped Cards Area */}
@@ -220,7 +220,7 @@ export const BattlefieldPanel: React.FC<BattlefieldPanelProps> = ({
           {/* Hand Cards Area (Deck) */}
           <div className="mt-2 pt-4 border-t border-red-500/10">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-[11px] font-extrabold text-red-400 uppercase tracking-wider">Bài trên tay của Bên B ({antithesisHand.length})</span>
+              <span className="text-[16px] font-extrabold text-red-400 uppercase tracking-wider">Bài trên tay của Bên B ({antithesisHand.length})</span>
               <span className="text-[10px] text-neutral-500 italic">Nhấp để hạ</span>
             </div>
             <div className="flex flex-wrap gap-2 justify-start content-start min-h-[110px] max-h-[220px] overflow-y-auto pr-1">
