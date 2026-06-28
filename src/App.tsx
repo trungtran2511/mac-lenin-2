@@ -1297,7 +1297,7 @@ export default function App() {
                 {/* Chapter details content panel (60% width) */}
                 <div className="md:col-span-6 space-y-3">
                   <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono px-2">Chi tiết chương học</span>
-                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-between relative pb-28 md:pb-32">
+                  <div className="liquid-glass rounded-3xl p-8 border border-white/10 space-y-6 flex flex-col justify-start relative pb-28 md:pb-32">
                     <ChapterSyllabusPanel
                       activeChapterId={selectedChapterDetails}
                       chapters={curriculumData?.chapters || []}
