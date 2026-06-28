@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { RotateCcw, AlertOctagon, CheckCircle2 } from "lucide-react";
+import { RotateCcw, AlertOctagon, CheckCircle2, Trophy, Flame } from "lucide-react";
 import { DARK_CEO_DEPARTMENTS, DARK_CEO_CRISES } from "../../lib/darkCeoData";
 import type { ChatEntry, KarmaTimer, CrisisMessage, CeoChoice } from "../../lib/darkCeoTypes";
 import { CeoStatsBar } from "./CeoStatsBar";
@@ -295,17 +295,34 @@ export default function DarkCeoGame() {
 
       {/* Game Over Screen */}
       {gameOver && (
-        <div className="border border-red-500/20 bg-red-950/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 py-12">
-          <div className="p-3 bg-red-500/20 rounded-full border border-red-500/30">
-            <AlertOctagon className="w-8 h-8 text-red-500" />
+        <div className="relative border border-red-500/30 bg-gradient-to-br from-red-950/20 via-neutral-900/80 to-black rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center text-center gap-6 py-16 overflow-hidden shadow-[0_0_50px_rgba(239,68,68,0.15)] animate-fade-in">
+          {/* Animated red pulse backdrop glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
+          
+          <div className="relative p-5 bg-gradient-to-br from-red-500/20 to-rose-600/30 rounded-2xl border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)] animate-bounce">
+            <Flame className="w-12 h-12 text-red-400" />
           </div>
-          <h3 className="text-xl font-black text-white uppercase tracking-wider">PHÁ SẢN BIỆN CHỨNG (GAME OVER)</h3>
-          <p className="text-[18px] text-neutral-300 max-w-md leading-relaxed font-light">{gameOverReason}</p>
+          
+          <div className="space-y-3 z-10">
+            <span className="text-xs uppercase tracking-[0.25em] text-red-500 font-extrabold px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20">
+              Phá sản biện chứng
+            </span>
+            <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none uppercase pt-2" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              GAME OVER
+            </h3>
+          </div>
+          
+          <p className="text-[19px] md:text-[21px] text-neutral-300 max-w-xl leading-relaxed font-light font-sans z-10">
+            {gameOverReason}
+          </p>
+          
+          <div className="w-full max-w-sm h-[1px] bg-gradient-to-r from-transparent via-red-500/30 to-transparent my-2" />
+          
           <button
             onClick={startGame}
-            className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 text-sm font-bold transition-all hover:scale-105 active:scale-95"
+            className="z-10 group flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold shadow-[0_4px_20px_rgba(239,68,68,0.4)] transition-all hover:scale-105 active:scale-95 cursor-pointer text-base uppercase tracking-wider"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
             Khởi động lại doanh nghiệp
           </button>
         </div>
@@ -313,20 +330,35 @@ export default function DarkCeoGame() {
 
       {/* Victory Screen */}
       {gameWon && (
-        <div className="border border-emerald-500/20 bg-emerald-950/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 py-12">
-          <div className="p-3 bg-emerald-500/20 rounded-full border border-emerald-500/30">
-            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+        <div className="relative border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-neutral-900/80 to-black rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center text-center gap-6 py-16 overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.15)] animate-fade-in">
+          {/* Animated green pulse backdrop glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none" />
+          
+          <div className="relative p-5 bg-gradient-to-br from-emerald-500/20 to-teal-600/30 rounded-2xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)] animate-pulse">
+            <Trophy className="w-12 h-12 text-emerald-400" />
           </div>
-          <h3 className="text-xl font-black text-white uppercase tracking-wider">CEO KIỆT XUẤT (VICTORY)</h3>
-          <p className="text-[18px] text-neutral-300 max-w-md leading-relaxed font-light">
+          
+          <div className="space-y-3 z-10">
+            <span className="text-xs uppercase tracking-[0.25em] text-emerald-400 font-extrabold px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              Đỉnh cao quản trị
+            </span>
+            <h3 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-none uppercase pt-2" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              CEO KIỆT XUẤT
+            </h3>
+          </div>
+          
+          <p className="text-[19px] md:text-[21px] text-neutral-300 max-w-xl leading-relaxed font-light font-sans z-10">
             Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 12 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
           </p>
+          
+          <div className="w-full max-w-sm h-[1px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent my-2" />
+          
           <button
             onClick={startGame}
-            className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all hover:scale-105 active:scale-95"
+            className="z-10 group flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold shadow-[0_4px_20px_rgba(16,185,129,0.4)] transition-all hover:scale-105 active:scale-95 cursor-pointer text-base uppercase tracking-wider"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Chơi lượt mới
+            <RotateCcw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+            Bắt đầu nhiệm kỳ mới
           </button>
         </div>
       )}
