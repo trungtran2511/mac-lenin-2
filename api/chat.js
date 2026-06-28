@@ -89,7 +89,10 @@ export default async function handler(req) {
     });
   }
 
-  const model = body.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
+  const configModel = body.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
+  const fallbackModels = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+  const models = [configModel, ...fallbackModels.filter(m => m !== configModel)];
+
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemMessage = messages.find(message => message.role === "system")?.content || "";
   const userMessages = messages
@@ -109,142 +112,144 @@ export default async function handler(req) {
   let latestError = null;
 
   for (const apiKey of availableKeys) {
-    try {
-      if (externalApiUrl) {
-        const externalResponse = await fetch(externalApiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({ model, messages })
-        });
+    for (const model of models) {
+      try {
+        if (externalApiUrl) {
+          const externalResponse = await fetch(externalApiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({ model, messages })
+          });
 
-        const externalText = await externalResponse.text();
-        let externalJson = {};
+          const externalText = await externalResponse.text();
+          let externalJson = {};
 
-        try {
-          externalJson = externalText ? JSON.parse(externalText) : {};
-        } catch {
-          externalJson = { raw: externalText };
+          try {
+            externalJson = externalText ? JSON.parse(externalText) : {};
+          } catch {
+            externalJson = { raw: externalText };
+          }
+
+          if (!externalResponse.ok) {
+            if (externalResponse.status === 429) {
+              cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(externalJson));
+              latestError = {
+                status: 429,
+                data: {
+                  error: "External AI endpoint request failed with 429",
+                  message: getGeminiErrorMessage(externalJson),
+                  details: externalJson
+                }
+              };
+              continue;
+            }
+
+            return new Response(JSON.stringify({
+              error: "External AI endpoint request failed",
+              message: getGeminiErrorMessage(externalJson),
+              details: externalJson
+            }), {
+              status: externalResponse.status,
+              headers: { "Content-Type": "application/json" }
+            });
+          }
+
+          return new Response(JSON.stringify(externalJson), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
         }
 
-        if (!externalResponse.ok) {
-          if (externalResponse.status === 429) {
-            cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(externalJson));
+        if (!(apiKey.startsWith("AIza") || apiKey.startsWith("AQ."))) {
+          latestError = {
+            status: 500,
+            data: {
+              error: "Invalid GEMINI_API_KEY",
+              message: "Direct Google Gemini requests need a Google AI Studio key. Current valid keys typically start with AIza or AQ."
+            }
+          };
+          continue;
+        }
+
+        const geminiResponse = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": apiKey
+            },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptText }] }],
+              ...(systemMessage
+                ? { systemInstruction: { parts: [{ text: systemMessage }] } }
+                : {}),
+              generationConfig: {
+                maxOutputTokens: 4000
+              }
+            })
+          }
+        );
+
+        const responseText = await geminiResponse.text();
+        let responseJson = {};
+
+        try {
+          responseJson = responseText ? JSON.parse(responseText) : {};
+        } catch {
+          responseJson = { raw: responseText };
+        }
+
+        if (!geminiResponse.ok) {
+          if (geminiResponse.status === 429) {
+            cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(responseJson));
             latestError = {
               status: 429,
               data: {
-                error: "External AI endpoint request failed with 429",
-                message: getGeminiErrorMessage(externalJson),
-                details: externalJson
+                error: "Gemini API request failed with 429",
+                message: getGeminiErrorMessage(responseJson),
+                details: responseJson
               }
             };
             continue;
           }
 
           return new Response(JSON.stringify({
-            error: "External AI endpoint request failed",
-            message: getGeminiErrorMessage(externalJson),
-            details: externalJson
+            error: "Gemini API request failed",
+            message: getGeminiErrorMessage(responseJson),
+            details: responseJson
           }), {
-            status: externalResponse.status,
+            status: geminiResponse.status,
             headers: { "Content-Type": "application/json" }
           });
         }
 
-        return new Response(JSON.stringify(externalJson), {
+        const text = responseJson.candidates?.[0]?.content?.parts
+          ?.map(part => part.text || "")
+          .join("")
+          .trim() || "";
+
+        return new Response(JSON.stringify({
+          choices: [{ message: { role: "assistant", content: text } }],
+          candidates: responseJson.candidates
+        }), {
           status: 200,
           headers: { "Content-Type": "application/json" }
         });
-      }
 
-      if (!(apiKey.startsWith("AIza") || apiKey.startsWith("AQ."))) {
+      } catch (error) {
+        console.error("Single key request failed", error);
         latestError = {
           status: 500,
           data: {
-            error: "Invalid GEMINI_API_KEY",
-            message: "Direct Google Gemini requests need a Google AI Studio key. Current valid keys typically start with AIza or AQ."
+            error: "Chat API failed",
+            message: error.message || "Request failed"
           }
         };
-        continue;
       }
-
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": apiKey
-          },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            ...(systemMessage
-              ? { systemInstruction: { parts: [{ text: systemMessage }] } }
-              : {}),
-            generationConfig: {
-              maxOutputTokens: 4000
-            }
-          })
-        }
-      );
-
-      const responseText = await geminiResponse.text();
-      let responseJson = {};
-
-      try {
-        responseJson = responseText ? JSON.parse(responseText) : {};
-      } catch {
-        responseJson = { raw: responseText };
-      }
-
-      if (!geminiResponse.ok) {
-        if (geminiResponse.status === 429) {
-          cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(responseJson));
-          latestError = {
-            status: 429,
-            data: {
-              error: "Gemini API request failed with 429",
-              message: getGeminiErrorMessage(responseJson),
-              details: responseJson
-            }
-          };
-          continue;
-        }
-
-        return new Response(JSON.stringify({
-          error: "Gemini API request failed",
-          message: getGeminiErrorMessage(responseJson),
-          details: responseJson
-        }), {
-          status: geminiResponse.status,
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      const text = responseJson.candidates?.[0]?.content?.parts
-        ?.map(part => part.text || "")
-        .join("")
-        .trim() || "";
-
-      return new Response(JSON.stringify({
-        choices: [{ message: { role: "assistant", content: text } }],
-        candidates: responseJson.candidates
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
-
-    } catch (error) {
-      console.error("Single key request failed", error);
-      latestError = {
-        status: 500,
-        data: {
-          error: "Chat API failed",
-          message: error.message || "Request failed"
-        }
-      };
     }
   }
 

@@ -47,7 +47,8 @@ function getCachedResponse(prompt: string, systemInstruction: string): string | 
     const raw = localStorage.getItem(key);
     if (raw) {
       const entry: CacheEntry = JSON.parse(raw);
-      if (Date.now() - entry.timestamp < 86_400_000) {
+      // Cache response for 30 days (2,592,000,000 ms) to maximize free API quota
+      if (Date.now() - entry.timestamp < 2_592_000_000) {
         MEMORY_CACHE.set(key, entry);
         return entry.response;
       } else {
@@ -101,8 +102,7 @@ const isFallbackEligible = (error: unknown) => {
   return error.status === 401 || error.status === 403 || error.status === 404 || error.status === 429 || error.status >= 500;
 };
 
-async function executeServerProxyRequest(prompt: string, systemInstruction: string): Promise<string> {
-  const model = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
+async function executeServerProxyRequest(prompt: string, systemInstruction: string, model: string): Promise<string> {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -127,8 +127,7 @@ async function executeServerProxyRequest(prompt: string, systemInstruction: stri
   return result;
 }
 
-async function executeGeminiRequest(apiKey: string, prompt: string, systemInstruction: string): Promise<string> {
-  const model = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
+async function executeGeminiRequest(apiKey: string, prompt: string, systemInstruction: string, model: string): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   let response: Response;
@@ -183,35 +182,47 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
     String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim()
   ].filter((key, index, allKeys) => key && allKeys.indexOf(key) === index);
 
+  const configModel = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
+  const fallbackModels = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+  const models = [configModel, ...fallbackModels.filter(m => m !== configModel)];
+
   const now = Date.now();
   const availableKeys = keys.filter(key => (quotaCooldownByKey.get(key) || 0) <= now);
+
+  let lastError: unknown = null;
 
   // 1. Nếu có key client, ưu tiên gọi trực tiếp từ client trước (không qua Server Proxy để tránh độ trễ)
   if (availableKeys.length > 0) {
     for (const key of availableKeys) {
-      try {
-        const result = await executeGeminiRequest(key, prompt, systemInstruction);
-        saveResponseToCache(prompt, systemInstruction, result);
-        return result;
-      } catch (error) {
-        if (error instanceof AiRequestError && error.status === 429) {
-          quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
+      for (const model of models) {
+        try {
+          const result = await executeGeminiRequest(key, prompt, systemInstruction, model);
+          saveResponseToCache(prompt, systemInstruction, result);
+          return result;
+        } catch (error) {
+          lastError = error;
+          if (error instanceof AiRequestError && error.status === 429) {
+            quotaCooldownByKey.set(key, Date.now() + (error.retryAfterMs || 60_000));
+          }
+          if (!isFallbackEligible(error)) throw error;
         }
-        if (!isFallbackEligible(error)) throw error;
       }
     }
   }
 
   // 2. Nếu không có key client hoặc gọi client lỗi, chuyển sang gọi Server Proxy trên Vercel
-  try {
-    const result = await executeServerProxyRequest(prompt, systemInstruction);
-    saveResponseToCache(prompt, systemInstruction, result);
-    return result;
-  } catch (serverError) {
-    console.warn("Server proxy failed, no client-side keys available or client-side failed too", serverError);
+  for (const model of models) {
+    try {
+      const result = await executeServerProxyRequest(prompt, systemInstruction, model);
+      saveResponseToCache(prompt, systemInstruction, result);
+      return result;
+    } catch (serverError) {
+      lastError = serverError;
+      console.warn(`Server proxy failed for model ${model}`, serverError);
+    }
   }
 
-  throw new AiRequestError("Không thể kết nối tới Thầy Nam AI bằng bất kỳ key hay phương thức nào.");
+  throw lastError || new AiRequestError("Không thể kết nối tới Thầy Nam AI bằng bất kỳ key hay phương thức nào.");
 }
 
 export function parseAiJson<T>(value: string): T | null {
