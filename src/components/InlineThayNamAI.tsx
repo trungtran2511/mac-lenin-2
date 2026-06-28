@@ -66,8 +66,8 @@ export function InlineThayNamAI({
             <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white tracking-wide">{titleText}</h4>
-            <p className="text-[10px] text-white/40 font-mono">Chương {chapterId} • Inline Context Panel</p>
+            <h4 className="text-sm font-bold text-white tracking-wide">{titleText}</h4>
+            <p className="text-xs text-white/40 font-mono">Chương {chapterId} • Inline Context Panel</p>
           </div>
         </div>
         {aiResponse && (
@@ -85,18 +85,18 @@ export function InlineThayNamAI({
       {aiResponse && (
         <div className="space-y-4 animate-fade-rise">
           {/* Main Answer */}
-          <div className="bg-neutral-900/40 border border-white/5 rounded-xl p-4 text-xs md:text-sm text-white/90 leading-relaxed font-light whitespace-pre-line">
+          <div className="bg-neutral-900/40 border border-white/5 rounded-xl p-4 text-sm md:text-base text-white/90 leading-relaxed font-normal whitespace-pre-line">
             {aiResponse.answer}
           </div>
 
           {/* Key Concepts Tags */}
           {aiResponse.keyConcepts && aiResponse.keyConcepts.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-wider font-mono mr-1">Thuật ngữ:</span>
+              <span className="text-xs font-mono font-bold text-white/35 mr-1">Thuật ngữ:</span>
               {aiResponse.keyConcepts.map((concept, index) => (
                 <span
                   key={index}
-                  className="px-2 py-0.5 text-[10px] font-medium bg-white/5 border border-white/10 text-white/60 rounded-md"
+                  className="px-2.5 py-0.5 text-xs font-medium bg-white/5 border border-white/10 text-white/60 rounded-md"
                 >
                   {concept}
                 </span>
@@ -106,7 +106,7 @@ export function InlineThayNamAI({
 
           {/* Next Step Suggestion */}
           {aiResponse.nextStep && (
-            <div className="text-[11px] text-emerald-400/80 bg-emerald-500/5 border border-emerald-500/10 rounded-lg px-3 py-2 flex items-start gap-2">
+            <div className="text-sm text-emerald-400/85 bg-emerald-500/5 border border-emerald-500/10 rounded-lg px-3 py-2 flex items-start gap-2">
               <span className="font-bold text-emerald-400">💡 Gợi ý tiếp theo:</span>
               <span className="italic">{aiResponse.nextStep}</span>
             </div>
@@ -123,12 +123,12 @@ export function InlineThayNamAI({
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={placeholderText}
             disabled={isLoading}
-            className="flex-1 bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30 disabled:opacity-50"
+            className="flex-1 bg-neutral-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isLoading || !question.trim()}
-            className="px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:bg-white/40 border-none cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:bg-white/40 border-none cursor-pointer"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin text-black" />

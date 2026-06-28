@@ -229,13 +229,13 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
     <div className="w-full space-y-8 animate-fade-rise">
       {/* Title */}
       <div className="liquid-glass border border-white/10 rounded-3xl p-6 md:p-8 space-y-4">
-        <span className="px-2.5 py-1 text-[9px] font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
+        <span className="px-2.5 py-1 text-xs font-bold bg-white/10 text-white border border-white/15 rounded-md uppercase font-mono">
           Công cụ Chương 3
         </span>
         <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
           Phân Tích Tiền Lương & Giá Trị Thặng Dư
         </h3>
-        <p className="text-xs md:text-sm text-white/60 leading-relaxed font-light">
+        <p className="text-sm md:text-base text-white/60 leading-relaxed font-light">
           Nhập công việc làm thêm thực tế của bạn để khám phá xem tiền lương nhận được có đủ tái tạo sức lao động và tìm hiểu cách giới chủ thu giá trị thặng dư (m) từ ngày làm việc của bạn.
         </p>
       </div>
@@ -246,98 +246,98 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
         {/* Left Input Pane */}
         <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-5 h-fit">
           <div className="border-b border-white/5 pb-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Nhập thông tin công việc</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Nhập thông tin công việc</h4>
           </div>
 
           {/* Job Title */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">Tên công việc làm thêm:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Tên công việc làm thêm:</label>
             <input
               type="text"
               value={jobTitle}
               onChange={e => setJobTitle(e.target.value)}
               placeholder="Ví dụ: Phục vụ cafe, Gia sư toán, Shipper..."
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/30"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30"
             />
           </div>
 
           {/* Location */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">Tỉnh / Thành phố làm việc:</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Tỉnh / Thành phố làm việc:</label>
             <select
               value={provinceId}
               onChange={e => setProvinceId(e.target.value)}
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white/30"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-white/30"
             >
               {provinces.map(p => (
                 <option key={p.id} value={p.id} className="bg-background text-white">{p.name}</option>
               ))}
             </select>
-            <span className="text-[9px] text-white/40 block font-mono">
+            <span className="text-xs text-white/40 block font-mono">
               Vùng tối thiểu: {region.name} - Sàn: {region.minHourlyWage.toLocaleString()} đ/h ({region.source})
             </span>
           </div>
 
           {/* Monthly Salary */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">Lương tháng nhận được (đ):</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Lương tháng nhận được (đ):</label>
             <input
               type="number"
               value={monthlySalaryInput}
               onChange={e => setMonthlySalaryInput(e.target.value)}
               placeholder="Ví dụ: 3000000"
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
             />
           </div>
 
           {/* Hours and Days */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider font-mono">Số giờ/ngày:</label>
+              <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Số giờ/ngày:</label>
               <input
                 type="number"
                 value={hoursPerDayInput}
                 onChange={e => setHoursPerDayInput(e.target.value)}
                 placeholder="8"
-                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider font-mono">Số ngày/tháng:</label>
+              <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Số ngày/tháng:</label>
               <input
                 type="number"
                 value={workingDaysInput}
                 onChange={e => setWorkingDaysInput(e.target.value)}
                 placeholder="26"
-                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
               />
             </div>
           </div>
 
           {/* Living Cost (Crucial check) */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">Chi phí sống thực tế của bạn (đ):</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Chi phí sống thực tế của bạn (đ):</label>
             <input
               type="number"
               value={livingCostInput}
               onChange={e => setLivingCostInput(e.target.value)}
               placeholder="Bắt buộc nhập tự sống..."
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none border-dashed"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none border-dashed"
             />
-            <span className="text-[9px] text-amber-400/80 block font-mono">
+            <span className="text-xs text-amber-400/80 block font-mono">
               *Hệ thống không tự đoán chi phí sống để tránh làm sai lệch số liệu thực tế.
             </span>
           </div>
 
           {/* Family Support */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider font-mono">Trợ cấp gia đình/Hỗ trợ khác (đ):</label>
+            <label className="text-xs font-bold text-white/50 uppercase tracking-wider font-mono">Trợ cấp gia đình/Hỗ trợ khác (đ):</label>
             <input
               type="number"
               value={familySupportInput}
               onChange={e => setFamilySupportInput(e.target.value)}
               placeholder="0"
-              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+              className="w-full bg-neutral-900/60 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none"
             />
           </div>
 
@@ -346,7 +346,7 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
             <button
               type="button"
               onClick={handleReset}
-              className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm font-bold flex items-center justify-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Xóa sạch
             </button>
@@ -354,7 +354,7 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
               type="button"
               disabled={!isFormComplete || hasBlockingWarning || isAiLoading}
               onClick={handleAiClassify}
-              className="flex-1 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs transition-all flex items-center justify-center gap-1 border-none disabled:opacity-40 disabled:bg-white/40 cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-sm transition-all flex items-center justify-center gap-1 border-none disabled:opacity-40 disabled:bg-white/40 cursor-pointer"
             >
               {isAiLoading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
@@ -372,14 +372,14 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
           {/* Validation Warnings Box */}
           {warnings.length > 0 && (
             <div className="liquid-glass border border-white/10 rounded-3xl p-6 space-y-3">
-              <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+              <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
                 Cảnh báo chất lượng dữ liệu
               </span>
               <div className="space-y-2">
                 {warnings.map((w, idx) => (
                   <div
                     key={idx}
-                    className={`p-3.5 rounded-xl text-xs flex items-start gap-2.5 border ${
+                    className={`p-3.5 rounded-xl text-sm flex items-start gap-2.5 border ${
                       w.severity === "blocking"
                         ? "bg-rose-500/10 border-rose-500/20 text-rose-400"
                         : "bg-amber-500/5 border-amber-500/10 text-amber-300"
@@ -395,7 +395,7 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
 
           {/* AI error fallback info */}
           {aiError && (
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-4 rounded-xl text-xs leading-relaxed">
+            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-4 rounded-xl text-sm leading-relaxed">
               {aiError}
             </div>
           )}
@@ -405,34 +405,34 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Card 1: Chủ trả */}
               <div className="liquid-glass border border-white/10 rounded-2xl p-5 space-y-2 text-left">
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
                   1. Chủ trả cho bạn (v)
                 </span>
                 <div className="text-lg font-bold text-white font-mono">{formatMoney(monthlySalary)}</div>
-                <div className="text-[10px] text-white/50 font-mono">
+                <div className="text-sm text-white/50 font-mono">
                   Lương giờ: {formatMoney(hourlyWage)}/h
                 </div>
               </div>
 
               {/* Card 2: Bạn cần để sống */}
               <div className="liquid-glass border border-white/10 rounded-2xl p-5 space-y-2 text-left">
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
                   2. Bạn cần để sống
                 </span>
                 <div className="text-lg font-bold text-white font-mono">
                   {livingCost !== null && livingCost > 0 ? formatMoney(livingCost) : "Chưa nhập"}
                 </div>
-                <div className="text-[10px] text-white/50">
+                <div className="text-sm text-white/50">
                   {livingCost !== null && livingCost > 0 ? `Chiếm ${Math.round(survivalPercent || 0)}% thu nhập` : "Thiếu chi phí để so sánh"}
                 </div>
               </div>
 
               {/* Card 3: Kết luận */}
               <div className="liquid-glass border border-white/10 rounded-2xl p-5 space-y-2 text-left md:col-span-1">
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider block font-mono">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider block font-mono">
                   3. Kết luận mức sinh tồn
                 </span>
-                <div className={`text-xs font-bold uppercase tracking-tight py-1 rounded text-center border ${
+                <div className={`text-sm font-bold uppercase tracking-tight py-1.5 rounded text-center border ${
                   livingCost === null || livingCost <= 0
                     ? "bg-rose-500/10 border-rose-500/20 text-rose-400"
                     : totalIncome >= livingCost
@@ -445,7 +445,7 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
                     ? "Đủ trang trải"
                     : "Thiếu thốn sinh hoạt"}
                 </div>
-                <div className="text-[10px] text-white/50 font-light">
+                <div className="text-sm text-white/50 font-normal">
                   {livingCost === null || livingCost <= 0
                     ? "Nhập chi phí sống để đánh giá đủ sống."
                     : livingCostGap !== null && livingCostGap >= 0
@@ -460,14 +460,14 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
           {!hasBlockingWarning && isFormComplete && (
             <div className="liquid-glass border border-white/10 rounded-3xl p-6 md:p-8 space-y-6">
               <div className="border-b border-white/5 pb-3">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Phân tích chuyên sâu (Học thuyết thặng dư)</h4>
+                <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Phân tích chuyên sâu (Học thuyết thặng dư)</h4>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Regional minimum wage comparison */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">So với sàn lương tối thiểu vùng:</span>
-                  <div className="text-xs text-white/80 leading-relaxed font-light">
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">So với sàn lương tối thiểu vùng:</span>
+                  <div className="text-sm text-white/85 leading-relaxed font-normal">
                     Mức lương giờ của bạn là <strong className="text-white font-mono">{formatMoney(hourlyWage)}</strong>.
                     Lương tối thiểu của sàn {region.name} là <strong className="text-white font-mono">{formatMoney(region.minHourlyWage)}</strong>.
                     {hourlyWage >= region.minHourlyWage ? (
@@ -480,8 +480,8 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
 
                 {/* Job reference range */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">Nhóm nghề & Tham chiếu ngành:</span>
-                  <div className="text-xs text-white/80 leading-relaxed font-light">
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Nhóm nghề & Tham chiếu ngành:</span>
+                  <div className="text-sm text-white/85 leading-relaxed font-normal">
                     Phân loại: <strong className="text-white">{activeResult.jobCategory}</strong>
                     <br />
                     Khoảng lương giờ tham chiếu: <strong className="text-white font-mono">{formatMoney(activeResult.suggestedHourlyRange[0])} - {formatMoney(activeResult.suggestedHourlyRange[1])}</strong>.
@@ -492,8 +492,8 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
               {/* Relative Surplus simulation */}
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono">Mô phỏng thặng dư tương đối (Tăng năng suất)</span>
-                  <label className="flex items-center gap-2 text-xs text-white/80 cursor-pointer">
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono">Mô phỏng thặng dư tương đối (Tăng năng suất)</span>
+                  <label className="flex items-center gap-2 text-sm text-white/85 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={isTechApplied}
@@ -503,15 +503,15 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
                     <span>Áp dụng công nghệ/AI</span>
                   </label>
                 </div>
-                <p className="text-[11px] text-white/50 leading-relaxed font-light">
+                <p className="text-sm text-white/60 leading-relaxed font-normal">
                   Khi năng suất lao động tăng (ví dụ áp dụng AI), thời gian cần thiết để bù đắp chi phí tái sinh sức lao động (necessaryHours) sẽ giảm đi, làm gia tăng thời gian làm thặng dư cho chủ ruộng/capitalist mà không cần kéo dài ngày làm việc.
                 </p>
               </div>
 
               {/* Day Breakdown Visualizer */}
               <div className="space-y-3">
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-wider font-mono block">Bóc tách ngày làm việc của bạn:</span>
-                <div className="w-full bg-white/10 h-8 rounded-xl overflow-hidden flex font-mono text-[10px] text-black font-extrabold relative">
+                <span className="text-xs font-bold text-white/40 uppercase tracking-wider font-mono block">Bóc tách ngày làm việc của bạn:</span>
+                <div className="w-full bg-white/10 h-8 rounded-xl overflow-hidden flex font-mono text-xs text-black font-extrabold relative">
                   <div
                     className="bg-blue-400 h-full flex items-center justify-center transition-all duration-500"
                     style={{ width: `${(necessaryHours / hoursPerDay) * 100}%` }}
@@ -527,16 +527,16 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
                     {surplusHours > 1 && `${surplusHours.toFixed(1)}h Thặng dư`}
                   </div>
                 </div>
-                <div className="flex justify-between text-[10px] text-white/50 font-mono">
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-400" /> Lao động tất yếu: bù đắp mức sống sinh tồn</span>
-                  <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400" /> Lao động thặng dư: tạo thặng dư cho chủ</span>
+                <div className="flex justify-between text-[11px] text-white/50 font-mono">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" /> Lao động tất yếu: bù đắp mức sống sinh tồn</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Lao động thặng dư: tạo thặng dư cho chủ</span>
                 </div>
               </div>
 
               {/* Academic Details Toggle */}
               <div className="border-t border-white/5 pt-4">
-                <span className="text-[10px] font-bold text-white/30 uppercase tracking-wider font-mono block mb-2">Đại lượng học thuật:</span>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-mono text-white/70">
+                <span className="text-xs font-bold text-white/30 uppercase tracking-wider font-mono block mb-2">Đại lượng học thuật:</span>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm font-mono text-white/75">
                   <div>Tỷ suất thặng dư (m'): <strong className="text-white">{Math.round(surplusRatio)}%</strong></div>
                   <div>Giá trị thặng dư tạo ra/tháng (m): <strong className="text-white">{formatMoney(monthlySurplusValue)}</strong></div>
                   <div>Cường độ bóc lột: <strong className="text-white">{(surplusRatio / 100).toFixed(2)} lần v</strong></div>
@@ -545,11 +545,11 @@ Hãy trả về chính xác một đối tượng JSON (không chứa bất kỳ
 
               {/* AI commentary */}
               {activeResult.plainExplanation && (
-                <div className="bg-emerald-500/5 border border-emerald-500/10 text-emerald-300 p-4 rounded-xl text-xs leading-relaxed space-y-1">
+                <div className="bg-emerald-500/5 border border-emerald-500/10 text-emerald-300 p-4 rounded-xl text-sm leading-relaxed space-y-1">
                   <strong className="text-white font-semibold flex items-center gap-1">
                     <Bot className="w-4 h-4 text-emerald-400" /> Nhận định của Thầy Nam AI:
                   </strong>
-                  <p className="font-light">{activeResult.plainExplanation}</p>
+                  <p className="font-normal">{activeResult.plainExplanation}</p>
                 </div>
               )}
             </div>

@@ -25,6 +25,14 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
   lessons,
   onPracticeQuiz,
 }) => {
+  const panelRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (selectedSectionIndex !== null && panelRef.current) {
+      panelRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedSectionIndex, activeChapterId]);
+
   if (selectedSectionIndex === null) return null;
   const activeLesson = lessons.find(l => l.chapterId === activeChapterId);
   if (!activeLesson) return null;
@@ -32,7 +40,10 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
   if (!point) return null;
 
   return (
-    <div className="mt-6 rounded-3xl border border-white/10 bg-neutral-900/60 liquid-glass animate-fade-rise w-full overflow-hidden">
+    <div
+      ref={panelRef}
+      className="mt-6 rounded-3xl border border-white/10 bg-neutral-900/60 liquid-glass animate-fade-rise w-full overflow-hidden"
+    >
       {/* Header bar */}
       <div className="flex items-center justify-between bg-white/[0.03] px-6 py-4 border-b border-white/5">
         <div className="flex items-center gap-3">
@@ -61,7 +72,7 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
       {/* Content body */}
       <div className="p-6 space-y-5">
         {/* Summary text */}
-        <p className="text-sm text-white/90 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
+        <p className="text-base text-white/90 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4">
           {point.text}
         </p>
 
@@ -71,7 +82,7 @@ export const SectionDetailPanel: React.FC<SectionDetailPanelProps> = ({
             <span className="text-xs font-bold uppercase tracking-widest text-white/30 font-mono">
               Nội dung chi tiết từ giáo trình
             </span>
-            <div className="text-sm text-white/80 leading-relaxed space-y-3 font-light select-text">
+            <div className="text-base text-white/85 leading-relaxed space-y-3 font-normal select-text">
               {point.details.map((p, idx) => (
                 <p key={idx} className="pl-4 border-l border-white/[0.06]">{p}</p>
               ))}

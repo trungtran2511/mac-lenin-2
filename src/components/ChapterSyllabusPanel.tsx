@@ -33,7 +33,7 @@ export const ChapterSyllabusPanel: React.FC<ChapterSyllabusPanelProps> = ({
 
       {activeLesson ? (
         <div className="space-y-5 flex-1">
-          <p className="text-base text-white/80 leading-relaxed font-light">{activeLesson.intro}</p>
+          <p className="text-base text-white/80 leading-relaxed font-normal">{activeLesson.intro}</p>
           {/* 2 columns, bigger cells */}
           <div className="grid grid-cols-2 gap-3.5">
             {activeLesson.keyPoints.map((point, index) => (
@@ -60,7 +60,7 @@ export const ChapterSyllabusPanel: React.FC<ChapterSyllabusPanelProps> = ({
           </div>
         </div>
       ) : (
-        <div className="text-sm text-white/70 leading-relaxed space-y-4 whitespace-pre-line font-light flex-1">
+        <div className="text-base text-white/80 leading-relaxed space-y-4 whitespace-pre-line font-normal flex-1">
           {activeCh.summary}
         </div>
       )}

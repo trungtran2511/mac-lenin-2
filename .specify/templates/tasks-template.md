@@ -70,11 +70,8 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T008 Configure error handling and logging infrastructure
 - [ ] T009 Setup environment configuration management
 - [ ] T010 Define or update AI prompt contract files under `skills/conversation/`
-- [ ] T011 Validate AI input/output boundaries, premium gates, rate limits, and
+- [ ] T011 Validate AI input/output boundaries, rate limits, and key rotation
   fallback behavior for affected stories
-- [ ] T012 Validate authentication provider boundaries for affected stories:
-  Google/Facebook token verification, canonical account linking, V-FIT JWT
-  issuance, security audit events, and provider failure responses
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

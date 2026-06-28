@@ -40,17 +40,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Validate the active plan against the V-FIT constitution:
+Validate the active plan against the KTCT-Easy constitution:
 
-- AI-native control plane is explicit for reasoning-driven behavior.
-- Prompt files under `skills/conversation/` own AI behavior.
-- AI input and output contracts are bounded and reviewable.
-- Backend module boundaries, observability, and error envelopes remain intact.
-- Premium AI paths enforce onboarding, JWT, subscription gates, rate limits, and
-  fallback behavior.
-- Authentication changes preserve canonical V-FIT user identity, verify Google
-  and Facebook provider tokens server-side, issue V-FIT JWTs only, and audit
-  login/link/unlink events.
+- AI-native control plane (Thay Nam AI) is explicit for explanations and reviews.
+- Prompt configurations are governed and versioned under code logic.
+- Data source discipline enforces no fabrication of economic data, and mock data is labeled.
+- Frontend structure remains a client-side static React SPA with deterministic calculations.
+- API Key Rotation fallback and client-side cooldown gates are respected.
 
 ## Project Structure
 

@@ -29,16 +29,16 @@ export function CurriculumReadingPanel({
     <section className="rounded-[24px] border border-white/10 bg-neutral-950/85 p-4 shadow-2xl shadow-black/20 md:p-6">
       <div className="grid gap-4 border-b border-white/10 pb-5 lg:grid-cols-[1fr_220px] lg:items-end">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">Tổng quan chương</div>
+          <div className="text-xs uppercase tracking-wider text-white/45 font-mono">Tổng quan chương</div>
           <h4 className="mt-2 max-w-4xl text-xl font-bold leading-snug text-white md:text-2xl">{label}</h4>
         </div>
-        <p className="text-sm leading-6 text-white/55 lg:text-right">
+        <p className="text-base leading-relaxed text-white/60 lg:text-right">
           Chọn một mục để mở nội dung chi tiết ở bên dưới.
         </p>
       </div>
 
       <div className="mt-5 space-y-3">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">6 mục chính</div>
+        <div className="text-xs uppercase tracking-wider text-white/45 font-mono">6 mục chính</div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {readingSections.map((section, index) => (
             <button
@@ -48,8 +48,8 @@ export function CurriculumReadingPanel({
               className="group min-h-[176px] rounded-2xl border border-white/10 bg-white/[0.035] p-5 text-left transition-colors hover:border-emerald-300/35 hover:bg-white/[0.065]"
             >
               <h5 className="text-base font-semibold leading-snug text-white md:text-lg">{section.heading}</h5>
-              <p className="mt-3 line-clamp-4 text-sm leading-6 text-white/64">{section.text}</p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
+              <p className="mt-3 line-clamp-4 text-base leading-relaxed text-white/70">{section.text}</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300">
                 Đọc chi tiết <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
             </button>
@@ -72,9 +72,9 @@ export function CurriculumReadingDetail({
     <section className="relative left-1/2 w-[calc(100vw-24px)] -translate-x-1/2 rounded-[24px] border border-white/10 bg-neutral-950/92 p-4 shadow-2xl shadow-black/25 md:w-[calc(100vw-56px)] md:p-7 xl:w-[calc(100vw-96px)]">
       <div className="grid gap-4 border-b border-white/10 pb-5 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-white/45 font-mono">Nội dung chi tiết</div>
+          <div className="text-xs uppercase tracking-wider text-white/45 font-mono">Nội dung chi tiết</div>
           <h4 className="mt-2 text-xl font-bold text-white md:text-2xl">{section.heading}</h4>
-          <p className="mt-2 text-sm text-white/50">{chapterLabel}</p>
+          <p className="mt-2 text-base text-white/60">{chapterLabel}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -96,15 +96,15 @@ export function CurriculumReadingDetail({
 
       <article className="mx-auto max-w-7xl py-6">
         {section.source && (
-          <div className="text-[10px] uppercase tracking-[0.16em] text-white/45 font-mono">{section.source}</div>
+          <div className="text-xs uppercase tracking-wider text-white/45 font-mono">{section.source}</div>
         )}
-        <p className="mt-4 text-base leading-8 text-white/82 md:text-lg">{section.text}</p>
+        <p className="mt-4 text-lg leading-relaxed text-white/85 md:text-xl">{section.text}</p>
 
         <div className="mt-6 grid gap-4 border-t border-white/10 pt-6 lg:grid-cols-2">
           {paragraphs.map((paragraph, index) => (
             <p
               key={`${section.heading}-${index}`}
-              className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 text-[15px] leading-8 text-white/72 md:p-5 md:text-base"
+              className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 text-base leading-relaxed text-white/80 md:p-5 md:text-lg"
             >
               {paragraph}
             </p>

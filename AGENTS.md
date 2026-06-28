@@ -98,7 +98,7 @@ bd close <id>         # Complete work
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read
-`specs/010-ktct-easy/plan.md`.
+`specs/011-adjust-font-sizes/plan.md`.
 <!-- SPECKIT END -->
 
 ## Deploy Architecture Rules

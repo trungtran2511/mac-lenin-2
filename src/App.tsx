@@ -1304,24 +1304,26 @@ export default function App() {
                     setSelectedSectionIndex={setSelectedSectionIndex}
                   />
 
-                  <SectionDetailPanel
-                    activeChapterId={selectedChapterDetails}
-                    selectedSectionIndex={selectedSectionIndex}
-                    setSelectedSectionIndex={setSelectedSectionIndex}
-                    lessons={lessons}
-                    onPracticeQuiz={(chapterId) => {
-                      setActiveChapterId(chapterId);
-                      setQuizSubTab("practice");
-                      handleResetQuiz();
-                    }}
-                  />
-
                   {/* Small Chibi Teacher Mascot inside the right column */}
                   <div className="absolute bottom-4 right-4 w-20 h-24 md:w-24 md:h-28 z-20 pointer-events-none">
                     <img src={chibiTeacher} alt="Thầy Nam Chibi" className="w-full h-full object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]" />
                   </div>
                 </div>
               </div>
+            )}
+
+            {quizSubTab === "syllabus" && selectedSectionIndex !== null && (
+              <SectionDetailPanel
+                activeChapterId={selectedChapterDetails}
+                selectedSectionIndex={selectedSectionIndex}
+                setSelectedSectionIndex={setSelectedSectionIndex}
+                lessons={lessons}
+                onPracticeQuiz={(chapterId) => {
+                  setActiveChapterId(chapterId);
+                  setQuizSubTab("practice");
+                  handleResetQuiz();
+                }}
+              />
             )}
 
             {/* Sub-tab 2: Practice Quiz */}

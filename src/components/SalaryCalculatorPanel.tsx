@@ -423,7 +423,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
           </div>
 
           <label className="block space-y-2">
-            <span className="text-xs font-bold text-white/60">Tên công việc</span>
+            <span className="text-sm font-bold text-white/60">Tên công việc</span>
             <input
               value={jobTitle}
               onChange={e => {
@@ -437,7 +437,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Lương tháng</span>
+              <span className="text-sm font-bold text-white/60">Lương tháng</span>
               <input
                 type="number"
                 value={salaryInput}
@@ -450,7 +450,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Chi phí sống</span>
+              <span className="text-sm font-bold text-white/60">Chi phí sống</span>
               <input
                 type="number"
                 value={livingCostInput}
@@ -464,7 +464,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
               <span className="block text-[11px] leading-4 text-white/38">{LIVING_COST_DATA_NOTICE}</span>
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Giờ/ngày</span>
+              <span className="text-sm font-bold text-white/60">Giờ/ngày</span>
               <input
                 type="number"
                 value={hoursInput}
@@ -477,7 +477,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Ngày/tháng</span>
+              <span className="text-sm font-bold text-white/60">Ngày/tháng</span>
               <input
                 type="number"
                 value={daysInput}
@@ -492,7 +492,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Tỉnh/Thành phố</span>
+              <span className="text-sm font-bold text-white/60">Tỉnh/Thành phố</span>
               <select
                 value={provinceId}
                 onChange={e => handleProvinceChange(e.target.value)}
@@ -505,7 +505,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
               <span className="block text-[11px] text-white/38">{region.shortName}: {formatMoney(region.minHourlyWage)}/giờ</span>
             </label>
             <label className="block space-y-2">
-              <span className="text-xs font-bold text-white/60">Trợ cấp</span>
+              <span className="text-sm font-bold text-white/60">Trợ cấp</span>
               <input
                 type="number"
                 value={familySupportInput}
@@ -539,7 +539,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
             </button>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs leading-5 text-white/55">
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-sm leading-relaxed text-white/60">
             <strong className="text-white">Nguồn đang dùng:</strong> tỉnh/thành chỉ dùng để suy ra vùng lương tối thiểu. Mức sống theo tỉnh cần import dataset gốc, hiện app không tự ước đoán.
           </div>
         </aside>
@@ -555,7 +555,7 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
               <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                 <div className="text-[10px] uppercase tracking-wider text-white/45">Lương giờ</div>
                 <div className="mt-1 text-3xl font-black text-white">{formatMoney(hourlyWage)}</div>
-                <div className="mt-1 text-xs text-white/55">Sàn: {formatMoney(region.minHourlyWage)}/giờ</div>
+                <div className="mt-1 text-sm text-white/60">Sàn: {formatMoney(region.minHourlyWage)}/giờ</div>
               </div>
             </div>
           </section>
@@ -661,21 +661,21 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
                   <div className={`mt-1 text-lg font-bold ${minimumPayGap < 0 ? "text-red-200" : "text-emerald-200"}`}>
                     {minimumPayGap < 0 ? `Thiếu ${formatMoney(Math.abs(minimumPayGap))}` : `Cao hơn ${formatMoney(minimumPayGap)}`}
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-white/55">Sàn {region.shortName}: {formatMoney(minimumMonthlyPay)} cho tổng giờ đã nhập.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-white/60">Sàn {region.shortName}: {formatMoney(minimumMonthlyPay)} cho tổng giờ đã nhập.</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
                   <div className="text-[10px] uppercase tracking-wider text-white/40">So với mặt bằng nghề</div>
                   <div className={`mt-1 text-lg font-bold ${marketLowGap < 0 ? "text-red-200" : "text-emerald-200"}`}>
                     {marketLowGap < 0 ? `Thấp hơn ${formatMoney(Math.abs(marketLowGap))}/giờ` : `Đạt đáy +${formatMoney(marketLowGap)}/giờ`}
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-white/55">{result.jobCategory}: {formatMoney(result.suggestedHourlyRange[0])} - {formatMoney(result.suggestedHourlyRange[1])}/giờ.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-white/60">{result.jobCategory}: {formatMoney(result.suggestedHourlyRange[0])} - {formatMoney(result.suggestedHourlyRange[1])}/giờ.</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
                   <div className="text-[10px] uppercase tracking-wider text-white/40">Ước tính thặng dư</div>
                   <div className="mt-1 text-lg font-bold text-white">
                     {isWageBelowLivingCost ? "Không đo bằng lương" : formatMoney(monthlySurplusValue)}
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-white/55">
+                  <p className="mt-2 text-sm leading-relaxed text-white/60">
                     {isWageBelowLivingCost
                       ? "Vì lương chưa đủ sống, cần xem đây là dấu hiệu bị ép giá sức lao động."
                       : `${surplusHours.toFixed(1)} giờ/ngày vượt phần bù chi phí sống.`}
@@ -696,16 +696,16 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
           <details className="rounded-[20px] border border-white/10 bg-neutral-950/82 p-4">
             <summary className="cursor-pointer text-sm font-bold text-white">Lý luận cần nhớ</summary>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">v:</strong> tiền lương / giá trị sức lao động.</div>
-              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">t:</strong> lao động tất yếu {effectiveNecessaryHours.toFixed(1)}h.</div>
-              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">t':</strong> lao động thặng dư {surplusHours.toFixed(1)}h.</div>
-              <div className="rounded-xl bg-white/[0.04] p-3 text-xs text-white/60"><strong className="text-white">m':</strong> tỷ suất thặng dư {Math.round(surplusRatio)}%.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-sm text-white/70"><strong className="text-white">v:</strong> tiền lương / giá trị sức lao động.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-sm text-white/70"><strong className="text-white">t:</strong> lao động tất yếu {effectiveNecessaryHours.toFixed(1)}h.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-sm text-white/70"><strong className="text-white">t':</strong> lao động thặng dư {surplusHours.toFixed(1)}h.</div>
+              <div className="rounded-xl bg-white/[0.04] p-3 text-sm text-white/70"><strong className="text-white">m':</strong> tỷ suất thặng dư {Math.round(surplusRatio)}%.</div>
             </div>
-            <p className="mt-4 text-sm leading-6 text-white/60">{result.advice}</p>
+            <p className="mt-4 text-base leading-relaxed text-white/70">{result.advice}</p>
             <button
               type="button"
               onClick={onAskTeacher}
-              className="mt-4 rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-neutral-200 transition-all flex items-center gap-2"
+              className="mt-4 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-black hover:bg-neutral-200 transition-all flex items-center gap-2"
             >
               Hỏi Thầy Nam AI <ArrowRight className="w-4 h-4" />
             </button>

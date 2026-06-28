@@ -281,7 +281,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
   return (
     <div className="space-y-5">
       {isCappedNotice && currentIndex === 0 && (
-        <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
+        <div className="rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-base leading-relaxed text-amber-100">
           <AlertTriangle className="mr-2 inline h-4 w-4 text-amber-300" />
           Số câu yêu cầu vượt dữ liệu hiện có, app tự giảm còn {quizQuestions.length} câu.
         </div>
@@ -303,7 +303,7 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
             <span className="rounded-md border border-white/15 bg-white/10 px-2 py-1 text-[10px] font-bold uppercase text-white/80">
               Chương {currentQ.chapterId}
             </span>
-            <h4 className="mt-3 text-base font-bold leading-7 text-white md:text-lg">{currentQ.prompt}</h4>
+            <h4 className="mt-3 text-lg font-bold leading-relaxed text-white md:text-xl">{currentQ.prompt}</h4>
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -325,10 +325,10 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   type="button"
                   onClick={() => handleSelectOption(option.id)}
                   disabled={isAnswered}
-                  className={`min-h-[88px] rounded-xl border p-4 text-left text-sm font-medium transition-colors ${optionStyle}`}
+                  className={`min-h-[88px] rounded-xl border p-5 text-left text-base font-medium transition-colors ${optionStyle}`}
                 >
-                  <span className="mr-2 font-mono text-xs font-bold">{option.id}.</span>
-                  <span className="leading-6">{option.text}</span>
+                  <span className="mr-2 font-mono text-sm font-bold">{option.id}.</span>
+                  <span className="leading-relaxed">{option.text}</span>
                 </button>
               );
             })}
@@ -347,11 +347,11 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
                   </span>
                 )}
               </div>
-              <p className="mt-3 text-sm leading-7 text-white/70">{currentQ.explanation}</p>
+              <p className="mt-3 text-base leading-relaxed text-white/75">{currentQ.explanation}</p>
               {currentQ.contextExcerpt && (
                 <details className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
-                  <summary className="cursor-pointer text-xs font-bold text-white/55">Ngữ cảnh giáo trình</summary>
-                  <p className="mt-3 text-xs leading-6 text-white/55">{currentQ.contextExcerpt}</p>
+                  <summary className="cursor-pointer text-sm font-bold text-white/60">Ngữ cảnh giáo trình</summary>
+                  <p className="mt-3 text-sm leading-relaxed text-white/60">{currentQ.contextExcerpt}</p>
                 </details>
               )}
             </div>
