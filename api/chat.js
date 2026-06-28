@@ -115,9 +115,19 @@ export default async function handler(req) {
 
   let latestError = null;
 
+  const getKeyLabel = (key) => {
+    if (key === process.env.GEMINI_API_KEY2) return "Key 3 (GEMINI_API_KEY2)";
+    if (key === process.env.GEMINI_API_KEY1) return "Key 2 (GEMINI_API_KEY1)";
+    if (key === process.env.GEMINI_API_KEY) return "Key 1 (GEMINI_API_KEY)";
+    if (key === process.env.GOOGLE_API_KEY) return "Key Google (GOOGLE_API_KEY)";
+    return `Key ẩn (${key.substring(0, 6)}...${key.substring(key.length - 4)})`;
+  };
+
   for (const apiKey of availableKeys) {
+    const keyLabel = getKeyLabel(apiKey);
     for (const model of models) {
       try {
+        console.log(`[Server proxy] Đang thử bằng ${keyLabel} - Model: ${model}`);
         if (externalApiUrl) {
           const externalResponse = await fetch(externalApiUrl, {
             method: "POST",
@@ -228,6 +238,7 @@ export default async function handler(req) {
         }
 
         if (!geminiResponse.ok) {
+          console.error(`[Server proxy] Lỗi với ${keyLabel} - Status: ${geminiResponse.status}`);
           if (geminiResponse.status === 429) {
             cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(responseJson));
             latestError = {
@@ -256,6 +267,7 @@ export default async function handler(req) {
           .join("")
           .trim() || "";
 
+        console.log(`[Server proxy] Thành công bằng ${keyLabel}!`);
         return new Response(JSON.stringify({
           choices: [{ message: { role: "assistant", content: text } }],
           candidates: responseJson.candidates

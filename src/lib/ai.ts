@@ -222,9 +222,17 @@ async function executeGeminiRequest(apiKey: string, prompt: string, systemInstru
   return result;
 }
 
+function getKeyLabel(key: string): string {
+  if (key === String(import.meta.env.VITE_GEMINI_API_KEY2 || "").trim()) return "Key 3 (VITE_GEMINI_API_KEY2)";
+  if (key === String(import.meta.env.VITE_GEMINI_API_KEY1 || "").trim()) return "Key 2 (VITE_GEMINI_API_KEY1)";
+  if (key === String(import.meta.env.VITE_GEMINI_API_KEY || "").trim()) return "Key 1 (VITE_GEMINI_API_KEY)";
+  return `Key ẩn (${key.substring(0, 6)}...${key.substring(key.length - 4)})`;
+}
+
 export async function askThayNamAI(prompt: string, systemInstruction: string): Promise<string> {
   const cached = getCachedResponse(prompt, systemInstruction);
   if (cached !== null) {
+    console.log("[Thầy Nam AI] Đang trả về kết quả từ Cache (Không tiêu tốn API Key).");
     return cached;
   }
 
@@ -246,20 +254,25 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   // 1. Nếu có key client, ưu tiên gọi trực tiếp từ client trước (không qua Server Proxy để tránh độ trễ)
   if (availableKeys.length > 0) {
     for (const key of availableKeys) {
+      const label = getKeyLabel(key);
       for (const model of models) {
         try {
+          console.log(`[Thầy Nam AI] Đang thử gọi trực tiếp bằng ${label} - Model: ${model}`);
           const result = await executeGeminiRequest(key, prompt, systemInstruction, model);
+          console.log(`[Thầy Nam AI] Gọi trực tiếp thành công bằng ${label}!`);
           saveResponseToCache(prompt, systemInstruction, result);
           return result;
-        } catch (error) {
+        } catch (error: any) {
+          console.error(`[Thầy Nam AI] Lỗi khi gọi bằng ${label} (Model: ${model}):`, error.message || error);
           lastError = error;
           if (error instanceof AiRequestError && error.status === 429) {
+            console.warn(`[Thầy Nam AI] Key ${label} bị giới hạn tốc độ (429). Đưa vào trạng thái chờ 60s.`);
             setKeyCooldown(key, error.retryAfterMs || 60_000);
             // Break model loop to immediately try the next key, saving waiting time
             break;
           }
           if (error instanceof AiRequestError && error.status === 408) {
-            // Also cooldown key on request timeout to avoid using unstable key
+            console.warn(`[Thầy Nam AI] Key ${label} bị quá thời gian (408). Đưa vào trạng thái chờ 30s.`);
             setKeyCooldown(key, 30_000);
             break;
           }
@@ -272,13 +285,15 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
   // 2. Nếu không có key client hoặc gọi client lỗi, chuyển sang gọi Server Proxy trên Vercel
   // Chỉ gọi Server Proxy một lần duy nhất với model cấu hình để tránh gửi các request dư thừa không cần thiết lên server khi các key đã bị rate limit
   const activeCooldownKeys = keys.filter(key => isKeyOnCooldown(key));
+  console.log(`[Thầy Nam AI] Tất cả key client thất bại hoặc đang chờ. Đang gọi dự phòng qua Server Proxy...`);
   try {
     const result = await executeServerProxyRequest(prompt, systemInstruction, configModel, activeCooldownKeys);
+    console.log(`[Thầy Nam AI] Gọi Server Proxy thành công!`);
     saveResponseToCache(prompt, systemInstruction, result);
     return result;
-  } catch (serverError) {
+  } catch (serverError: any) {
+    console.error(`[Thầy Nam AI] Gọi Server Proxy thất bại:`, serverError.message || serverError);
     lastError = serverError;
-    console.warn(`Server proxy failed`, serverError);
   }
 
   throw lastError || new AiRequestError("Không thể kết nối tới Thầy Nam AI bằng bất kỳ key hay phương thức nào.");
