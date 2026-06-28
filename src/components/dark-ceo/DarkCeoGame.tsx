@@ -265,9 +265,6 @@ export default function DarkCeoGame() {
           <h2 className="text-2xl font-black text-white flex items-center gap-2">
             👔 Giám Đốc Hắc Ám: Biện Chứng Sinh Tồn
           </h2>
-          <p className="text-sm text-neutral-400 mt-1 font-light max-w-xl">
-            Mọi sự vật hiện tượng đều vận động thông qua đấu tranh của các mặt đối lập. Hãy đóng vai CEO điều hành một doanh nghiệp tư bản trong môi trường định hướng XHCN, giữ thăng bằng giữa lợi nhuận và lợi ích tập thể.
-          </p>
         </div>
         <div className="flex items-center gap-2 text-sm font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-neutral-300">
           <span>Lượt chơi:</span>

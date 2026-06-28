@@ -125,9 +125,6 @@ export default function CardBattleArena() {
                 <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
                 Biện Chứng Kỳ Đài: Đấu Trường Thẻ Bài
               </h2>
-              <p className="text-sm text-neutral-400 mt-1 font-light max-w-xl">
-                Quy luật Lượng đổi dẫn đến Chất đổi. Kéo thả thẻ Đề xuất và Phản đề để tích lũy Lượng đến Điểm Nút nhằm kích hoạt Bước Nhảy tạo ra Chất mới.
-              </p>
             </div>
 
             {/* Select Debate dropdown */}

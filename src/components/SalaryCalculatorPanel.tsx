@@ -404,13 +404,9 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
       <header className="rounded-[24px] border border-white/10 bg-neutral-950/82 p-5 md:p-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-white/45">Chương 3</span>
-            <h2 className="mt-1 text-3xl md:text-5xl text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+            <h2 className="text-3xl md:text-5xl text-white tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
               Phân tích lương & thặng dư
             </h2>
-          </div>
-          <div className="text-sm text-white/55 md:text-right">
-            Nhập công việc thật. App tính lương giờ, mức sống và cảnh báo bóc lột.
           </div>
         </div>
       </header>

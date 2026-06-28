@@ -141,9 +141,6 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
           <h2 className="text-2xl font-black text-white flex items-center gap-2">
             🏙️ Kinh Tế Kỳ Thành: SimEcon Việt Nam 2026
           </h2>
-          <p className="text-sm text-neutral-400 mt-1 font-light max-w-xl">
-            Lưới sa bàn 10x10 đại diện cho 100% GDP quốc gia. Click vào các tòa nhà đại diện để chụp X-Ray xem vai trò hiến định và các ngành then chốt.
-          </p>
         </div>
       </div>
 

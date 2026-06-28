@@ -1205,13 +1205,9 @@ export default function App() {
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
               <div>
-                <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Tự học lý luận & Giải trắc nghiệm</span>
                 <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
                   <BookOpen className="text-white w-8 h-8" /> Tự Học & Ôn Tập Giáo Trình
                 </h2>
-                <p className="text-white/50 text-xs md:text-sm mt-1">
-                  Đọc tóm tắt giáo trình lý thuyết và luyện tập bộ câu hỏi trắc nghiệm chuẩn xác.
-                </p>
               </div>
 
               {/* Sub-tab Switcher */}
@@ -1525,13 +1521,9 @@ export default function App() {
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
             <div>
-              <span className="text-white/40 text-xs tracking-widest uppercase block mb-1 font-mono">Trợ lý học tập & Hướng nghiệp</span>
               <h2 className="text-3xl md:text-5xl text-white tracking-tight flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
                 <Bot className="text-white w-8 h-8" /> Thầy Nam AI: Marxist Coach
               </h2>
-              <p className="text-white/50 text-xs md:text-sm mt-1">
-                Lý luận Mác - Lênin đồng hành cùng đời sống sinh viên.
-              </p>
             </div>
 
             {/* Mode Switcher */}
