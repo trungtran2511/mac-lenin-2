@@ -160,13 +160,13 @@ const getAiText = async (prompt: string) => {
 };
 
 export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelProps) {
-  const [jobTitle, setJobTitle] = useState("");
-  const [salaryInput, setSalaryInput] = useState("");
-  const [hoursInput, setHoursInput] = useState("");
+  const [jobTitle, setJobTitle] = useState("Chạy xe");
+  const [salaryInput, setSalaryInput] = useState("6000000");
+  const [hoursInput, setHoursInput] = useState("6");
   const [daysInput, setDaysInput] = useState("26");
   const [provinceId, setProvinceId] = useState("ha-noi");
-  const [livingCostInput, setLivingCostInput] = useState("");
-  const [familySupportInput, setFamilySupportInput] = useState("");
+  const [livingCostInput, setLivingCostInput] = useState("5000000");
+  const [familySupportInput, setFamilySupportInput] = useState("10000000");
   const [aiResult, setAiResult] = useState<AiClassificationResult | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
@@ -627,25 +627,56 @@ export function SalaryCalculatorPanel({ onAskTeacher }: SalaryCalculatorPanelPro
                 </p>
               </div>
 
-              <div className={`rounded-2xl border p-4 ${
-                !hasLivingCost
-                  ? "border-amber-300/25 bg-amber-300/10"
-                  : isWageBelowLivingCost
-                    ? "border-red-300/25 bg-red-400/10"
-                    : "border-emerald-300/25 bg-emerald-300/10"
-              }`}>
-                <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
-                <div className="mt-2 text-2xl font-black text-white">
-                  {!hasLivingCost ? "Thiếu mốc mức sống" : isWageBelowLivingCost ? "Lương không đủ sống" : "Có phần vượt chi phí sống"}
-                </div>
-                <p className="mt-2 text-sm leading-6 text-white/68">
-                  {!hasLivingCost
-                    ? "Chưa thể kết luận vì thiếu chi phí sống làm mốc so sánh."
-                    : isWageBelowLivingCost
-                    ? `Riêng lương công việc đang thiếu ${formatMoney(livingCost - monthlySalary)} so với chi phí sống.`
-                    : `Sau khi bù chi phí sống, lương còn dư ${formatMoney(monthlySalary - livingCost)}.`}
-                </p>
-              </div>
+              {(() => {
+                if (!hasLivingCost) {
+                  return (
+                    <div className="rounded-2xl border border-amber-300/25 bg-amber-300/10 p-4">
+                      <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
+                      <div className="mt-2 text-2xl font-black text-white">Thiếu mốc mức sống</div>
+                      <p className="mt-2 text-sm leading-6 text-white/68">
+                        Chưa thể kết luận vì thiếu chi phí sống làm mốc so sánh.
+                      </p>
+                    </div>
+                  );
+                }
+                
+                const salaryGap = monthlySalary - livingCost;
+                const totalGap = (monthlySalary + familySupport) - livingCost;
+                
+                if (salaryGap >= 0) {
+                  return (
+                    <div className="rounded-2xl border border-emerald-300/25 bg-emerald-300/10 p-4">
+                      <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
+                      <div className="mt-2 text-2xl font-black text-white">Lương đủ sống</div>
+                      <p className="mt-2 text-sm leading-6 text-white/68">
+                        Lương từ công việc đủ bù đắp chi phí sống (dư {formatMoney(salaryGap)}). {familySupport > 0 && `Cộng thêm trợ cấp ${formatMoney(familySupport)}, bạn dư tổng cộng ${formatMoney(totalGap)}.`}
+                      </p>
+                    </div>
+                  );
+                }
+                
+                if (totalGap >= 0) {
+                  return (
+                    <div className="rounded-2xl border border-emerald-300/25 bg-emerald-300/10 p-4">
+                      <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
+                      <div className="mt-2 text-2xl font-black text-white">Đủ sống nhờ trợ cấp</div>
+                      <p className="mt-2 text-sm leading-6 text-white/68">
+                        Lương công việc chưa đủ chi phí sống (thiếu {formatMoney(Math.abs(salaryGap))}). Tuy nhiên, nhờ trợ cấp {formatMoney(familySupport)}, tổng thu nhập của bạn đã đủ sống (dư {formatMoney(totalGap)}).
+                      </p>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <div className="rounded-2xl border border-red-300/25 bg-red-400/10 p-4">
+                    <div className="text-[10px] uppercase tracking-wider text-white/50">3. Kết luận dễ hiểu</div>
+                    <div className="mt-2 text-2xl font-black text-white">Thu nhập không đủ sống</div>
+                    <p className="mt-2 text-sm leading-6 text-white/68">
+                      Lương công việc thiếu {formatMoney(Math.abs(salaryGap))} so với chi phí sống. {familySupport > 0 ? `Dù có thêm trợ cấp ${formatMoney(familySupport)}, tổng thu nhập vẫn thiếu ${formatMoney(Math.abs(totalGap))}/tháng.` : "Bạn cần thêm thu nhập hoặc trợ cấp để bù đắp."}
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3">
