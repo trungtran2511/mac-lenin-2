@@ -1411,7 +1411,7 @@ export default function App() {
 
                       return (
                         <div className="space-y-4">
-                          <h3 className="text-base font-semibold text-white leading-relaxed select-text">
+                          <h3 className="text-[36px] font-bold text-white leading-[48px] select-text">
                             {qObj.question}
                           </h3>
                           
@@ -1444,17 +1444,17 @@ export default function App() {
                                     }
                                   }}
                                   disabled={hasAnswered}
-                                  className={`text-left p-4 rounded-2xl border text-xs md:text-sm leading-relaxed transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
+                                  className={`text-left p-4 rounded-2xl border text-[36px] font-medium leading-[48px] transition-all flex items-start justify-between gap-3 cursor-pointer break-words ${btnStyle}`}
                                 >
                                   <div className="flex min-w-0 gap-2.5">
-                                    <span className="font-mono opacity-50">{String.fromCharCode(65 + idx)}.</span>
+                                    <span className="font-mono font-bold opacity-50">{String.fromCharCode(65 + idx)}.</span>
                                     <span className="min-w-0 overflow-wrap-anywhere">{option}</span>
                                   </div>
                                   {hasAnswered && isCorrectOption && (
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                                    <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-2" />
                                   )}
                                   {hasAnswered && isSelected && !isCorrectOption && (
-                                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                                    <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0 mt-2" />
                                   )}
                                 </button>
                               );
@@ -1463,11 +1463,11 @@ export default function App() {
 
                           {/* Feedback Explanation Panel */}
                           {userSelectedOption !== null && (
-                            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-xs md:text-sm text-white/90 leading-relaxed animate-fade-rise space-y-4 mt-4">
-                              <div className="flex items-center gap-2 text-[10px] font-bold font-mono tracking-wider text-white/50 uppercase">
+                            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-sm md:text-base text-white/90 leading-relaxed animate-fade-rise space-y-4 mt-4">
+                              <div className="flex items-center gap-2 text-sm font-bold font-mono tracking-wider text-white/50 uppercase">
                                 <HelpCircle className="w-4 h-4" /> Luận giải học thuật của Thầy Nam:
                               </div>
-                              <p className="font-light">{qObj.explanation}</p>
+                              <p className="font-normal text-lg text-white/80">{qObj.explanation}</p>
 
                               {showInlineChat && (
                                 <InlineQuizChat
