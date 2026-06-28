@@ -80,14 +80,14 @@ Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chu
       <div className="flex-1 p-3 overflow-y-auto space-y-3 scrollbar-thin">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`p-3 rounded-xl text-xs max-w-[85%] leading-relaxed ${msg.role === "user" ? "bg-emerald-500/20 border border-emerald-500/30 text-white" : "bg-white/5 border border-white/5 text-white/80"}`}>
+            <div className={`p-3 rounded-xl text-lg max-w-[85%] leading-relaxed ${msg.role === "user" ? "bg-emerald-500/20 border border-emerald-500/30 text-white" : "bg-white/5 border border-white/5 text-white/80"}`}>
               {msg.text}
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="p-3 rounded-xl text-xs bg-white/5 border border-white/5 text-white/40 animate-pulse">
+            <div className="p-3 rounded-xl text-lg bg-white/5 border border-white/5 text-white/40 animate-pulse">
               Đang phân tích dữ liệu...
             </div>
           </div>
@@ -107,7 +107,7 @@ Hãy giải thích thật dễ hiểu, ngắn gọn và bám sát lý luận chu
             }
           }}
           placeholder="Hỏi thêm về câu trắc nghiệm này..."
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-emerald-500"
+          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-lg text-white placeholder-white/30 focus:outline-none focus:border-emerald-500"
         />
         <button
           onClick={handleSend}
