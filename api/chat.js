@@ -84,9 +84,13 @@ export default async function handler(req) {
   });
 
   if (availableKeys.length === 0) {
+    const nextUnlock = Math.min(...uniqueKeys.map(k => cooldownsByKey.get(k) || 0));
+    const waitSec = Math.max(0, Math.ceil((nextUnlock - Date.now()) / 1000));
+    console.warn(`[Server proxy] Tất cả ${uniqueKeys.length} key đang cooldown. Key sớm nhất sau ~${waitSec}s.`);
     return new Response(JSON.stringify({
       error: "All server keys are in cooldown state",
-      message: "Vui lòng đợi ít phút trước khi thử lại."
+      message: `Tất cả API key đang bị giới hạn tốc độ. Thử lại sau ~${waitSec} giây.`,
+      waitSeconds: waitSec
     }), {
       status: 429,
       headers: { "Content-Type": "application/json" }
@@ -238,14 +242,20 @@ export default async function handler(req) {
         }
 
         if (!geminiResponse.ok) {
-          console.error(`[Server proxy] Lỗi với ${keyLabel} - Status: ${geminiResponse.status}`);
+          const errMsg = getGeminiErrorMessage(responseJson);
+          console.error(`[Server proxy] ❌ ${keyLabel} / ${model} → HTTP ${geminiResponse.status}: ${errMsg}`);
           if (geminiResponse.status === 429) {
-            cooldownsByKey.set(apiKey, Date.now() + getRetryDelay(responseJson));
+            const delay = getRetryDelay(responseJson);
+            cooldownsByKey.set(apiKey, Date.now() + delay);
+            console.warn(`[Server proxy] Key ${keyLabel} bị 429. Block ${Math.round(delay/1000)}s. Lỗi Gemini: ${errMsg}`);
             latestError = {
               status: 429,
               data: {
-                error: "Gemini API request failed with 429",
-                message: getGeminiErrorMessage(responseJson),
+                error: "Gemini API rate limited (429)",
+                message: errMsg,
+                keyLabel,
+                model,
+                retryAfterSeconds: Math.round(delay / 1000),
                 details: responseJson
               }
             };

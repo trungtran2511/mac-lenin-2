@@ -45,11 +45,9 @@ function buildKeyRegistry(): ApiKeyStatus[] {
     { key: String(import.meta.env.VITE_GEMINI_API_KEY  || "").trim(), label: "Key 1 (VITE_GEMINI_API_KEY)"  },
   ];
 
-  // De-duplicate
   const seen = new Set<string>();
   const unique = rawKeys.filter(({ key }) => key && !seen.has(key) && seen.add(key));
 
-  // Restore persisted cooldowns so page-refresh doesn't reset them
   let persisted: Record<string, number> = {};
   try {
     const raw = localStorage.getItem(COOLDOWN_LS_KEY);
@@ -59,12 +57,7 @@ function buildKeyRegistry(): ApiKeyStatus[] {
   const now = Date.now();
   return unique.map(({ key, label }) => {
     const blockedUntil = persisted[key] || 0;
-    return {
-      key,
-      label,
-      isBlocked: now < blockedUntil,
-      blockedUntil,
-    };
+    return { key, label, isBlocked: now < blockedUntil, blockedUntil };
   });
 }
 
@@ -231,54 +224,14 @@ async function executeGeminiRequest(
   return result;
 }
 
-async function executeServerProxyRequest(
-  prompt: string,
-  systemInstruction: string,
-  model: string,
-  blockedKeys?: string[]
-): Promise<string> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12_000);
-
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: systemInstruction },
-          { role: "user", content: prompt },
-        ],
-        cooldownKeys: blockedKeys,
-      }),
-    });
-
-    if (!response.ok) throw new AiRequestError(`Server returned error ${response.status}`, response.status);
-
-    const data = await response.json();
-    const result =
-      data.choices?.[0]?.message?.content ||
-      data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || "").join("").trim();
-
-    if (!result) throw new AiRequestError("No valid content returned from server proxy");
-    return result;
-  } catch (err: any) {
-    if (err.name === "AbortError") throw new AiRequestError("Yêu cầu tới Server Proxy bị quá thời gian (Timeout).", 408);
-    if (err instanceof AiRequestError) throw err;
-    throw new AiRequestError(err.message || "Không thể kết nối tới Server Proxy.");
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
 
 // ─────────────────────────────────────────────
 // Main entry point
 // ─────────────────────────────────────────────
 
 const configModel = String(import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash").trim();
-const fallbackModels = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+// Fallback models theo thứ tự ưu tiên: 2.5-flash → 2.0-flash (khi 2.5 overload/503)
+const fallbackModels = ["gemini-2.5-flash", "gemini-2.0-flash"];
 const MODELS = [configModel, ...fallbackModels.filter(m => m !== configModel)];
 
 export async function askThayNamAI(prompt: string, systemInstruction: string): Promise<string> {
@@ -296,113 +249,82 @@ export async function askThayNamAI(prompt: string, systemInstruction: string): P
 
   let lastError: unknown = null;
 
-  // ── Step 1: Round-robin qua các key còn sạch
-  // getAvailableKey() tự un-block key hết hạn cooldown rồi trả về key đầu tiên free
-  let keyEntry = getAvailableKey();
-  while (keyEntry !== null) {
-    const entry = keyEntry; // capture for closure clarity
-
-    // Với mỗi key, chỉ thử model đầu tiên trước.
-    // Chỉ fallback sang model khác nếu lỗi không phải 429/408 (tức là lỗi của model, không phải key).
-    for (const model of MODELS) {
-      try {
-        console.log(`[Thầy Nam AI] Thử Key ${entry.label} — Model: ${model}`);
-        const result = await executeGeminiRequest(entry.key, prompt, systemInstruction, model);
-        console.log(`[Thầy Nam AI] ✅ Thành công với Key ${entry.label} — Model: ${model}`);
-        saveResponseToCache(prompt, systemInstruction, result);
-        return result;
-      } catch (error: any) {
-        console.error(`[Thầy Nam AI] ❌ Key ${entry.label} / Model ${model}:`, error.message ?? error);
-        lastError = error;
-
-        if (error instanceof AiRequestError) {
-          if (error.status === 429) {
-            // Rate limit của KEY → block key, chuyển sang key tiếp theo ngay
-            const cooldownMs = error.retryAfterMs ? error.retryAfterMs + 5_000 : 65_000;
-            console.warn(
-              `[Thầy Nam AI] Key ${entry.label} bị 429. Block ${Math.round(cooldownMs / 1000)}s — chuyển key.`
-            );
-            blockKey(entry, cooldownMs);
-            break; // thoát vòng model, thử key tiếp theo
-          }
-
-          if (error.status === 408) {
-            // Timeout → block ngắn rồi chuyển key
-            console.warn(`[Thầy Nam AI] Key ${entry.label} timeout. Block 30s — chuyển key.`);
-            blockKey(entry, 30_000);
-            break;
-          }
-
-          // Lỗi 4xx khác (key hỏng, model bị tắt…) → thử model tiếp theo trên cùng key
-          // (vòng for tự tiếp tục)
-        }
+  // ── Helper: round-robin qua TẤT CẢ key đang free
+  // Dùng snapshot tại thời điểm gọi để đảm bảo mọi key đều được thử,
+  // kể cả khi key trước đó hết model nhưng chưa bị block (503/404)
+  async function tryAllAvailableKeys(phase: "initial" | "retry"): Promise<string | null> {
+    // Lấy snapshot các key có sẵn (bao gồm cả việc tự mở block hết hạn)
+    const now = Date.now();
+    const candidates: ApiKeyStatus[] = [];
+    for (const k of KEY_REGISTRY) {
+      if (k.isBlocked && now > k.blockedUntil) {
+        k.isBlocked = false;
+        k.blockedUntil = 0;
+        console.log(`[Thầy Nam AI] Key ${k.label} đã hết thời gian phạt — mở block.`);
       }
+      if (!k.isBlocked) candidates.push(k);
     }
 
-    // Lấy key tiếp theo (getAvailableKey bỏ qua key vừa bị block)
-    keyEntry = getAvailableKey();
+    // Thử từng key trong snapshot (for..of đảm bảo Key1 luôn được thử dù Key2 hết model)
+    for (const current of candidates) {
+      if (current.isBlocked) continue; // bỏ qua nếu bị block trong vòng này
+
+      for (const model of MODELS) {
+        try {
+          console.log(`[Thầy Nam AI] ${phase === "retry" ? "🔄 Retry" : "Thử"} Key ${current.label} — Model: ${model}`);
+          const result = await executeGeminiRequest(current.key, prompt, systemInstruction, model);
+          console.log(`[Thầy Nam AI] ✅ Thành công với Key ${current.label} — Model: ${model}`);
+          saveResponseToCache(prompt, systemInstruction, result);
+          return result;
+        } catch (error: any) {
+          console.error(`[Thầy Nam AI] ❌ Key ${current.label} / Model ${model}:`, error.message ?? error);
+          lastError = error;
+
+          if (error instanceof AiRequestError) {
+            if (error.status === 429) {
+              const cooldownMs = error.retryAfterMs ? error.retryAfterMs + 5_000 : 65_000;
+              console.warn(`[Thầy Nam AI] Key ${current.label} bị 429. Block ${Math.round(cooldownMs / 1000)}s — chuyển key.`);
+              blockKey(current, cooldownMs);
+              break; // thoát vòng model, for..of tự chuyển sang key tiếp theo
+            }
+            if (error.status === 408) {
+              console.warn(`[Thầy Nam AI] Key ${current.label} timeout. Block 30s — chuyển key.`);
+              blockKey(current, 30_000);
+              break;
+            }
+            // 503, 404, 5xx khác → thử model tiếp theo trên cùng key
+          }
+        }
+      }
+      // Hết model trên key này → for..of tự chuyển sang key tiếp theo trong candidates
+    }
+    return null;
   }
 
-  // ── Step 2: Tất cả client key đang bị block
-  // Nếu thời gian chờ ngắn (≤ AUTO_WAIT_LIMIT_S), tự động đợi key sớm nhất thay vì
-  // bắt user phải bấm lại thủ công (tránh leo thang retryDelay từ Gemini).
+  // ── Step 1: Thử tất cả key đang free ngay lập tức
+  const result1 = await tryAllAvailableKeys("initial");
+  if (result1 !== null) return result1;
+
+  // ── Step 2: Tất cả key đang bị block
+  // Nếu thời gian chờ ≤ AUTO_WAIT_LIMIT_S, tự động chờ rồi retry TẤT CẢ key vừa unblock
   const AUTO_WAIT_LIMIT_S = 70;
   const waitSec = secondsUntilNextKey();
 
   if (waitSec > 0 && waitSec <= AUTO_WAIT_LIMIT_S) {
     const waitMs = waitSec * 1000 + 1_000; // +1s buffer
     console.log(
-      `[Thầy Nam AI] Tất cả key đang block. Tự động chờ ${waitSec}s cho key sớm nhất (đừng bấm lại)...`
+      `[Thầy Nam AI] Tất cả key đang block. Tự động chờ ${waitSec}s — retry TẤT CẢ key sau cooldown...`
     );
     await new Promise<void>(resolve => setTimeout(resolve, waitMs));
 
-    // Retry với key vừa được mở block
-    const retryEntry = getAvailableKey();
-    if (retryEntry !== null) {
-      for (const model of MODELS) {
-        try {
-          console.log(`[Thầy Nam AI] 🔄 Retry sau chờ — Key ${retryEntry.label} / Model: ${model}`);
-          const result = await executeGeminiRequest(retryEntry.key, prompt, systemInstruction, model);
-          console.log(`[Thầy Nam AI] ✅ Retry thành công với Key ${retryEntry.label}!`);
-          saveResponseToCache(prompt, systemInstruction, result);
-          return result;
-        } catch (retryError: any) {
-          console.error(`[Thầy Nam AI] ❌ Retry thất bại Key ${retryEntry.label} / Model ${model}:`, retryError.message ?? retryError);
-          lastError = retryError;
-          if (retryError instanceof AiRequestError && (retryError.status === 429 || retryError.status === 408)) {
-            const cooldownMs = retryError.retryAfterMs ? retryError.retryAfterMs + 5_000 : 65_000;
-            blockKey(retryEntry, cooldownMs);
-            break;
-          }
-        }
-      }
-    }
+    const result2 = await tryAllAvailableKeys("retry");
+    if (result2 !== null) return result2;
   } else if (waitSec > AUTO_WAIT_LIMIT_S) {
-    // Thời gian chờ quá dài → không auto-wait, báo user ngay
     console.warn(`[Thầy Nam AI] Cooldown quá dài (${waitSec}s > ${AUTO_WAIT_LIMIT_S}s). Bỏ qua auto-wait.`);
   }
 
-  // ── Step 3: Thử Server Proxy như phương án dự phòng cuối
-  const blockedKeys = KEY_REGISTRY.filter(k => k.isBlocked).map(k => k.key);
-  const finalWaitSec = secondsUntilNextKey(); // Tính lại sau auto-wait
-
-  console.warn(
-    `[Thầy Nam AI] Tất cả ${KEY_REGISTRY.length} key vẫn bị block. ` +
-    (finalWaitSec > 0 ? `Key sớm nhất sẵn sàng sau ~${finalWaitSec}s. ` : "") +
-    "Gọi Server Proxy..."
-  );
-
-  try {
-    const result = await executeServerProxyRequest(prompt, systemInstruction, configModel, blockedKeys);
-    console.log("[Thầy Nam AI] ✅ Server Proxy thành công!");
-    saveResponseToCache(prompt, systemInstruction, result);
-    return result;
-  } catch (serverError: any) {
-    console.error("[Thầy Nam AI] Server Proxy thất bại:", serverError.message ?? serverError);
-    lastError = serverError;
-  }
-
-  // ── Step 4: Mọi phương thức đều thất bại → throw với thông tin cooldown cho UI
+  // ── Step 3: Mọi phương thức đều thất bại → throw với thông tin cooldown cho UI
+  const finalWaitSec = secondsUntilNextKey();
   throw new AiRequestError(
     finalWaitSec > 0
       ? `Tất cả API key đang bị giới hạn tốc độ. Vui lòng thử lại sau ~${finalWaitSec} giây.`
