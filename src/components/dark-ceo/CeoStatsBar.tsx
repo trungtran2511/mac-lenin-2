@@ -18,7 +18,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
       value: scores.profit,
       icon: DollarSign,
       color: "bg-amber-500",
-      description: "Doanh thu trừ chi phí. Chạm 0% = phá sản; chạm 100% = bóc lột cực đoan."
+      description: "Doanh thu trừ chi phí. Chạm ≤ 5% = phá sản; chạm ≥ 95% = bóc lột cực đoan."
     },
     {
       key: "competitiveness",
@@ -26,7 +26,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
       value: scores.competitiveness,
       icon: ShieldAlert,
       color: "bg-blue-500",
-      description: "Thế lực trên thị trường. Chạm 0% = bị nuốt chửng; chạm 100% = độc quyền trì trệ."
+      description: "Thế lực trên thị trường. Chạm ≤ 5% = bị nuốt chửng; chạm ≥ 95% = độc quyền trì trệ."
     },
     {
       key: "socialResponsibility",
@@ -34,7 +34,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
       value: scores.socialResponsibility,
       icon: Award,
       color: "bg-emerald-500",
-      description: "Sự tuân thủ pháp luật, bảo vệ môi trường. Chạm 0% = bị đóng cửa."
+      description: "Sự tuân thủ pháp luật, bảo vệ môi trường. Chạm ≤ 5% = bị đóng cửa; chạm ≥ 95% = quá tải trách nhiệm."
     },
     {
       key: "workerMorale",
@@ -42,7 +42,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
       value: scores.workerMorale,
       icon: HeartHandshake,
       color: "bg-red-500",
-      description: "Độ gắn bó của nhân sự. Chạm 0% = đình công hàng loạt; chạm 100% = quỹ phúc lợi quá tải."
+      description: "Độ gắn bó của nhân sự. Chạm ≤ 5% = đình công hàng loạt; chạm ≥ 95% = quỹ lương phúc lợi quá tải."
     }
   ];
 
@@ -75,24 +75,35 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
               </span>
             </div>
 
-            {/* Progress Bar Container */}
-            <div className="w-full h-2.5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative">
-              {/* Progress Fill */}
-              <div
-                className={`h-full ${stat.color} transition-all duration-500 rounded-full`}
-                style={{ width: `${stat.value}%` }}
-              />
+            {/* Progress Bar Container with Tooltip */}
+            <div className="relative group/bar w-full">
+              <div className="w-full h-2.5 bg-neutral-950 rounded-full overflow-hidden border border-white/5 relative cursor-pointer">
+                {/* Progress Fill */}
+                <div
+                  className={`h-full ${stat.color} transition-all duration-500 rounded-full`}
+                  style={{ width: `${stat.value}%` }}
+                />
 
-              {/* Danger Zone Markers */}
-              <div className="absolute top-0 bottom-0 left-[15%] w-[1px] bg-red-500/30" />
-              <div className="absolute top-0 bottom-0 left-[85%] w-[1px] bg-red-500/30" />
+                {/* Danger Zone Markers */}
+                <div className="absolute top-0 bottom-0 left-[15%] w-[1px] bg-red-500/30" />
+                <div className="absolute top-0 bottom-0 left-[85%] w-[1px] bg-red-500/30" />
+              </div>
+
+              {/* Win Tip Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 hidden group-hover/bar:block bg-neutral-950/95 border border-amber-500/30 text-[11px] text-amber-200 p-2 rounded-lg shadow-xl z-50 text-center font-sans backdrop-blur-sm pointer-events-none">
+                💡 <b>Mẹo thắng:</b> Duy trì tất cả chỉ số trong khoảng 15% – 85% suốt 12 lượt chơi.
+              </div>
             </div>
 
+            {/* Text hint below the bar */}
+            <span className="text-[11px] text-neutral-400 font-mono">
+              ⚠️ Giữ 15% – 85% để an toàn
+            </span>
+
             {/* Description Tooltip helper */}
-            <p className="text-[15px] text-neutral-500 font-light leading-snug">
+            <p className="text-[14px] text-neutral-500 font-light leading-snug mt-1">
               {stat.description}
             </p>
-            <p className="text-[13px] text-neutral-600 font-mono mt-1">Mục tiêu: giữ 15% – 85%</p>
           </div>
         );
       })}
