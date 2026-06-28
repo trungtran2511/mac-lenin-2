@@ -17,7 +17,10 @@ import {
   Building,
   Briefcase,
   Download,
-  RotateCcw
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  RotateCw
 } from "lucide-react";
 /*
 import {
@@ -379,7 +382,7 @@ export default function App() {
   const [lessons, setLessons] = useState<ChapterLessons[]>([]);
 
   // Self-study & practice quiz states
-  const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice'>('syllabus');
+  const [quizSubTab, setQuizSubTab] = useState<'syllabus' | 'practice' | 'flashcard'>('syllabus');
   const [activeChapterId, setActiveChapterId] = useState<number | null>(1); // null means All Chapters
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [userSelectedOption, setUserSelectedOption] = useState<number | null>(null);
@@ -388,6 +391,12 @@ export default function App() {
   const [selectedChapterDetails, setSelectedChapterDetails] = useState<number>(1);
   const [selectedSectionIndex, setSelectedSectionIndex] = useState<number | null>(null);
   const [showInlineChat, setShowInlineChat] = useState(false);
+  const [answerKeyPassword, setAnswerKeyPassword] = useState("");
+  const [isAnswerKeyUnlocked, setIsAnswerKeyUnlocked] = useState(false);
+  const [isAnswerKeyDropdownOpen, setIsAnswerKeyDropdownOpen] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [flashcardIndex, setFlashcardIndex] = useState(0);
+  const [isFlashcardFlipped, setIsFlashcardFlipped] = useState(false);
 
   // Job offer page states (handled in child component)
 
@@ -480,10 +489,54 @@ export default function App() {
     setSelectedSectionIndex(null);
   }, [selectedChapterDetails]);
 
-  // Reset inline AI chat when switching quiz questions or active chapter quiz filter
+  // Reset inline AI chat and answer key dropdown when switching quiz questions or active chapter quiz filter
   useEffect(() => {
     setShowInlineChat(false);
+    setIsAnswerKeyDropdownOpen(false);
+    setPasswordError("");
   }, [currentQuizIndex, activeChapterId]);
+
+  // Reset flashcard state when switching card index
+  useEffect(() => {
+    setIsFlashcardFlipped(false);
+  }, [flashcardIndex]);
+
+  // Listen for keyboard navigation in Flashcard mode
+  useEffect(() => {
+    if (activeView !== "self-study" || quizSubTab !== "flashcard") return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Avoid intercepting shortcuts when focusing input or select elements
+      if (
+        e.target instanceof HTMLInputElement || 
+        e.target instanceof HTMLTextAreaElement || 
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        setIsFlashcardFlipped(prev => !prev);
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        if (flashcardIndex > 0) {
+          setFlashcardIndex(prev => prev - 1);
+        }
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        const questionsList = activeChapterId === null 
+          ? curriculumData?.quiz_questions || [] 
+          : (curriculumData?.quiz_questions || []).filter(q => q.chapter === activeChapterId);
+        if (flashcardIndex < questionsList.length - 1) {
+          setFlashcardIndex(prev => prev + 1);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeView, quizSubTab, flashcardIndex, activeChapterId, curriculumData]);
 
   // Update welcome message when AI Mode changes
   useEffect(() => {
@@ -1224,6 +1277,16 @@ export default function App() {
                 >
                   Trắc Nghiệm Ôn Luyện
                 </button>
+                <button
+                  onClick={() => {
+                    setQuizSubTab("flashcard");
+                    setIsFlashcardFlipped(false);
+                    setFlashcardIndex(0);
+                  }}
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${quizSubTab === "flashcard" ? "bg-white text-black font-bold" : "text-white/50 hover:text-white"}`}
+                >
+                  Thẻ Ghi Nhớ (Flashcard)
+                </button>
               </div>
             </div>
 
@@ -1410,6 +1473,78 @@ export default function App() {
                           <h3 className="text-[20px] font-bold text-white leading-[28px] select-text">
                             {qObj.question}
                           </h3>
+
+                          {/* Password-protected Answer Key Dropdown */}
+                          <div className="border border-white/10 rounded-xl bg-black/40 overflow-hidden">
+                            <button
+                              type="button"
+                              onClick={() => setIsAnswerKeyDropdownOpen(!isAnswerKeyDropdownOpen)}
+                              className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                {isAnswerKeyUnlocked ? "🔓" : "🔒"} Xem nhanh đáp án đúng {isAnswerKeyDropdownOpen ? "(Đóng)" : "(Yêu cầu mật khẩu)"}
+                              </span>
+                              <span className="text-[10px] opacity-70">
+                                {isAnswerKeyDropdownOpen ? "▲" : "▼"}
+                              </span>
+                            </button>
+
+                            {isAnswerKeyDropdownOpen && (
+                              <div className="p-3 border-t border-white/5 bg-neutral-950/40 space-y-2">
+                                {!isAnswerKeyUnlocked ? (
+                                  <div className="flex flex-col sm:flex-row gap-2 items-center">
+                                    <input
+                                      type="password"
+                                      placeholder="Nhập mật khẩu để mở khóa..."
+                                      value={answerKeyPassword}
+                                      onChange={(e) => {
+                                        setAnswerKeyPassword(e.target.value);
+                                        setPasswordError("");
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          e.preventDefault();
+                                          if (answerKeyPassword === "abc123123.jj@A") {
+                                            setIsAnswerKeyUnlocked(true);
+                                            setPasswordError("");
+                                          } else {
+                                            setPasswordError("Mật khẩu không chính xác!");
+                                          }
+                                        }
+                                      }}
+                                      className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-xs text-white placeholder-white/30 focus:outline-none focus:border-emerald-500"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (answerKeyPassword === "abc123123.jj@A") {
+                                          setIsAnswerKeyUnlocked(true);
+                                          setPasswordError("");
+                                        } else {
+                                          setPasswordError("Mật khẩu không chính xác!");
+                                        }
+                                      }}
+                                      className="w-full sm:w-auto px-4 py-1 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-bold transition-all cursor-pointer"
+                                    >
+                                      Xác nhận
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-emerald-300 font-mono leading-relaxed space-y-1">
+                                    <div className="font-bold text-emerald-400">
+                                      ✅ ĐÁP ÁN ĐÚNG: {String.fromCharCode(65 + qObj.correctAnswer)}. {qObj.options[qObj.correctAnswer]}
+                                    </div>
+                                    <div className="text-white/60 font-sans mt-1">
+                                      <b>Luận giải:</b> {qObj.explanation}
+                                    </div>
+                                  </div>
+                                )}
+                                {passwordError && (
+                                  <p className="text-[10px] text-rose-400 font-mono">{passwordError}</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
                           
                           {/* Options Grid */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1509,6 +1644,197 @@ export default function App() {
                 )}
               </div>
             )}
+
+            {/* Sub-tab 3: Flashcard */}
+            {quizSubTab === "flashcard" && (
+                  <div className="space-y-8">
+                    {/* Chapter selector filter */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900/60 p-4 rounded-2xl border border-white/5">
+                      <div className="flex w-full min-w-0 flex-col sm:flex-row sm:items-center gap-3">
+                        <label className="text-xs font-semibold text-white/60 uppercase tracking-wider font-mono">Chọn chương để ôn luyện:</label>
+                        <select
+                          value={activeChapterId === null ? "all" : activeChapterId}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setActiveChapterId(val === "all" ? null : parseInt(val));
+                            setFlashcardIndex(0);
+                            setIsFlashcardFlipped(false);
+                          }}
+                          className="bg-neutral-800 border border-white/10 rounded-xl px-4 py-2 text-xs md:text-sm text-white focus:outline-none focus:border-white min-w-0 sm:max-w-xs cursor-pointer"
+                        >
+                          <option value="all">Tất cả các chương</option>
+                          {curriculumData?.chapters.map(ch => (
+                            <option key={ch.id} value={ch.id}>Chương {ch.id}: {ch.title}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {(() => {
+                      const questionsList = activeChapterId === null 
+                        ? curriculumData?.quiz_questions || [] 
+                        : (curriculumData?.quiz_questions || []).filter(q => q.chapter === activeChapterId);
+                      
+                      if (questionsList.length === 0) {
+                        return (
+                          <div className="text-center py-12 text-white/40">
+                            Chưa có câu hỏi trắc nghiệm nào cho chương này.
+                          </div>
+                        );
+                      }
+
+                      const qObj = questionsList[flashcardIndex];
+                      if (!qObj) return null;
+
+                      return (
+                        <div className="flex flex-col items-center gap-6 max-w-4xl w-full mx-auto">
+                          {/* Progress Bar & Counter */}
+                          <div className="w-full flex items-center justify-between text-xs text-white/50 font-mono">
+                            <span>Câu {flashcardIndex + 1} / {questionsList.length}</span>
+                            <span className="flex items-center gap-1.5">
+                              <span className={`w-2 h-2 rounded-full ${isFlashcardFlipped ? "bg-emerald-500" : "bg-blue-400"} animate-pulse`} />
+                              {isFlashcardFlipped ? "Mặt sau: Đáp án & Luận giải" : "Mặt trước: Câu hỏi trắc nghiệm"}
+                            </span>
+                          </div>
+                          <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+                              style={{ width: `${((flashcardIndex + 1) / questionsList.length) * 100}%` }}
+                            />
+                          </div>
+
+                          {/* 3D Flip Card Container */}
+                          <div className="perspective-1000 w-full h-[500px] sm:h-[450px] md:h-[420px]">
+                            <div
+                              className={`w-full h-full duration-500 preserve-3d relative cursor-pointer ${
+                                isFlashcardFlipped ? "rotate-y-180" : ""
+                              }`}
+                              onClick={() => setIsFlashcardFlipped(!isFlashcardFlipped)}
+                            >
+                              {/* Front Side */}
+                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-neutral-900/90 via-neutral-950/95 to-neutral-900/90 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto scrollbar-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent)] before:pointer-events-none hover:scale-[1.005] hover:border-white/20 transition-all duration-300">
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <span className="rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase text-white/80 font-mono tracking-wider">
+                                      Chương {qObj.chapter}
+                                    </span>
+                                    <span className="text-[10px] text-white/40 uppercase tracking-widest font-mono">Mặt trước [Q]</span>
+                                  </div>
+                                  <h4 className="text-[18px] md:text-[20px] font-bold leading-snug md:leading-[28px] text-white select-text font-serif" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                                    {qObj.question}
+                                  </h4>
+                                  
+                                  {/* Option list visual reference */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                    {qObj.options.map((option, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="p-3 px-4 rounded-xl border border-white/5 bg-white/5 text-white/70 text-xs md:text-sm font-medium leading-relaxed flex items-start gap-2.5 hover:bg-white/10 transition-all duration-200"
+                                      >
+                                        <span className="font-mono font-bold text-white/40">{String.fromCharCode(65 + idx)}.</span>
+                                        <span>{option}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <div className="text-center text-[10px] text-white/30 font-mono pt-4 border-t border-white/5 mt-4 tracking-wider uppercase">
+                                  💡 Nhấn vào thẻ hoặc nhấn [Phím Cách] để lật xem đáp án
+                                </div>
+                              </div>
+
+                              {/* Back Side */}
+                              <div className="absolute inset-0 backface-hidden bg-gradient-to-br from-emerald-950/20 via-neutral-950/98 to-neutral-900/95 border border-emerald-500/20 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl rotate-y-180 overflow-y-auto scrollbar-none font-sans before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent)] before:pointer-events-none hover:scale-[1.005] transition-all duration-300">
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase text-emerald-300 font-mono tracking-wider">
+                                      Đáp án đúng
+                                    </span>
+                                    <span className="text-[10px] text-emerald-400/60 uppercase tracking-widest font-mono">Mặt sau [A]</span>
+                                  </div>
+
+                                  <h4 className="text-[16px] md:text-[18px] font-bold leading-normal text-white/80 select-text font-serif" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                                    {qObj.question}
+                                  </h4>
+
+                                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 px-4 text-emerald-300 text-xs md:text-sm font-bold font-mono shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                                    ✅ {String.fromCharCode(65 + qObj.correctAnswer)}. {qObj.options[qObj.correctAnswer]}
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    <div className="text-[10px] font-bold font-mono uppercase tracking-wider text-white/40">
+                                      Luận giải học thuật:
+                                    </div>
+                                    <p className="text-white/70 text-xs md:text-sm leading-relaxed font-normal select-text">
+                                      {qObj.explanation}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="text-center text-[10px] text-white/30 font-mono pt-4 border-t border-white/5 mt-4 tracking-wider uppercase">
+                                  💡 Nhấn vào thẻ hoặc nhấn [Phím Cách] để lật lại câu hỏi
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Controls bar */}
+                          <div className="w-full max-w-md mx-auto flex flex-col items-center gap-2">
+                            <div className="w-full flex items-center justify-between bg-neutral-900/80 backdrop-blur-md border border-white/10 p-2 rounded-2xl shadow-xl mt-2">
+                              {/* Previous Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (flashcardIndex > 0) {
+                                    setFlashcardIndex(prev => prev - 1);
+                                  }
+                                }}
+                                disabled={flashcardIndex === 0}
+                                className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-white/5 disabled:cursor-not-allowed transition-all flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95"
+                                title="Thẻ trước"
+                              >
+                                <ChevronLeft className="w-5 h-5" />
+                              </button>
+
+                              {/* Flip Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsFlashcardFlipped(prev => !prev);
+                                }}
+                                className="flex-1 mx-3 py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-extrabold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border-none"
+                              >
+                                <RotateCw className="w-4 h-4" /> Lật thẻ
+                              </button>
+
+                              {/* Next Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (flashcardIndex < questionsList.length - 1) {
+                                    setFlashcardIndex(prev => prev + 1);
+                                  }
+                                }}
+                                disabled={flashcardIndex === questionsList.length - 1}
+                                className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-white/5 disabled:cursor-not-allowed transition-all flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95"
+                                title="Thẻ tiếp theo"
+                              >
+                                <ChevronRight className="w-5 h-5" />
+                              </button>
+                            </div>
+
+                            {/* Keyboard shortcuts reference */}
+                            <div className="hidden sm:flex justify-between w-full px-4 text-[9px] text-white/30 font-mono uppercase tracking-widest mt-1">
+                              <span>[←] Trước</span>
+                              <span>[Space] Lật thẻ</span>
+                              <span>Kế tiếp [→]</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
 
           </div>
         </section>
