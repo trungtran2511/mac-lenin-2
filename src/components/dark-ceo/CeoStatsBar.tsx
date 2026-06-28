@@ -92,6 +92,7 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
             <p className="text-[15px] text-neutral-500 font-light leading-snug">
               {stat.description}
             </p>
+            <p className="text-[13px] text-neutral-600 font-mono mt-1">Mục tiêu: giữ 15% – 85%</p>
           </div>
         );
       })}

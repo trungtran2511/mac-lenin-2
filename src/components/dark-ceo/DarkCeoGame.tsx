@@ -7,7 +7,7 @@ import { SlackChatPanel } from "./SlackChatPanel";
 import { KarmaAlert } from "./KarmaAlert";
 
 export default function DarkCeoGame() {
-  const maxTurns = 10;
+  const maxTurns = 12;
   const typingTimeoutRef = useRef<any>(null);
 
   // Game States
@@ -22,6 +22,7 @@ export default function DarkCeoGame() {
   const [chatHistory, setChatHistory] = useState<ChatEntry[]>([]);
   const [pendingKarma, setPendingKarma] = useState<KarmaTimer[]>([]);
   const [currentCrisis, setCurrentCrisis] = useState<CrisisMessage | null>(null);
+  const [crisisQueue, setCrisisQueue] = useState<CrisisMessage[]>([]);
 
   const [isTyping, setIsTyping] = useState(false);
   const [typingDeptName, setTypingDeptName] = useState("");
@@ -70,14 +71,16 @@ export default function DarkCeoGame() {
       }
     ];
     setChatHistory(initialHistory);
-    loadCrisis(1);
+    // Shuffle and pick 12 crises from pool of 18
+    const shuffled = [...DARK_CEO_CRISES].sort(() => Math.random() - 0.5).slice(0, 12);
+    setCrisisQueue(shuffled);
+    loadCrisisFromQueue(1, shuffled);
   };
 
-  const loadCrisis = (turn: number) => {
+  const loadCrisisFromQueue = (turn: number, queue: CrisisMessage[]) => {
     setIsTyping(true);
-    // Cycle through author crises based on turn number
-    const crisisIndex = (turn - 1) % DARK_CEO_CRISES.length;
-    const baseCrisis = DARK_CEO_CRISES[crisisIndex];
+    const crisisIndex = turn - 1;
+    const baseCrisis = queue[crisisIndex] || queue[0];
 
     const dept = DARK_CEO_DEPARTMENTS.find((d) => d.id === baseCrisis.departmentId);
     setTypingDeptName(dept?.name || "Hệ thống");
@@ -91,7 +94,7 @@ export default function DarkCeoGame() {
       const newCrisis: CrisisMessage = {
         ...baseCrisis,
         id: `${baseCrisis.id}-turn-${turn}`,
-        timestamp: `09:${15 * turn}`
+        timestamp: `09:${String(15 * turn).padStart(2, '0')}`
       };
 
       setCurrentCrisis(newCrisis);
@@ -212,12 +215,12 @@ export default function DarkCeoGame() {
           }, 1500);
         } else {
           // Load next crisis
-          loadCrisis(nextTurn);
+          loadCrisisFromQueue(nextTurn, crisisQueue);
         }
       }, 500);
     } else {
       // Load next crisis directly
-      loadCrisis(nextTurn);
+      loadCrisisFromQueue(nextTurn, crisisQueue);
     }
   };
 
@@ -303,7 +306,7 @@ export default function DarkCeoGame() {
           </div>
           <h3 className="text-xl font-black text-white uppercase tracking-wider">CEO KIỆT XUẤT (VICTORY)</h3>
           <p className="text-[18px] text-neutral-300 max-w-md leading-relaxed font-light">
-            Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 10 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
+            Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 12 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
           </p>
           <button
             onClick={startGame}
