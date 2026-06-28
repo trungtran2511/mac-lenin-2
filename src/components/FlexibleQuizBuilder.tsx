@@ -25,12 +25,21 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
   const [score, setScore] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [isCappedNotice, setIsCappedNotice] = useState(false);
+  const [answerKeyPassword, setAnswerKeyPassword] = useState("");
+  const [isAnswerKeyUnlocked, setIsAnswerKeyUnlocked] = useState(false);
+  const [isAnswerKeyDropdownOpen, setIsAnswerKeyDropdownOpen] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     if (!isQuizActive) {
       setSelectedChapters(initialChapterIds.length ? initialChapterIds : [1]);
     }
   }, [initialChapterIds, isQuizActive]);
+
+  useEffect(() => {
+    setIsAnswerKeyDropdownOpen(false);
+    setPasswordError("");
+  }, [currentIndex, isQuizActive]);
 
   useEffect(() => {
     let mounted = true;
@@ -304,6 +313,78 @@ export function FlexibleQuizBuilder({ onBackToSyllabus, initialChapterIds = [1] 
               Chương {currentQ.chapterId}
             </span>
             <h4 className="mt-3 text-[20px] font-bold leading-[28px] text-white md:text-[20px]">{currentQ.prompt}</h4>
+          </div>
+
+          {/* Password-protected Answer Key Dropdown */}
+          <div className="border border-white/10 rounded-xl bg-black/40 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setIsAnswerKeyDropdownOpen(!isAnswerKeyDropdownOpen)}
+              className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                {isAnswerKeyUnlocked ? "🔓" : "🔒"} Xem nhanh đáp án đúng {isAnswerKeyDropdownOpen ? "(Đóng)" : "(Yêu cầu mật khẩu)"}
+              </span>
+              <span className="text-[10px] opacity-70">
+                {isAnswerKeyDropdownOpen ? "▲" : "▼"}
+              </span>
+            </button>
+
+            {isAnswerKeyDropdownOpen && (
+              <div className="p-3 border-t border-white/5 bg-neutral-950/40 space-y-2">
+                {!isAnswerKeyUnlocked ? (
+                  <div className="flex flex-col sm:flex-row gap-2 items-center">
+                    <input
+                      type="password"
+                      placeholder="Nhập mật khẩu để mở khóa..."
+                      value={answerKeyPassword}
+                      onChange={(e) => {
+                        setAnswerKeyPassword(e.target.value);
+                        setPasswordError("");
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          if (answerKeyPassword === "abc123123.jj@A") {
+                            setIsAnswerKeyUnlocked(true);
+                            setPasswordError("");
+                          } else {
+                            setPasswordError("Mật khẩu không chính xác!");
+                          }
+                        }
+                      }}
+                      className="w-full sm:flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-xs text-white placeholder-white/30 focus:outline-none focus:border-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (answerKeyPassword === "abc123123.jj@A") {
+                          setIsAnswerKeyUnlocked(true);
+                          setPasswordError("");
+                        } else {
+                          setPasswordError("Mật khẩu không chính xác!");
+                        }
+                      }}
+                      className="w-full sm:w-auto px-4 py-1 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Xác nhận
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-xs text-emerald-300 font-mono leading-relaxed space-y-1">
+                    <div className="font-bold text-emerald-400">
+                      ✅ ĐÁP ÁN ĐÚNG: {currentQ.correctOptionId}. {currentQ.options.find(o => o.id === currentQ.correctOptionId)?.text}
+                    </div>
+                    <div className="text-white/60 font-sans mt-1">
+                      <b>Luận giải:</b> {currentQ.explanation}
+                    </div>
+                  </div>
+                )}
+                {passwordError && (
+                  <p className="text-[10px] text-rose-400 font-mono">{passwordError}</p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
