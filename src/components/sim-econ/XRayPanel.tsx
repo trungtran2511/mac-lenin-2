@@ -55,8 +55,8 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
               <div className="bg-neutral-950/40 border border-white/5 rounded-2xl p-4 flex gap-3">
                 <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: sector.color }} />
                 <div>
-                  <h4 className="text-sm font-bold text-neutral-300">Quy định Hiến pháp & Vai trò Chủ đạo</h4>
-                  <p className="text-xs text-neutral-300 mt-1.5 leading-relaxed font-light">
+                  <h4 className="text-base font-bold text-white">Quy định Hiến pháp & Vai trò Chủ đạo</h4>
+                  <p className="text-sm text-neutral-200 mt-1.5 leading-relaxed font-normal">
                     {sector.constitutional_role}
                   </p>
                 </div>
@@ -64,7 +64,7 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
 
               {/* Key Industries */}
               <div className="flex flex-col gap-3">
-                <h4 className="text-sm font-bold text-neutral-300 flex items-center gap-1.5">
+                <h4 className="text-base font-bold text-white flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   Các Ngành Hạt Nhân & Định Hướng Phát Triển
                 </h4>
@@ -78,7 +78,7 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
                       <div className="text-lg mt-0.5 select-none">{ind.icon}</div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center gap-2">
-                          <span className="text-sm font-bold text-white">{ind.name}</span>
+                          <span className="text-base font-bold text-white">{ind.name}</span>
                           <span
                             className={`text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-md ${
                               ind.importance === "critical"
@@ -95,7 +95,7 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
                               : "Bổ trợ"}
                           </span>
                         </div>
-                        <p className="text-xs text-neutral-300 mt-1.5 leading-normal font-light">
+                        <p className="text-sm text-neutral-300 mt-1.5 leading-relaxed font-normal">
                           {ind.description}
                         </p>
                       </div>

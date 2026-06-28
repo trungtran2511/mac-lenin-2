@@ -148,7 +148,7 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Grid Board */}
         <div className="lg:col-span-5 flex flex-col gap-3">
-          <span className="text-[17px] font-semibold text-neutral-300 self-center lg:self-start">
+          <span className="text-base font-bold text-white self-center lg:self-start">
             Sa bàn Thành phố GDP (Mỗi ô = 1% tỷ trọng)
           </span>
           <CityGrid grid={grid} onCellClick={handleCellClick} />
@@ -176,7 +176,7 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
           {/* AI Forecast panel */}
           <div className="bg-neutral-900/30 border border-white/5 rounded-2xl p-5 flex flex-col gap-4 text-left">
             <div className="flex justify-between items-center">
-              <span className="text-[17px] font-bold text-neutral-300 flex items-center gap-1.5">
+              <span className="text-base font-bold text-white flex items-center gap-1.5">
                 <BrainCircuit className="w-5 h-5 text-blue-400" />
                 Đánh giá cấu trúc & Dự báo vĩ mô
               </span>
@@ -209,16 +209,16 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               ) : (
-                <div className="text-[18px] text-neutral-200 leading-relaxed font-light w-full text-left whitespace-pre-line">
+                <div className="text-[21px] text-white/85 leading-relaxed font-normal w-full text-left whitespace-pre-line">
                   {forecast}
                 </div>
               )}
             </div>
 
             {/* Constitutional compliance check */}
-            <div className="flex items-center gap-2 text-[17px] text-neutral-400 border-t border-white/5 pt-3">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>
+            <div className="flex items-center gap-2 text-sm md:text-base border-t border-white/5 pt-3">
+              <ShieldCheck className={`w-4 h-4 ${contributions.state >= 25 ? "text-emerald-500" : "text-red-400"}`} />
+              <span className={`font-semibold ${contributions.state >= 25 ? "text-emerald-400" : "text-red-400"}`}>
                 {contributions.state >= 25
                   ? "Kinh tế Nhà nước đủ tỷ trọng (>= 25%) để giữ vai trò chủ đạo nền kinh tế."
                   : "Cảnh báo: Tỷ trọng Kinh tế Nhà nước quá thấp (< 25%), có nguy cơ mất vai trò định hướng vĩ mô."}
@@ -251,13 +251,13 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
             {/* Modal body */}
             <div className="overflow-y-auto scrollbar-thin pr-1 space-y-4 flex-1">
               <div className="p-4 bg-black/40 border border-white/5 rounded-2xl">
-                <p className="text-[18px] text-neutral-200 leading-relaxed font-light whitespace-pre-line">
+                <p className="text-[21px] text-white/85 leading-relaxed font-normal whitespace-pre-line">
                   {forecast}
                 </p>
               </div>
 
               {/* Summary metadata */}
-              <div className="p-4 bg-neutral-900/50 rounded-2xl border border-white/5 space-y-2 text-xs text-neutral-400">
+              <div className="p-4 bg-neutral-900/50 rounded-2xl border border-white/5 space-y-2 text-sm text-neutral-300">
                 <div className="flex justify-between">
                   <span>Kinh tế Nhà nước:</span>
                   <span className="font-bold text-white">{Math.round(contributions.state)}%</span>
@@ -270,8 +270,8 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
                   <span>Kinh tế FDI:</span>
                   <span className="font-bold text-white">{Math.round(contributions.fdi)}%</span>
                 </div>
-                <div className="border-t border-white/5 pt-2 flex items-center gap-1.5 text-neutral-300">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <div className={`border-t border-white/5 pt-2 flex items-center gap-1.5 font-semibold ${contributions.state >= 25 ? "text-emerald-400" : "text-red-400"}`}>
+                  <ShieldCheck className={`w-3.5 h-3.5 shrink-0 ${contributions.state >= 25 ? "text-emerald-500" : "text-red-400"}`} />
                   <span>
                     {contributions.state >= 25
                       ? "Kinh tế Nhà nước đủ tỷ trọng để giữ vai trò chủ đạo."

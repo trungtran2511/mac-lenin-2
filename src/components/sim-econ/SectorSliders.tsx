@@ -9,7 +9,7 @@ interface SectorSlidersProps {
 export const SectorSliders: React.FC<SectorSlidersProps> = ({ contributions, onChange }) => {
   return (
     <div className="flex flex-col gap-5 w-full bg-neutral-900/30 border border-white/5 rounded-2xl p-5">
-      <h3 className="text-sm font-bold text-neutral-300 uppercase tracking-wider mb-2">
+      <h3 className="text-base font-bold text-white uppercase tracking-wider mb-2">
         📊 Điều phối Tỷ trọng GDP (Tổng = 100%)
       </h3>
 
@@ -18,8 +18,8 @@ export const SectorSliders: React.FC<SectorSlidersProps> = ({ contributions, onC
 
         return (
           <div key={sector.id} className="flex flex-col gap-2">
-            <div className="flex justify-between text-sm">
-              <span className="font-bold flex items-center gap-2">
+            <div className="flex justify-between text-sm md:text-base">
+              <span className="font-bold flex items-center gap-2 text-white">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: sector.color }} />
                 {sector.name}
               </span>
@@ -38,11 +38,11 @@ export const SectorSliders: React.FC<SectorSlidersProps> = ({ contributions, onC
                 className="flex-grow h-1.5 rounded-lg appearance-none cursor-pointer bg-neutral-950 accent-current"
                 style={{ color: sector.color }}
               />
-              <span className="text-xs text-neutral-500 w-8 text-right font-mono">
+              <span className="text-xs text-neutral-400 w-8 text-right font-mono">
                 {Math.round(val)} ô
               </span>
             </div>
-            <p className="text-xs text-neutral-400 font-light leading-snug">
+            <p className="text-sm text-neutral-300 font-normal leading-relaxed">
               {sector.description}
             </p>
           </div>
