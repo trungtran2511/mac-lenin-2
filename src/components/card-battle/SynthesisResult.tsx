@@ -99,7 +99,7 @@ export const SynthesisResult: React.FC<SynthesisResultProps> = ({
               </span>
             </h2>
 
-            <p className="text-[19px] text-amber-100/70 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
+            <p className="text-[19px] text-amber-100/90 leading-relaxed font-normal max-w-xl mx-auto md:mx-0">
               {synthesisCard.description}
             </p>
 
@@ -133,7 +133,7 @@ export const SynthesisResult: React.FC<SynthesisResultProps> = ({
                 Mặt Đấu Tranh
               </span>
             </div>
-            <p className="text-[18px] text-neutral-300 leading-relaxed font-light">
+            <p className="text-[18px] text-neutral-200 leading-relaxed font-normal">
               {synthesisCard.struggleDetail}
             </p>
           </div>
@@ -149,7 +149,7 @@ export const SynthesisResult: React.FC<SynthesisResultProps> = ({
                 Mặt Thống Nhất
               </span>
             </div>
-            <p className="text-[18px] text-neutral-300 leading-relaxed font-light">
+            <p className="text-[18px] text-neutral-200 leading-relaxed font-normal">
               {synthesisCard.unityDetail}
             </p>
           </div>

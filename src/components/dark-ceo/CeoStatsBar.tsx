@@ -96,12 +96,12 @@ export const CeoStatsBar: React.FC<CeoStatsBarProps> = ({ scores }) => {
             </div>
 
             {/* Text hint below the bar */}
-            <span className="text-[11px] text-neutral-400 font-mono">
+            <span className={`text-[12px] font-semibold ${isDanger ? "text-red-400 animate-pulse" : "text-amber-400"}`}>
               ⚠️ Giữ 15% – 85% để an toàn
             </span>
 
             {/* Description Tooltip helper */}
-            <p className="text-[14px] text-neutral-500 font-light leading-snug mt-1">
+            <p className="text-[15px] text-neutral-300 font-normal leading-relaxed mt-1">
               {stat.description}
             </p>
           </div>

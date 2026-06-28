@@ -48,7 +48,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
           if (entry.type === "system") {
             return (
               <div key={index} className="flex justify-center my-2">
-                <span className="text-xs bg-white/5 border border-white/15 px-3 py-1 rounded-full text-neutral-400 font-mono">
+                <span className="text-sm bg-neutral-900 border border-white/10 px-4 py-1.5 rounded-full text-neutral-200 font-medium">
                   {entry.text}
                 </span>
               </div>
@@ -101,7 +101,7 @@ export const SlackChatPanel: React.FC<SlackChatPanelProps> = ({
                   </span>
                   <span className="text-xs text-neutral-500 font-mono">{entry.timestamp}</span>
                 </div>
-                <p className="text-[18px] text-neutral-300 mt-1 leading-relaxed font-light whitespace-pre-wrap">
+                <p className="text-[21px] text-white/95 mt-1 leading-relaxed font-normal whitespace-pre-wrap">
                   {entry.text}
                 </p>
               </div>

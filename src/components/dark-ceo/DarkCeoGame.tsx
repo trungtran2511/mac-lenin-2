@@ -312,7 +312,7 @@ export default function DarkCeoGame() {
             </h3>
           </div>
           
-          <p className="text-[19px] md:text-[21px] text-neutral-300 max-w-xl leading-relaxed font-light font-sans z-10">
+          <p className="text-[19px] md:text-[21px] text-neutral-200 max-w-xl leading-relaxed font-normal font-sans z-10">
             {gameOverReason}
           </p>
           
@@ -347,7 +347,7 @@ export default function DarkCeoGame() {
             </h3>
           </div>
           
-          <p className="text-[19px] md:text-[21px] text-neutral-300 max-w-xl leading-relaxed font-light font-sans z-10">
+          <p className="text-[19px] md:text-[21px] text-neutral-200 max-w-xl leading-relaxed font-normal font-sans z-10">
             Chúc mừng! Bạn đã chèo lái doanh nghiệp vượt qua toàn bộ 12 lượt khủng hoảng, duy trì sự cân bằng biện chứng hoàn hảo giữa tích lũy thặng dư và phúc lợi xã hội định hướng XHCN.
           </p>
           

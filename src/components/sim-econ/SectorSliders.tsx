@@ -1,5 +1,6 @@
 import React from "react";
 import { SIM_ECON_SECTORS } from "../../lib/simEconData";
+import { SlidersHorizontal } from "lucide-react";
 
 interface SectorSlidersProps {
   contributions: { [key: string]: number };
@@ -9,8 +10,9 @@ interface SectorSlidersProps {
 export const SectorSliders: React.FC<SectorSlidersProps> = ({ contributions, onChange }) => {
   return (
     <div className="flex flex-col gap-5 w-full bg-neutral-900/30 border border-white/5 rounded-2xl p-5">
-      <h3 className="text-base font-bold text-white uppercase tracking-wider mb-2">
-        📊 Điều phối Tỷ trọng GDP (Tổng = 100%)
+      <h3 className="text-base font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+        <SlidersHorizontal className="w-5 h-5 text-emerald-400" />
+        Điều phối Tỷ trọng GDP (Tổng = 100%)
       </h3>
 
       {SIM_ECON_SECTORS.map((sector) => {

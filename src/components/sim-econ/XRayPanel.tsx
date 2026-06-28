@@ -1,8 +1,34 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Shield, Sparkles, CheckCircle } from "lucide-react";
+import {
+  X,
+  Shield,
+  Sparkles,
+  CheckCircle,
+  ShieldAlert,
+  Zap,
+  Landmark,
+  ShoppingCart,
+  Cpu,
+  Sprout,
+  Factory,
+  Ship,
+  Car
+} from "lucide-react";
 import type { EconomicSectorExtended } from "../../lib/simEconTypes";
+
+const industryIconMap: { [key: string]: React.ComponentType<{ className?: string, style?: React.CSSProperties }> } = {
+  "🛡️": ShieldAlert,
+  "⚡": Zap,
+  "🏦": Landmark,
+  "🛒": ShoppingCart,
+  "💻": Cpu,
+  "🚜": Sprout,
+  "🏭": Factory,
+  "🚢": Ship,
+  "🚗": Car
+};
 
 interface XRayPanelProps {
   sector: EconomicSectorExtended | null;
@@ -75,7 +101,16 @@ export const XRayPanel: React.FC<XRayPanelProps> = ({ sector, onClose }) => {
                       key={i}
                       className="p-3 bg-neutral-950/20 border border-white/5 rounded-xl flex gap-3 items-start hover:bg-white/[0.02] transition-colors"
                     >
-                      <div className="text-lg mt-0.5 select-none">{ind.icon}</div>
+                      <div className="mt-1 select-none shrink-0">
+                        {(() => {
+                          const IndustryIcon = industryIconMap[ind.icon];
+                          return IndustryIcon ? (
+                            <IndustryIcon className="w-5 h-5" style={{ color: sector.color }} />
+                          ) : (
+                            <span className="text-lg">{ind.icon}</span>
+                          );
+                        })()}
+                      </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center gap-2">
                           <span className="text-base font-bold text-white">{ind.name}</span>

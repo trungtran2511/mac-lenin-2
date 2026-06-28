@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, BrainCircuit, ShieldCheck } from "lucide-react";
+import { Sparkles, BrainCircuit, ShieldCheck, Building } from "lucide-react";
 import { SIM_ECON_SECTORS } from "../../lib/simEconData";
 import type { GridCell, EconomicSectorExtended } from "../../lib/simEconTypes";
 import { CityGrid } from "./CityGrid";
@@ -139,7 +139,8 @@ Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
         <div>
           <h2 className="text-3xl md:text-4xl text-white flex items-center gap-3" style={{ fontFamily: "'Instrument Serif', serif" }}>
-            🏙️ Kinh Tế Kỳ Thành: SimEcon Việt Nam 2026
+            <Building className="w-8 h-8 text-blue-400" />
+            Kinh Tế Kỳ Thành: SimEcon Việt Nam 2026
           </h2>
         </div>
       </div>
