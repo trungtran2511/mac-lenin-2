@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, RefreshCw, MessageSquareCode } from "lucide-react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import type { SynthesisCard } from "../../lib/cardBattleTypes";
-import { askThayNamAI } from "../../lib/ai";
 
 interface SynthesisResultProps {
   synthesisCard: SynthesisCard;
@@ -13,227 +12,96 @@ interface SynthesisResultProps {
 
 export const SynthesisResult: React.FC<SynthesisResultProps> = ({
   synthesisCard,
-  thesisName,
-  antithesisName,
   onReset
 }) => {
-  const [commentary, setCommentary] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    async function getAiCommentary() {
-      const systemInstruction = `Bạn là Thầy Nam AI, giảng viên Kinh tế chính trị Mác - Lênin. 
-Hãy bình luận ngắn gọn (2-3 câu), dí dỏm về sự phủ định biện chứng và sự dung hợp giữa hai yếu tố đối lập để tạo ra chất mới (sự phát triển). 
-Sử dụng ngôn ngữ Gen Z thân thiện, hài hước, chèn emoji để kích thích tư duy sáng tạo của sinh viên. 
-Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`;
-
-      const prompt = `Hai mặt đối lập:
-- Đề xuất (Thesis): "${thesisName}"
-- Phản đề (Antithesis): "${antithesisName}"
-Dung hợp thành Chất mới (Synthesis): "${synthesisCard.name}" (${synthesisCard.description})`;
-
-      try {
-        const response = await askThayNamAI(prompt, systemInstruction);
-        if (active) {
-          setCommentary(response);
-          setIsLoading(false);
-          setIsModalOpen(true);
-        }
-      } catch (err) {
-        if (active) {
-          setCommentary("Chất mới đã được hình thành! Thầy Nam AI đang bận chấm bài thi, nhưng chúc mừng bạn đã thực hiện Bước Nhảy biện chứng thành công!");
-          setIsLoading(false);
-          setIsModalOpen(true);
-        }
-      }
-    }
-
-    getAiCommentary();
-    return () => {
-      active = false;
-    };
-  }, [synthesisCard, thesisName, antithesisName]);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center justify-center p-6 border border-white/10 bg-neutral-900/60 backdrop-blur-md rounded-3xl w-full max-w-xl mx-auto shadow-2xl relative overflow-hidden"
+      className="p-6 md:p-10 border border-white/10 bg-neutral-900/60 backdrop-blur-md rounded-3xl w-full shadow-2xl relative overflow-hidden"
     >
       {/* Decorative gradient light */}
-      <div className="absolute -top-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-amber-400 animate-spin" style={{ animationDuration: "3s" }} />
-        <span className="text-xs tracking-[0.3em] uppercase text-amber-400 font-extrabold">Dung Hợp Thành Công</span>
-      </div>
-
-      <h3 className="text-xl md:text-2xl font-black text-white text-center leading-tight mb-6">
-        CHẤT MỚI: {synthesisCard.name}
-      </h3>
-
-      {/* Main synthesized card view */}
-      <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-        className="w-48 h-64 rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/80 via-orange-600/80 to-red-700/80 p-5 flex flex-col justify-between shadow-[0_10px_30px_rgba(245,158,11,0.25)] relative group"
-      >
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
-
-        <div className="flex justify-between items-center">
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/30 text-amber-200">
-            Hợp đề (Synthesis)
-          </span>
-          <Sparkles className="w-4 h-4 text-amber-200" />
-        </div>
-
-        <div className="flex flex-col items-center text-center gap-3 my-auto">
-          <div className="p-3 rounded-full bg-black/25">
-            <Sparkles className="w-8 h-8 text-amber-200" />
-          </div>
-          <h4 className="text-base font-extrabold text-white leading-tight px-1">{synthesisCard.name}</h4>
-        </div>
-
-        <p className="text-[11px] text-amber-50/90 text-center leading-snug font-normal border-t border-white/10 pt-2">
-          {synthesisCard.description}
-        </p>
-      </motion.div>
-
-      {/* AI Commentary Bubble */}
-      <div className="mt-8 w-full border-t border-white/10 pt-5">
-        <div className="flex items-center justify-between mb-3 text-neutral-400">
+      {/* Header row */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6 mb-6 relative z-10">
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <MessageSquareCode className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-bold text-neutral-300">Lời bình từ Thầy Nam AI:</span>
+            <Sparkles className="w-5 h-5 text-amber-400 animate-spin" style={{ animationDuration: "3s" }} />
+            <span className="text-xs tracking-[0.3em] uppercase text-amber-400 font-extrabold">Dung Hợp Thành Công</span>
           </div>
-          {!isLoading && (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors px-2.5 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 cursor-pointer"
-            >
-              Phóng to 🔎
-            </button>
-          )}
+          <h3
+            className="text-3xl md:text-4xl text-white leading-tight"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            CHẤT MỚI: {synthesisCard.name}
+          </h3>
         </div>
 
-        <div className={`bg-black/30 rounded-2xl p-4 border border-white/5 min-h-[80px] max-h-[280px] overflow-y-auto scrollbar-thin ${isLoading ? "flex items-center justify-center" : ""}`}>
-          {isLoading ? (
-            <div className="flex items-center gap-1.5 py-2">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
-            </div>
-          ) : (
-            <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-normal text-left whitespace-pre-line w-full">
-              {commentary}
-            </p>
-          )}
-        </div>
+        <button
+          onClick={onReset}
+          className="self-start md:self-auto flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Vòng biện chứng mới
+        </button>
       </div>
 
-      {/* Detailed Dialectical Breakdown */}
-      {synthesisCard.struggleDetail && (
-        <div className="mt-6 w-full space-y-3 border-t border-white/10 pt-5 text-xs md:text-sm text-neutral-300">
-          <h4 className="font-extrabold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider text-xs">
-            🍀 Phân Tích Bản Chất Biện Chứng
-          </h4>
-          
-          <div className="space-y-3 bg-neutral-950/50 p-4.5 rounded-2xl border border-white/5 text-left">
-            <div>
-              <span className="font-extrabold text-red-400 text-xs block mb-1">🔥 MẶT ĐẤU TRANH (MÂU THUẪN):</span>
-              <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.struggleDetail}</p>
-            </div>
-            
-            <div className="border-t border-white/5 pt-3">
-              <span className="font-extrabold text-blue-400 text-xs block mb-1">🤝 MẶT THỐNG NHẤT (ĐỒNG HÀNH):</span>
-              <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.unityDetail}</p>
-            </div>
-            
-            <div className="border-t border-white/5 pt-3">
-              <span className="font-extrabold text-emerald-400 text-xs block mb-1">⚡ KẾT QUẢ (CHẤT MỚI):</span>
-              <p className="text-neutral-200 text-xs font-medium leading-relaxed">{synthesisCard.outcomeDetail}</p>
-            </div>
+      {/* Main 2-column layout */}
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-start relative z-10">
+        {/* Left: floating synthesis card */}
+        <motion.div
+          animate={{ y: [0, -6, 0] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          className="w-48 mx-auto md:mx-0 h-64 rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-500/80 via-orange-600/80 to-red-700/80 p-5 flex flex-col justify-between shadow-[0_10px_30px_rgba(245,158,11,0.25)] relative group shrink-0"
+        >
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
+
+          <div className="flex justify-between items-center">
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/30 text-amber-200">
+              Hợp đề (Synthesis)
+            </span>
+            <Sparkles className="w-4 h-4 text-amber-200" />
           </div>
-        </div>
-      )}
 
-      <button
-        onClick={onReset}
-        className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20 text-sm font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer"
-      >
-        <RefreshCw className="w-3.5 h-3.5" />
-        Vòng biện chứng mới
-      </button>
-
-      {/* Central Pop-up Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in pointer-events-auto">
-          <div className="w-full max-w-lg bg-neutral-950 border border-white/10 rounded-3xl p-6 relative overflow-hidden flex flex-col gap-4 text-left shadow-2xl max-h-[85vh] animate-fade-rise">
-            {/* Modal header */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
-                  Lời bình từ Thầy Nam AI
-                </h3>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-neutral-400 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg text-sm cursor-pointer"
-              >
-                ✕
-              </button>
+          <div className="flex flex-col items-center text-center gap-3 my-auto">
+            <div className="p-3 rounded-full bg-black/25">
+              <Sparkles className="w-8 h-8 text-amber-200" />
             </div>
+            <h4 className="text-base font-extrabold text-white leading-tight px-1">{synthesisCard.name}</h4>
+          </div>
 
-            {/* Modal body */}
-            <div className="overflow-y-auto scrollbar-thin pr-1 space-y-4 flex-1">
-              <div className="p-4 bg-black/40 border border-white/5 rounded-2xl">
-                <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-normal whitespace-pre-line">
-                  {commentary}
-                </p>
+          <p className="text-[11px] text-amber-50/90 text-center leading-snug font-normal border-t border-white/10 pt-2">
+            {synthesisCard.description}
+          </p>
+        </motion.div>
+
+        {/* Right: Dialectical Breakdown */}
+        {synthesisCard.struggleDetail && (
+          <div className="space-y-4 text-left">
+            <h4 className="font-extrabold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider text-[16px]">
+              🍀 Phân Tích Bản Chất Biện Chứng
+            </h4>
+
+            <div className="space-y-4 bg-neutral-950/50 p-5 rounded-2xl border border-white/5">
+              <div>
+                <span className="font-extrabold text-red-400 text-[15px] block mb-1.5">🔥 MẶT ĐẤU TRANH (MÂU THUẪN):</span>
+                <p className="text-[18px] text-neutral-300 leading-relaxed font-light">{synthesisCard.struggleDetail}</p>
               </div>
 
-              {/* Detailed Dialectical Breakdown inside Modal */}
-              {synthesisCard.struggleDetail && (
-                <div className="space-y-3 pt-3 border-t border-white/10 text-xs md:text-sm text-neutral-300">
-                  <h4 className="font-extrabold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider text-xs">
-                    🍀 Phân Tích Bản Chất Biện Chứng
-                  </h4>
-                  
-                  <div className="space-y-3 bg-neutral-900/50 p-4.5 rounded-2xl border border-white/5">
-                    <div>
-                      <span className="font-extrabold text-red-400 text-[10px] tracking-wider block mb-1">🔥 MẶT ĐẤU TRANH (MÂU THUẪN):</span>
-                      <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.struggleDetail}</p>
-                    </div>
-                    
-                    <div className="border-t border-white/5 pt-3">
-                      <span className="font-extrabold text-blue-400 text-[10px] tracking-wider block mb-1">🤝 MẶT THỐNG NHẤT (ĐỒNG HÀNH):</span>
-                      <p className="text-neutral-300 text-xs leading-relaxed font-light">{synthesisCard.unityDetail}</p>
-                    </div>
-                    
-                    <div className="border-t border-white/5 pt-3">
-                      <span className="font-extrabold text-emerald-400 text-[10px] tracking-wider block mb-1">⚡ KẾT QUẢ (CHẤT MỚI):</span>
-                      <p className="text-neutral-200 text-xs font-medium leading-relaxed">{synthesisCard.outcomeDetail}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+              <div className="border-t border-white/5 pt-4">
+                <span className="font-extrabold text-blue-400 text-[15px] block mb-1.5">🤝 MẶT THỐNG NHẤT (ĐỒNG HÀNH):</span>
+                <p className="text-[18px] text-neutral-300 leading-relaxed font-light">{synthesisCard.unityDetail}</p>
+              </div>
 
-            {/* Modal footer */}
-            <div className="border-t border-white/10 pt-3 flex justify-end">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"
-              >
-                Đồng ý
-              </button>
+              <div className="border-t border-white/5 pt-4">
+                <span className="font-extrabold text-emerald-400 text-[15px] block mb-1.5">⚡ KẾT QUẢ (CHẤT MỚI):</span>
+                <p className="text-[18px] text-neutral-200 font-medium leading-relaxed">{synthesisCard.outcomeDetail}</p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 };
