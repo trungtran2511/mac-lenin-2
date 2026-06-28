@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
-  ArrowLeft,
   BookOpen,
   ShieldAlert,
   Award,
@@ -1190,18 +1189,8 @@ export default function App() {
 
       {/* 6. SURPLUS VALUE CALCULATOR SECTION */}
       {activeView === "calculator" && (
-        <section id="surplus-value" className="subpage-shell relative bg-background px-4 md:px-8 py-20 border-t border-white/10 flex flex-col items-center min-h-[75vh] w-full">
+        <section id="surplus-value" className="subpage-shell relative bg-background px-4 md:px-8 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh] w-full">
           <div className="max-w-[96%] w-full space-y-12 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
             <SalaryCalculatorPanel onAskTeacher={() => scrollToSection("marxist-ai")} />
 
@@ -1211,18 +1200,8 @@ export default function App() {
 
             {/* 6.5. SELF-STUDY & PRACTICE SECTION */}
       {activeView === "self-study" && (
-        <section id="self-study" className="subpage-shell relative bg-background px-4 md:px-8 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="self-study" className="subpage-shell relative bg-background px-4 md:px-8 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-[95%] w-full space-y-12 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
               <div>
@@ -1541,18 +1520,8 @@ export default function App() {
 
       {/* 7. MARXIST AI CONSULTANT SECTION */}
       {activeView === "ai-consultant" && (
-        <section id="marxist-ai" className="subpage-shell relative bg-background px-6 md:px-28 py-32 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="marxist-ai" className="subpage-shell relative bg-background px-6 md:px-28 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-5xl w-full space-y-12 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
             <div>
@@ -1677,18 +1646,8 @@ export default function App() {
 
       {/* 8. DIALECTICAL DEBATE SECTION */}
       {activeView === "market-dynamics" && (
-        <section id="market-dynamics" className="subpage-shell relative bg-background px-2 md:px-4 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="market-dynamics" className="subpage-shell relative bg-background px-2 md:px-4 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-[98%] w-full space-y-6 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
             <Suspense fallback={
               <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
@@ -1705,18 +1664,8 @@ export default function App() {
 
       {/* 9. ETHICAL BOSS CHALLENGE SECTION */}
       {activeView === "ethical-challenge" && (
-        <section id="ethical-challenge" className="subpage-shell relative bg-background px-2 md:px-4 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="ethical-challenge" className="subpage-shell relative bg-background px-2 md:px-4 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-[98%] w-full space-y-6 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
             <Suspense fallback={
               <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
@@ -1733,18 +1682,8 @@ export default function App() {
 
       {/* 10. GDP SECTOR MATRIX SECTION */}
       {activeView === "gdp-sectors" && (
-        <section id="gdp-sectors" className="subpage-shell relative bg-background px-2 md:px-4 pt-16 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
+        <section id="gdp-sectors" className="subpage-shell relative bg-background px-2 md:px-4 pt-4 pb-20 border-t border-white/10 flex flex-col items-center min-h-[75vh]">
           <div className="max-w-[98%] w-full space-y-6 animate-fade-rise">
-
-            {/* Back Button */}
-            <div className="pb-4">
-              <button
-                onClick={() => scrollToSection("theory")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Quay lại trang chủ
-              </button>
-            </div>
 
             <Suspense fallback={
               <div className="flex flex-col items-center justify-center p-12 text-xs font-bold text-neutral-400 gap-3">
