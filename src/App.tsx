@@ -808,9 +808,51 @@ export default function App() {
       ? "[Nội dung này nằm ngoài phạm vi giáo trình chính thức]\n"
       : "";
 
-    const promptText = aiMode === "academic"
-      ? `${curriculumScopeHint}Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
-      : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`;
+    const isAboutProject = (text: string): boolean => {
+      const lower = text.toLowerCase();
+      return (
+        lower.includes("web") ||
+        lower.includes("website") ||
+        lower.includes("project") ||
+        lower.includes("dự án") ||
+        lower.includes("ứng dụng") ||
+        lower.includes("app") ||
+        lower.includes("chức năng") ||
+        lower.includes("tính năng") ||
+        lower.includes("giới thiệu") ||
+        lower.includes("thầy nam ai") ||
+        lower.includes("thầy nam") ||
+        lower.includes("là ai") ||
+        lower.includes("là gì") ||
+        lower.includes("làm được gì") ||
+        lower.includes("lý do") ||
+        lower.includes("mục đích")
+      );
+    };
+
+    const isProjectQuery = isAboutProject(messageText);
+
+    const promptText = isProjectQuery
+      ? `Yêu cầu hỏi đáp/giới thiệu về trang web/dự án KTCT-Easy hoặc Thầy Nam AI: "${messageText}"`
+      : (aiMode === "academic"
+        ? `${curriculumScopeHint}Câu hỏi ôn tập hoặc lý thuyết trắc nghiệm Kinh tế chính trị Mác - Lênin: "${messageText}"`
+        : `Nỗi uất ức đi làm thêm của sinh viên/người lao động: "${messageText}"`);
+
+    const projectContext = `
+THÔNG TIN VỀ TRANG WEB/DỰ ÁN NÀY (KTCT-Easy):
+- Tên trang web: KTCT-Easy (Học Kinh tế chính trị Mác - Lênin Dễ Dàng).
+- Lý do tạo ra: Giúp sinh viên vượt qua nỗi sợ môn Kinh tế chính trị Mác - Lênin. Thay vì bắt người học đọc các khối lý thuyết dài dòng và khô khan, trang web cung cấp các công cụ tương tác thực tế, trực quan hóa các quy luật kinh tế biện chứng và áp dụng ngay vào đời sống sinh viên (như việc đi làm thêm, chi tiêu, học tập).
+- Các chức năng và công cụ chính trên trang web bao gồm:
+  1. Trang Chủ: Giới thiệu chung và dẫn dắt người học vào các công cụ chính của trang web.
+  2. Tính Lương (Hiểu Lương & Thặng Dư Làm Thêm): Nơi người dùng nhập lương, số giờ làm và chi phí sống thực tế để phân tích xem lương có đủ sống (tái tạo sức lao động) không, đồng thời chỉ ra phần giá trị thặng dư (m) mà người lao động tạo ra cho chủ.
+  3. Tự Học (Tự Học & Trắc Nghiệm Giáo Trình): Tóm tắt nội dung 6 chương giáo trình chuẩn, kèm ngân hàng 240 câu hỏi trắc nghiệm ôn luyện ngẫu nhiên có đáp án, giải thích chi tiết và chức năng tải file giáo trình.
+  4. Biện Chứng Kỳ Đài: Công cụ giúp sinh viên đối chiếu và giải quyết các mâu thuẫn nội tâm (như Học vs Làm, Tiết kiệm vs Chi tiêu) dựa trên quy luật lượng - chất của triết học.
+  5. Giám Đốc Hắc Ám (Thử thách làm sếp): Trò chơi mô phỏng đóng vai chủ doanh nghiệp, nơi người chơi phải cân bằng giữa mục tiêu tối đa hóa lợi nhuận cạnh tranh khốc liệt và việc đảm bảo phúc lợi/đạo đức với người lao động.
+  6. Kinh Tế Kỳ Thành (Thành Phần Kinh Tế & GDP): Biểu đồ mô phỏng trực quan cơ cấu kinh tế nhiều thành phần định hướng xã hội chủ nghĩa tại Việt Nam, nêu bật vai trò chủ đạo của Kinh tế Nhà nước.
+  7. Trợ Lý AI Thầy Nam: Chatbot (chính là bạn) sẵn sàng hỗ trợ trực tuyến mọi lúc với 2 chế độ: "Góc Gỡ Rối" (tư vấn giải tỏa bất công đi làm bằng slang Gen Z hài hước nhưng ý nghĩa) và "Ôn Tập" (giải đáp thắc mắc lý thuyết học thuật và trắc nghiệm chuẩn giáo trình).
+
+Nếu người dùng hỏi về trang web/dự án KTCT-Easy này là gì, có chức năng gì, lý do tạo ra hoặc bất kỳ thông tin nào liên quan đến trang web/dự án KTCT-Easy, bạn hãy sử dụng thông tin ngữ cảnh ở trên để giới thiệu một cách đầy đủ, chính xác và nhiệt tình, đồng thời hướng dẫn họ bấm vào các tab tương ứng trên thanh điều hướng để trải nghiệm.
+`;
 
     const systemInstructionText = aiMode === "academic"
       ? `Bạn là Thầy Nam AI - giảng viên Kinh tế chính trị học Mác - Lênin thông thái, chuyên nghiệp và chuẩn xác. 
@@ -819,11 +861,17 @@ export default function App() {
          Khi có cảnh báo ngoài phạm vi, chỉ được bổ sung kiến thức chung thật ngắn gọn, trung lập, và phải nói rõ phần đó không phải trích từ giáo trình.
          Không được bịa số liệu, tác giả, chương mục hoặc đáp án trắc nghiệm không có trong dữ liệu.
 
+         ${projectContext}
+
          DỮ LIỆU GIÁO TRÌNH:
          ${curriculumContext}
 
          Hãy giải thích rõ ràng các khái niệm, quy luật bằng tiếng Việt khoa học, dễ hiểu nhất để sinh viên ôn thi đạt điểm cao. Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`
-      : "Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp. Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.";
+      : `Bạn là Thầy Nam AI - cố vấn triết học Gen Z hài hước nhưng cực kỳ tích cực. Người dùng sẽ kể cho bạn nỗi đau đi làm thêm (bị quỵt lương, ép KPI, làm quá giờ không lương). Hãy dùng lý luận Kinh tế chính trị Mác - Lênin (bóc lột thặng dư tuyệt đối/tương đối, giá trị sức lao động, bản chất bóc lột của nhà tư bản) để giải thích tình trạng của họ bằng giọng điệu hài hước, dí dỏm, sử dụng slang Gen Z trẻ trung. Cuối cùng, hãy đưa ra lời khuyên tích cực, định hướng sinh viên tự chủ lao động, tập trung học tập nâng cao chất lượng bản thân và biết bảo vệ quyền lợi hợp pháp. 
+
+         ${projectContext}
+
+         Tuyệt đối KHÔNG sử dụng bất kỳ định dạng markdown nào (như dấu sao đôi **, dấu thăng #, gạch đầu dòng, danh sách), chỉ trả về văn bản thuần túy không định dạng.`;
 
     try {
       const aiResponse = await askThayNamAI(promptText, systemInstructionText);
